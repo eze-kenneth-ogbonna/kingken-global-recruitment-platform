@@ -1,66 +1,73 @@
-# KingKen Global Platform 🚀
+<div align="center">
 
-**International Recruitment & Workforce Mobility System**
- A digital system connecting skilled African talent with global employers, beginning with the Gulf region.
+# Kingken Global Recruitment Platform
 
+Global recruitment technology platform connecting African talent with verified international employers.
 
-## 🌍 Vision
+Building the infrastructure for the future of global workforce mobility.
 
-To build a trusted *global workforce recruitment, deployment, and mobility platform* that empowers job seekers and solves manpower shortages for companies worldwide.
+Website: https://www.kingkenglobal.com.ng  
+Contact: info@kingkenglobal.com.ng
 
+</div>
 
-## 🧠 Project Overview
+---
 
-This project serves as the backbone of KingKen Global's recruitment technology:
+## 🌍 Overview
 
-- Employer partnership network
-- Worker application & verification system
-- Recruitment CRM
-- Visa and relocation workflows
-- Deployment tracking dashboard
+The **Kingken Global Recruitment Platform** is an enterprise-level recruitment technology system developed by **Kingken Global Travel Agency Ltd**.
 
-## 🚧 Features (Planned)
+The platform is designed to connect skilled workers from Africa with verified employers across international labor markets, including:
 
-✨ Employer onboarding portal  
-✨ Worker registration & profile system  
-✨ Manpower demand matching  
-✨ Visa processing automation  
-✨ Deployment & travel coordination system  
+• Kuwait  
+• Middle East  
+• Europe  
+• Global job markets  
 
+Our mission is to create a transparent, scalable, and technology-driven international recruitment ecosystem.
 
-## 🗺️ Architecture
+---
 
-Detailed architecture and design plans are in:
-`docs/architecture.md`
+## 🚀 Platform Vision
 
+To build one of the most advanced global recruitment infrastructures that enables:
 
-## 📄 Documentation
+Safe international employment  
+Verified employer networks  
+Digital worker identity systems  
+AI-powered job matching  
+Scalable recruitment automation  
 
-📌 Project overview → `docs/project-overview.md`  
-📌 Platform roadmap → `docs/roadmap.md`
+---
 
+## 🧠 Core Platform Systems
 
-## 🛠️ Getting Started
+The Kingken Global ecosystem includes:
 
-1. Clone the repository  
-2. Explore docs/ for design guidelines  
-3. Use `src/` for code development
+Global Recruitment Platform  
+Worker Digital Identity System  
+Employer Verification Network  
+International Job Marketplace  
+AI Recruitment Matching Engine  
+Global Workforce Database  
+Recruitment Automation System  
 
+---
 
-## 👍 Contributing
+## 🏗 System Architecture
 
-We welcome contributors! See **CONTRIBUTING.md** for standards and guidelines.
+kingken-global-recruitment-platform
+│
+├── backend
+├── frontend
+├── api
+├── database
+├── integrations
+├── automation
+├── security
+├── infrastructure
+├── analytics
+└── docs
 
+---
 
-## 📜 License
-
-This project is licensed under the **MIT License** — see `LICENSE` for details.
-
-
-## 📞 Contact
-
-KingKen Global Travel Agency Ltd.
-Company Registration No. 8382972
-Founder: **Eze Kenneth Ogbonna**  
-Website: https://kingkenglobal.com.ng  
-Email: info@kingkenglobal.com.ng
