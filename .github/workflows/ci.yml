@@ -1,0 +1,143 @@
+name: CI — Lint and Validate
+
+on:
+  push:
+    branches: [main, develop, "feature/**", "fix/**", "docs/**", "ops/**"]
+  pull_request:
+    branches: [main, develop]
+
+jobs:
+  markdown-lint:
+    name: Markdown Lint Check
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+
+      - name: Install markdownlint-cli
+        run: npm install -g markdownlint-cli
+
+      - name: Run markdownlint
+        run: |
+          markdownlint \
+            --config .markdownlint.json \
+            "**/*.md" \
+            --ignore node_modules \
+            --ignore ".git/**"
+        continue-on-error: true
+
+  check-no-secrets:
+    name: Check No Real Secrets Committed
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Check .env is not committed
+        run: |
+          if git ls-files | grep -q "^\.env$"; then
+            echo "ERROR: .env file is committed to the repository!"
+            echo "Remove it with: git rm --cached .env"
+            exit 1
+          else
+            echo "OK: .env file is not tracked by git"
+          fi
+
+      - name: Check for potential API key patterns
+        run: |
+          # Look for patterns that look like real API keys (not placeholders)
+          FOUND=0
+
+          # OpenAI API key pattern (sk-...)
+          if grep -r "sk-[A-Za-z0-9]\{20,\}" --include="*.md" --include="*.yml" --include="*.json" --include="*.js" --include="*.gs" .; then
+            echo "WARNING: Possible OpenAI API key found"
+            FOUND=1
+          fi
+
+          # Generic long random strings that look like secrets (but skip .env.example placeholders)
+          # Just warn, don't fail — false positives are common
+          if [ $FOUND -eq 1 ]; then
+            echo "Please review the above matches to ensure no real secrets are committed."
+            echo "If these are false positives (e.g., example values), you can ignore this warning."
+          else
+            echo "OK: No obvious secret patterns detected"
+          fi
+
+  validate-env-example:
+    name: Validate .env.example
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Check .env.example exists
+        run: |
+          if [ -f ".env.example" ]; then
+            echo "OK: .env.example exists"
+            echo "Variables defined:"
+            grep -c "^[A-Z_]*=" .env.example || true
+          else
+            echo "WARNING: .env.example not found"
+          fi
+
+      - name: Check .env.example has no real secrets
+        run: |
+          # .env.example should only have placeholder values like "your_*_here"
+          REAL_VALUES=$(grep -E "^[A-Z_]+=(?!your_|https?://|smtp\.|gpt-|development|production|\+[0-9])" .env.example | grep -v "^#" | grep -v "=$" || true)
+          if [ -n "$REAL_VALUES" ]; then
+            echo "REVIEW NEEDED: These .env.example values may be real (not placeholders):"
+            echo "$REAL_VALUES"
+          else
+            echo "OK: .env.example contains only placeholder values"
+          fi
+
+  file-structure-check:
+    name: Verify Required Files Exist
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Check required documentation files
+        run: |
+          REQUIRED_FILES=(
+            "README.md"
+            "ARCHITECTURE.md"
+            "DEVELOPMENT.md"
+            "CHANGELOG.md"
+            "CONTRIBUTING.md"
+            "SECURITY.md"
+            "CODE_OF_CONDUCT.md"
+            ".env.example"
+            "docs/SETUP_GUIDE.md"
+            "docs/AUTOMATION_GUIDE.md"
+            "docs/AI_SYSTEM_GUIDE.md"
+            "docs/CRM_GUIDE.md"
+            "docs/WHATSAPP_BOT_GUIDE.md"
+            "infrastructure/TECH_STACK.md"
+            "ops/ROLLOUT_CHECKLIST.md"
+          )
+
+          MISSING=0
+          for file in "${REQUIRED_FILES[@]}"; do
+            if [ -f "$file" ]; then
+              echo "OK: $file"
+            else
+              echo "MISSING: $file"
+              MISSING=$((MISSING + 1))
+            fi
+          done
+
+          if [ $MISSING -gt 0 ]; then
+            echo ""
+            echo "$MISSING required file(s) are missing."
+            exit 1
+          else
+            echo ""
+            echo "All required files present."
+          fi

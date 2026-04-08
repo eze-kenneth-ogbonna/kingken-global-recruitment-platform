@@ -1,0 +1,108 @@
+name: Deploy — Stub
+
+# ─────────────────────────────────────────────────────────────────────────────
+# KINGKEN GLOBAL — Deploy Workflow
+#
+# STATUS: STUB — This workflow is a placeholder for Phase 2 deployment.
+#
+# Phase 1 (MVP) does not require automated deployment since the platform
+# runs on Google Sheets + Zapier + WATI (no server to deploy).
+#
+# Phase 2 deployment will include:
+#   - Build React.js frontend
+#   - Deploy Node.js API to AWS EC2 / GCP Cloud Run
+#   - Run database migrations on PostgreSQL
+#   - Deploy static assets to S3 / CloudFront
+#   - Notify team on successful deployment
+#
+# TO ACTIVATE: Replace the placeholder steps below with real deployment steps
+# when Phase 2 development begins.
+# ─────────────────────────────────────────────────────────────────────────────
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+    inputs:
+      environment:
+        description: "Deployment environment"
+        required: true
+        default: "staging"
+        type: choice
+        options:
+          - staging
+          - production
+
+jobs:
+  deploy-check:
+    name: Pre-deployment Check
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Phase 1 MVP — No deployment required
+        run: |
+          echo "========================================="
+          echo "Kingken Global Recruitment Platform"
+          echo "Deploy Workflow — Phase 1 MVP"
+          echo "========================================="
+          echo ""
+          echo "Phase 1 is a no-code platform (Google Sheets + Zapier + WATI)."
+          echo "No server deployment is required."
+          echo ""
+          echo "This workflow will be activated in Phase 2 when the"
+          echo "React.js + Node.js platform is built."
+          echo ""
+          echo "Current platform status: MVP v1.0.0"
+          echo "Phase 2 target: Q3 2026"
+          echo ""
+          echo "For setup and go-live instructions, see:"
+          echo "  - docs/SETUP_GUIDE.md"
+          echo "  - ops/ROLLOUT_CHECKLIST.md"
+
+  # ── PHASE 2 DEPLOYMENT STEPS (uncomment when Phase 2 is ready) ─────────────
+  #
+  # build:
+  #   name: Build Frontend
+  #   runs-on: ubuntu-latest
+  #   steps:
+  #     - uses: actions/checkout@v4
+  #     - uses: actions/setup-node@v4
+  #       with:
+  #         node-version: "20"
+  #     - run: npm ci
+  #     - run: npm run build
+  #     - uses: actions/upload-artifact@v4
+  #       with:
+  #         name: build-output
+  #         path: dist/
+  #
+  # deploy-api:
+  #   name: Deploy API to AWS
+  #   runs-on: ubuntu-latest
+  #   needs: build
+  #   environment: ${{ github.event.inputs.environment || 'staging' }}
+  #   steps:
+  #     - uses: actions/checkout@v4
+  #     - name: Configure AWS credentials
+  #       uses: aws-actions/configure-aws-credentials@v4
+  #       with:
+  #         aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+  #         aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+  #         aws-region: us-east-1
+  #     - name: Deploy to EC2
+  #       run: |
+  #         # Deployment commands here
+  #         echo "Deploying API..."
+  #
+  # notify:
+  #   name: Notify Team
+  #   runs-on: ubuntu-latest
+  #   needs: [build, deploy-api]
+  #   if: always()
+  #   steps:
+  #     - name: Send WhatsApp notification
+  #       run: |
+  #         # Send deployment status to Kingken Tech WhatsApp group
+  #         echo "Deployment complete. Notifying team..."
