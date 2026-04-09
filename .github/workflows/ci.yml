@@ -2,7 +2,7 @@ name: CI — Lint and Validate
 
 on:
   push:
-    branches: [main, develop, "feature/**", "fix/**", "docs/**", "ops/**"]
+    branches: [main, develop, "feature/**", "fix/**", "docs/**", "ops/**", "copilot/**"]
   pull_request:
     branches: [main, develop]
 
@@ -53,7 +53,7 @@ jobs:
           # Look for patterns that look like real API keys (not placeholders)
           FOUND=0
 
-          # OpenAI API key pattern (sk-...)
+          # OpenAI API key pattern (sk...)
           if grep -r "sk-[A-Za-z0-9]\{20,\}" --include="*.md" --include="*.yml" --include="*.json" --include="*.js" --include="*.gs" .; then
             echo "WARNING: Possible OpenAI API key found"
             FOUND=1
@@ -88,7 +88,7 @@ jobs:
       - name: Check .env.example has no real secrets
         run: |
           # .env.example should only have placeholder values like "your_*_here"
-          REAL_VALUES=$(grep -E "^[A-Z_]+=(?!your_|https?://|smtp\.|gpt-|development|production|\+[0-9])" .env.example | grep -v "^#" | grep -v "=$" || true)
+          REAL_VALUES=$(grep -E "^[A-Z_]+=(?!your_|https?://|smtp\\.|gpt-|development|production|\\+[0-9])" .env.example | grep -v "^#" | grep -v "=$" || true)
           if [ -n "$REAL_VALUES" ]; then
             echo "REVIEW NEEDED: These .env.example values may be real (not placeholders):"
             echo "$REAL_VALUES"
