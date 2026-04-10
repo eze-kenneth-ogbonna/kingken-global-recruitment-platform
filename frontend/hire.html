@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Hire Workers – Kingken Global</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+<nav class="navbar">
+  <div class="container navbar__inner">
+    <a href="index.html" class="navbar__brand">
+      <div class="navbar__brand-mark">KG</div>
+      Kingken <span>Global</span>
+    </a>
+    <ul class="navbar__nav">
+      <li><a href="index.html">Home</a></li>
+      <li><a href="about.html">About</a></li>
+      <li><a href="services.html">Services</a></li>
+      <li><a href="jobs.html">Jobs</a></li>
+      <li><a href="hire.html" class="active">Hire Workers</a></li>
+      <li><a href="contact.html">Contact</a></li>
+    </ul>
+    <div class="navbar__actions">
+      <a href="signup.html" class="btn btn--outline btn--sm">Apply for Jobs</a>
+      <a href="hire.html"   class="btn btn--primary btn--sm">Hire Workers</a>
+    </div>
+    <button class="navbar__toggle" aria-label="Menu"><span></span><span></span><span></span></button>
+  </div>
+</nav>
+
+<section class="page-header">
+  <div class="container">
+    <p class="page-header__label">For Employers</p>
+    <h1 class="page-header__title">Request Workers</h1>
+    <p class="page-header__sub">Fill in your staffing requirements and we will deliver verified, ready-to-deploy candidates within 48 hours.</p>
+  </div>
+</section>
+
+<section class="section">
+  <div class="container" style="display:grid;grid-template-columns:1fr 1fr;gap:60px;align-items:start">
+
+    <!-- Form -->
+    <div class="form-card" style="max-width:none">
+      <h2 class="form-card__title">Staffing Request Form</h2>
+      <p class="form-card__sub">Tell us your requirements and we'll get back to you within 24 hours.</p>
+
+      <form data-submit-to="employer-dashboard.html">
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label">Company Name *</label>
+            <input type="text" class="form-control" placeholder="Your company name" required>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Industry *</label>
+            <select class="form-control" required>
+              <option value="">Select industry</option>
+              <option>Cleaning &amp; Janitorial</option>
+              <option>Hospitality &amp; Hotels</option>
+              <option>Construction</option>
+              <option>Logistics &amp; Delivery</option>
+              <option>Food &amp; Restaurants</option>
+              <option>Security</option>
+              <option>Healthcare Support</option>
+              <option>Retail</option>
+              <option>Manufacturing</option>
+              <option>Other</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label">Position(s) Needed *</label>
+            <input type="text" class="form-control" placeholder="e.g. Cleaners, Security Guards" required>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Number of Workers *</label>
+            <input type="number" class="form-control" placeholder="e.g. 10" min="1" required>
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label">Country *</label>
+            <select class="form-control" required>
+              <option value="">Select country</option>
+              <option>Kuwait</option>
+              <option>United Arab Emirates</option>
+              <option>Qatar</option>
+              <option>Saudi Arabia</option>
+              <option>Bahrain</option>
+              <option>Oman</option>
+              <option>Other</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label class="form-label">City / Location *</label>
+            <input type="text" class="form-control" placeholder="e.g. Kuwait City" required>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Contact Person *</label>
+          <input type="text" class="form-control" placeholder="Full name of contact person" required>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label">Phone / WhatsApp *</label>
+            <input type="tel" class="form-control" placeholder="+965 …" required>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Email Address *</label>
+            <input type="email" class="form-control" placeholder="company@example.com" required>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">When Do You Need Workers?</label>
+          <select class="form-control">
+            <option>Immediately (within 1 week)</option>
+            <option>Within 2 weeks</option>
+            <option>Within 1 month</option>
+            <option>Flexible</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Additional Requirements</label>
+          <textarea class="form-control" rows="4" placeholder="Any specific skills, experience, language requirements, or notes…" style="resize:vertical"></textarea>
+        </div>
+
+        <button type="submit" class="btn btn--primary" style="width:100%;justify-content:center;padding:14px">
+          🚀 Submit Staffing Request
+        </button>
+      </form>
+    </div>
+
+    <!-- Side Info -->
+    <div>
+      <div class="card" style="margin-bottom:24px">
+        <h3 style="font-size:17px;font-weight:700;margin-bottom:16px">Why Hire Through Us?</h3>
+        <ul style="list-style:none;display:flex;flex-direction:column;gap:14px">
+          <li style="display:flex;gap:12px">
+            <span style="font-size:18px">✅</span>
+            <div>
+              <strong style="font-size:14px">Pre-verified candidates</strong>
+              <p style="font-size:13px;color:var(--muted);margin-top:2px">Every worker is document-checked, health-screened, and reference-verified.</p>
+            </div>
+          </li>
+          <li style="display:flex;gap:12px">
+            <span style="font-size:18px">⚡</span>
+            <div>
+              <strong style="font-size:14px">48-hour candidate delivery</strong>
+              <p style="font-size:13px;color:var(--muted);margin-top:2px">Shortlisted profiles in your inbox within 2 business days.</p>
+            </div>
+          </li>
+          <li style="display:flex;gap:12px">
+            <span style="font-size:18px">🛡️</span>
+            <div>
+              <strong style="font-size:14px">End-to-end support</strong>
+              <p style="font-size:13px;color:var(--muted);margin-top:2px">We handle visa processing, travel, and on-arrival logistics.</p>
+            </div>
+          </li>
+          <li style="display:flex;gap:12px">
+            <span style="font-size:18px">🔄</span>
+            <div>
+              <strong style="font-size:14px">Replacement guarantee</strong>
+              <p style="font-size:13px;color:var(--muted);margin-top:2px">Free replacement within 90 days if a worker does not perform as expected.</p>
+            </div>
+          </li>
+        </ul>
+      </div>
+
+      <div class="card" style="background:var(--blue-light);border-color:transparent">
+        <h3 style="font-size:16px;font-weight:700;color:var(--blue);margin-bottom:12px">📞 Prefer to talk first?</h3>
+        <p style="font-size:14px;color:var(--mid);margin-bottom:16px">Our team is available to discuss your staffing needs directly.</p>
+        <a href="https://wa.me/96569048174" class="btn btn--primary btn--sm" style="width:100%;justify-content:center">
+          💬 WhatsApp Us Now
+        </a>
+        <div style="text-align:center;margin-top:10px;font-size:13px;color:var(--muted)">or call +965 6904 8174</div>
+      </div>
+
+      <div class="card" style="margin-top:24px">
+        <h3 style="font-size:15px;font-weight:700;margin-bottom:14px">Already have an account?</h3>
+        <a href="employer-dashboard.html" class="btn btn--outline" style="width:100%;justify-content:center">
+          🏢 Go to Employer Dashboard →
+        </a>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<footer class="footer">
+  <div class="container">
+    <div class="footer__grid">
+      <div>
+        <div class="footer__brand">Kingken <span>Global</span></div>
+        <p class="footer__desc">International recruitment connecting African talent with Gulf employers.</p>
+      </div>
+      <div>
+        <div class="footer__col-title">Company</div>
+        <ul class="footer__links">
+          <li><a href="about.html">About Us</a></li>
+          <li><a href="services.html">Services</a></li>
+          <li><a href="contact.html">Contact</a></li>
+        </ul>
+      </div>
+      <div>
+        <div class="footer__col-title">Platform</div>
+        <ul class="footer__links">
+          <li><a href="jobs.html">Browse Jobs</a></li>
+          <li><a href="hire.html">Hire Workers</a></li>
+          <li><a href="signup.html">Worker Signup</a></li>
+        </ul>
+      </div>
+      <div>
+        <div class="footer__col-title">Contact</div>
+        <ul class="footer__links">
+          <li><a href="tel:+96569048174">📞 +965 6904 8174</a></li>
+          <li><a href="mailto:info@kingkenglobal.com.ng">✉️ info@kingkenglobal.com.ng</a></li>
+          <li><a href="https://wa.me/96569048174">💬 WhatsApp Chat</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="footer__bottom">
+      <span class="footer__copy">© 2026 Kingken Global Travel Agency Ltd. All rights reserved.</span>
+    </div>
+  </div>
+</footer>
+
+<script src="js/main.js"></script>
+</body>
+</html>

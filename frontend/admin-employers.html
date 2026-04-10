@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Employers – Kingken Global Admin</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+<div class="dash-layout">
+  <aside class="sidebar" style="background:#0F172A">
+    <a href="index.html" class="sidebar__brand">
+      <div class="sidebar__brand-mark" style="background:#D97706">KG</div>
+      <span class="sidebar__brand-name">Admin <span>Panel</span></span>
+    </a>
+    <nav class="sidebar__nav">
+      <div class="sidebar__group">
+        <div class="sidebar__group-label">Overview</div>
+        <a href="admin-dashboard.html"><span class="icon">🏠</span> Dashboard</a>
+        <a href="admin-analytics.html"><span class="icon">📊</span> Analytics</a>
+      </div>
+      <div class="sidebar__group">
+        <div class="sidebar__group-label">Management</div>
+        <a href="admin-users.html"><span class="icon">👥</span> Manage Users</a>
+        <a href="admin-jobs.html"><span class="icon">📋</span> Manage Jobs</a>
+        <a href="candidates.html"><span class="icon">🎯</span> All Candidates</a>
+        <a href="admin-employers.html" class="active"><span class="icon">🏢</span> Employers</a>
+      </div>
+      <div class="sidebar__group">
+        <div class="sidebar__group-label">Finance</div>
+        <a href="admin-payments.html"><span class="icon">💳</span> Payments</a>
+      </div>
+      <div class="sidebar__group">
+        <div class="sidebar__group-label">System</div>
+        <a href="index.html"><span class="icon">🌐</span> Public Site</a>
+      </div>
+    </nav>
+    <div class="sidebar__footer">
+      <div class="sidebar__user">
+        <div class="sidebar__avatar" style="background:#D97706">AD</div>
+        <div>
+          <div class="sidebar__user-name">Admin User</div>
+          <div class="sidebar__user-role">Super Admin</div>
+        </div>
+      </div>
+    </div>
+  </aside>
+  <div class="dash-main">
+    <div class="dash-topbar">
+      <h1 class="dash-topbar__title">Employers</h1>
+      <div class="dash-topbar__actions">
+        <a href="admin-dashboard.html" class="btn btn--outline btn--sm">← Dashboard</a>
+      </div>
+    </div>
+    <div class="dash-content">
+      <div class="stat-cards" style="margin-bottom:24px">
+        <div class="stat-card" style="padding:16px"><div class="stat-card__label">Total Employers</div><div class="stat-card__value" data-count="83">0</div></div>
+        <div class="stat-card" style="padding:16px"><div class="stat-card__label">Verified</div><div class="stat-card__value" data-count="71">0</div></div>
+        <div class="stat-card" style="padding:16px"><div class="stat-card__label">Pending Verification</div><div class="stat-card__value" data-count="12">0</div></div>
+        <div class="stat-card" style="padding:16px"><div class="stat-card__label">Active Contracts</div><div class="stat-card__value" data-count="38">0</div></div>
+      </div>
+      <div class="panel">
+        <div class="panel__head">
+          <div class="panel__head-title">Employer Directory</div>
+          <div class="search-bar" style="width:220px"><span>🔍</span><input type="text" placeholder="Search employers…"></div>
+        </div>
+        <div class="panel__body">
+          <div class="table-wrap">
+            <table>
+              <thead><tr><th>Company</th><th>Country</th><th>Industry</th><th>Jobs Posted</th><th>Workers Hired</th><th>Revenue</th><th>Status</th><th>Actions</th></tr></thead>
+              <tbody>
+                <tr><td class="td-name">AlSafwa Cleaning Co.</td><td>Kuwait</td><td>Cleaning</td><td>4</td><td>22</td><td>$22,000</td><td><span class="badge badge--green">Verified</span></td><td><a href="employer-dashboard.html" class="btn btn--outline btn--sm">View</a></td></tr>
+                <tr><td class="td-name">Gulf Logistics LLC</td><td>UAE</td><td>Logistics</td><td>2</td><td>8</td><td>$7,200</td><td><span class="badge badge--green">Verified</span></td><td><a href="employer-dashboard.html" class="btn btn--outline btn--sm">View</a></td></tr>
+                <tr><td class="td-name">Al Rayyan Hotels</td><td>Qatar</td><td>Hospitality</td><td>3</td><td>15</td><td>$13,500</td><td><span class="badge badge--green">Verified</span></td><td><a href="employer-dashboard.html" class="btn btn--outline btn--sm">View</a></td></tr>
+                <tr><td class="td-name">Nesto Hypermarket</td><td>UAE</td><td>Retail</td><td>1</td><td>6</td><td>$5,400</td><td><span class="badge">Pending</span></td><td><a href="employer-dashboard.html" class="btn btn--primary btn--sm">Verify</a></td></tr>
+                <tr><td class="td-name">AlBabtain Construction</td><td>Kuwait</td><td>Construction</td><td>2</td><td>20</td><td>$18,000</td><td><span class="badge badge--green">Verified</span></td><td><a href="employer-dashboard.html" class="btn btn--outline btn--sm">View</a></td></tr>
+                <tr><td class="td-name">Emirates Ground Services</td><td>UAE</td><td>Aviation</td><td>1</td><td>0</td><td>—</td><td><span class="badge">Pending</span></td><td><a href="employer-dashboard.html" class="btn btn--primary btn--sm">Verify</a></td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<script src="js/main.js"></script>
+</body>
+</html>

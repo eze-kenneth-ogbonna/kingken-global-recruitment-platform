@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Analytics – Kingken Global Admin</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+<div class="dash-layout">
+  <aside class="sidebar" style="background:#0F172A">
+    <a href="index.html" class="sidebar__brand">
+      <div class="sidebar__brand-mark" style="background:#D97706">KG</div>
+      <span class="sidebar__brand-name">Admin <span>Panel</span></span>
+    </a>
+    <nav class="sidebar__nav">
+      <div class="sidebar__group">
+        <div class="sidebar__group-label">Overview</div>
+        <a href="admin-dashboard.html"><span class="icon">🏠</span> Dashboard</a>
+        <a href="admin-analytics.html" class="active"><span class="icon">📊</span> Analytics</a>
+      </div>
+      <div class="sidebar__group">
+        <div class="sidebar__group-label">Management</div>
+        <a href="admin-users.html"><span class="icon">👥</span> Manage Users</a>
+        <a href="admin-jobs.html"><span class="icon">📋</span> Manage Jobs</a>
+        <a href="candidates.html"><span class="icon">🎯</span> All Candidates</a>
+        <a href="admin-employers.html"><span class="icon">🏢</span> Employers</a>
+      </div>
+      <div class="sidebar__group">
+        <div class="sidebar__group-label">Finance</div>
+        <a href="admin-payments.html"><span class="icon">💳</span> Payments</a>
+      </div>
+      <div class="sidebar__group">
+        <div class="sidebar__group-label">System</div>
+        <a href="index.html"><span class="icon">🌐</span> Public Site</a>
+      </div>
+    </nav>
+    <div class="sidebar__footer">
+      <div class="sidebar__user">
+        <div class="sidebar__avatar" style="background:#D97706">AD</div>
+        <div>
+          <div class="sidebar__user-name">Admin User</div>
+          <div class="sidebar__user-role">Super Admin</div>
+        </div>
+      </div>
+    </div>
+  </aside>
+  <div class="dash-main">
+    <div class="dash-topbar">
+      <h1 class="dash-topbar__title">Analytics</h1>
+      <div class="dash-topbar__actions">
+        <a href="admin-dashboard.html" class="btn btn--outline btn--sm">← Dashboard</a>
+      </div>
+    </div>
+    <div class="dash-content">
+      <div class="stat-cards">
+        <div class="stat-card"><div class="stat-card__icon stat-card__icon--blue">👁️</div><div class="stat-card__label">Website Visitors (30d)</div><div class="stat-card__value" data-count="8420">0</div><div class="stat-card__change stat-card__change--up">↑ 18% vs last month</div></div>
+        <div class="stat-card"><div class="stat-card__icon stat-card__icon--gold">📋</div><div class="stat-card__label">Applications (30d)</div><div class="stat-card__value" data-count="312">0</div><div class="stat-card__change stat-card__change--up">↑ 34 this week</div></div>
+        <div class="stat-card"><div class="stat-card__icon stat-card__icon--green">🏢</div><div class="stat-card__label">Employer Inquiries</div><div class="stat-card__value" data-count="47">0</div></div>
+        <div class="stat-card"><div class="stat-card__icon stat-card__icon--red">💰</div><div class="stat-card__label">Conversion Rate</div><div class="stat-card__value">6.2%</div><div class="stat-card__change stat-card__change--up">↑ 0.8% vs last month</div></div>
+      </div>
+      <div class="panel" style="margin-bottom:24px">
+        <div class="panel__head"><div class="panel__head-title">Funnel Performance</div></div>
+        <div class="panel__body">
+          <div style="display:flex;flex-direction:column;gap:20px;max-width:600px">
+            <div><div style="display:flex;justify-content:space-between;font-size:14px;margin-bottom:6px"><span>🔵 Contacted / Outreach</span><strong>248</strong></div><div class="progress" style="height:14px"><div class="progress__bar" data-width="100" style="background:#E5E7EB"></div></div></div>
+            <div><div style="display:flex;justify-content:space-between;font-size:14px;margin-bottom:6px"><span>🟡 Interested</span><strong>74</strong></div><div class="progress" style="height:14px"><div class="progress__bar" data-width="30" style="background:var(--gold)"></div></div></div>
+            <div><div style="display:flex;justify-content:space-between;font-size:14px;margin-bottom:6px"><span>🟠 Active Leads</span><strong>37</strong></div><div class="progress" style="height:14px"><div class="progress__bar" data-width="15"></div></div></div>
+            <div><div style="display:flex;justify-content:space-between;font-size:14px;margin-bottom:6px"><span>🟢 Deals Closed</span><strong>14</strong></div><div class="progress" style="height:14px"><div class="progress__bar" data-width="6" style="background:#065F46"></div></div></div>
+          </div>
+        </div>
+      </div>
+      <div class="panel">
+        <div class="panel__head"><div class="panel__head-title">Top Traffic Sources</div></div>
+        <div class="panel__body">
+          <div class="table-wrap">
+            <table>
+              <thead><tr><th>Source</th><th>Visitors</th><th>Leads</th><th>Deals</th><th>Conversion</th></tr></thead>
+              <tbody>
+                <tr><td class="td-name">WhatsApp Outreach</td><td>1,240</td><td>28</td><td>8</td><td><span class="badge badge--green">0.6%</span></td></tr>
+                <tr><td class="td-name">Google Organic</td><td>2,810</td><td>42</td><td>12</td><td><span class="badge badge--green">0.4%</span></td></tr>
+                <tr><td class="td-name">Facebook Ads</td><td>3,200</td><td>53</td><td>10</td><td><span class="badge badge--blue">0.3%</span></td></tr>
+                <tr><td class="td-name">Direct / Referral</td><td>1,170</td><td>31</td><td>14</td><td><span class="badge badge--green">1.2%</span></td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<script src="js/main.js"></script>
+</body>
+</html>

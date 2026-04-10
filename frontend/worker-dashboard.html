@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Worker Dashboard – Kingken Global</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+<div class="dash-layout">
+
+  <!-- Sidebar -->
+  <aside class="sidebar">
+    <a href="index.html" class="sidebar__brand">
+      <div class="sidebar__brand-mark">KG</div>
+      <span class="sidebar__brand-name">Kingken <span>Global</span></span>
+    </a>
+    <nav class="sidebar__nav">
+      <div class="sidebar__group">
+        <div class="sidebar__group-label">My Account</div>
+        <a href="worker-dashboard.html" class="active"><span class="icon">🏠</span> Dashboard</a>
+        <a href="worker-profile.html"><span class="icon">👤</span> My Profile</a>
+        <a href="worker-applications.html"><span class="icon">📋</span> My Applications</a>
+      </div>
+      <div class="sidebar__group">
+        <div class="sidebar__group-label">Jobs</div>
+        <a href="jobs.html"><span class="icon">🔍</span> Browse Jobs</a>
+        <a href="job-details.html"><span class="icon">⭐</span> Saved Jobs</a>
+      </div>
+      <div class="sidebar__group">
+        <div class="sidebar__group-label">Support</div>
+        <a href="contact.html"><span class="icon">💬</span> Contact Support</a>
+      </div>
+    </nav>
+    <div class="sidebar__footer">
+      <div class="sidebar__user">
+        <div class="sidebar__avatar">AO</div>
+        <div>
+          <div class="sidebar__user-name">Amara Osei</div>
+          <div class="sidebar__user-role">Worker · Ghana</div>
+        </div>
+      </div>
+    </div>
+  </aside>
+
+  <!-- Main -->
+  <div class="dash-main">
+    <div class="dash-topbar">
+      <h1 class="dash-topbar__title">Welcome back, Amara 👋</h1>
+      <div class="dash-topbar__actions">
+        <button class="btn btn--outline btn--sm notif-btn">
+          🔔 <span class="notif-dot"></span>
+        </button>
+        <a href="index.html" class="btn btn--outline btn--sm">← Home</a>
+      </div>
+    </div>
+
+    <div class="dash-content">
+
+      <!-- Application Status Alert -->
+      <div class="alert alert--info">
+        📋 Your application is under review. Our team will contact you within 2–3 business days.
+      </div>
+
+      <!-- Stat Cards -->
+      <div class="stat-cards">
+        <div class="stat-card">
+          <div class="stat-card__icon stat-card__icon--blue">📋</div>
+          <div class="stat-card__label">Applications Submitted</div>
+          <div class="stat-card__value" data-count="3">0</div>
+          <div class="stat-card__change stat-card__change--up">↑ 1 this week</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-card__icon stat-card__icon--gold">⭐</div>
+          <div class="stat-card__label">Saved Jobs</div>
+          <div class="stat-card__value" data-count="7">0</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-card__icon stat-card__icon--green">✅</div>
+          <div class="stat-card__label">Profile Completeness</div>
+          <div class="stat-card__value">75%</div>
+          <div class="progress" style="margin-top:8px"><div class="progress__bar" data-width="75"></div></div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-card__icon stat-card__icon--red">🔔</div>
+          <div class="stat-card__label">New Notifications</div>
+          <div class="stat-card__value" data-count="2">0</div>
+        </div>
+      </div>
+
+      <!-- My Applications -->
+      <div class="panel" style="margin-bottom:28px">
+        <div class="panel__head">
+          <div class="panel__head-title">My Applications</div>
+          <a href="jobs.html" class="btn btn--outline btn--sm">Browse More Jobs</a>
+        </div>
+        <div class="panel__body">
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th>Job Title</th>
+                  <th>Company</th>
+                  <th>Location</th>
+                  <th>Applied On</th>
+                  <th>Status</th>
+                  <th>Action</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td class="td-name">Cleaning Supervisor</td>
+                  <td>AlSafwa Cleaning Co.</td>
+                  <td>Kuwait City, Kuwait</td>
+                  <td>2 Apr 2026</td>
+                  <td><span class="badge">Under Review</span></td>
+                  <td><a href="job-details.html" class="btn btn--outline btn--sm">View</a></td>
+                </tr>
+                <tr>
+                  <td class="td-name">Housekeeping Staff</td>
+                  <td>Al Rayyan Hotels</td>
+                  <td>Doha, Qatar</td>
+                  <td>28 Mar 2026</td>
+                  <td><span class="badge badge--green">Shortlisted</span></td>
+                  <td><a href="job-details.html" class="btn btn--outline btn--sm">View</a></td>
+                </tr>
+                <tr>
+                  <td class="td-name">Warehouse Associate</td>
+                  <td>Gulf Logistics LLC</td>
+                  <td>Dubai, UAE</td>
+                  <td>20 Mar 2026</td>
+                  <td><span class="badge badge--gray">Pending Documents</span></td>
+                  <td><a href="job-details.html" class="btn btn--outline btn--sm">View</a></td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <!-- Recommended Jobs -->
+      <div class="panel">
+        <div class="panel__head">
+          <div class="panel__head-title">Recommended Jobs for You</div>
+          <a href="jobs.html" class="btn btn--outline btn--sm">View All</a>
+        </div>
+        <div class="panel__body">
+          <div class="job-grid" style="grid-template-columns:repeat(auto-fill,minmax(260px,1fr))">
+
+            <a href="job-details.html" class="job-card">
+              <div class="job-card__company">Safeer Mall · Kuwait</div>
+              <div class="job-card__title">Security Guard</div>
+              <div class="job-card__meta">
+                <span class="job-card__meta-item">📍 Kuwait City</span>
+                <span class="job-card__meta-item">⏱️ Full-time</span>
+              </div>
+              <div class="job-card__footer">
+                <span class="job-card__salary">$580 / month</span>
+                <span class="badge badge--blue">Open</span>
+              </div>
+            </a>
+
+            <a href="job-details.html" class="job-card">
+              <div class="job-card__company">AlNahyan Hospital · UAE</div>
+              <div class="job-card__title">Hospital Cleaner</div>
+              <div class="job-card__meta">
+                <span class="job-card__meta-item">📍 Abu Dhabi</span>
+                <span class="job-card__meta-item">⏱️ Full-time</span>
+              </div>
+              <div class="job-card__footer">
+                <span class="job-card__salary">$700 / month</span>
+                <span class="badge">Urgent</span>
+              </div>
+            </a>
+
+            <a href="job-details.html" class="job-card">
+              <div class="job-card__company">Lusail Restaurant · Qatar</div>
+              <div class="job-card__title">Kitchen Helper</div>
+              <div class="job-card__meta">
+                <span class="job-card__meta-item">📍 Lusail, Qatar</span>
+                <span class="job-card__meta-item">⏱️ Full-time</span>
+              </div>
+              <div class="job-card__footer">
+                <span class="job-card__salary">$650 / month</span>
+                <span class="badge badge--blue">Open</span>
+              </div>
+            </a>
+
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<script src="js/main.js"></script>
+</body>
+</html>

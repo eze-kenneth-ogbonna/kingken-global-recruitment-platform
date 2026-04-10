@@ -1,0 +1,265 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Browse Jobs – Kingken Global</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+<nav class="navbar">
+  <div class="container navbar__inner">
+    <a href="index.html" class="navbar__brand">
+      <div class="navbar__brand-mark">KG</div>
+      Kingken <span>Global</span>
+    </a>
+    <ul class="navbar__nav">
+      <li><a href="index.html">Home</a></li>
+      <li><a href="about.html">About</a></li>
+      <li><a href="services.html">Services</a></li>
+      <li><a href="jobs.html" class="active">Jobs</a></li>
+      <li><a href="hire.html">Hire Workers</a></li>
+      <li><a href="contact.html">Contact</a></li>
+    </ul>
+    <div class="navbar__actions">
+      <a href="signup.html" class="btn btn--outline btn--sm">Apply for Jobs</a>
+      <a href="hire.html"   class="btn btn--primary btn--sm">Hire Workers</a>
+    </div>
+    <button class="navbar__toggle" aria-label="Menu"><span></span><span></span><span></span></button>
+  </div>
+</nav>
+
+<section class="page-header">
+  <div class="container">
+    <p class="page-header__label">Find Your Next Role</p>
+    <h1 class="page-header__title">Apply for Overseas Jobs</h1>
+    <p class="page-header__sub">Browse verified job openings in Kuwait, UAE, Qatar, and beyond. Apply in minutes.</p>
+  </div>
+</section>
+
+<!-- ── Filter Bar ─────────────────────────────────────────── -->
+<section class="section section--gray" style="padding:32px 0">
+  <div class="container">
+    <div style="display:flex;gap:12px;flex-wrap:wrap;align-items:center">
+      <div class="search-bar" style="flex:1;min-width:200px">
+        <span>🔍</span>
+        <input type="text" placeholder="Search job title, keyword…" id="jobSearch" data-table-search="jobsTable">
+      </div>
+      <select class="form-control" style="width:auto;padding:10px 14px">
+        <option>All Locations</option>
+        <option>Kuwait City, Kuwait</option>
+        <option>Dubai, UAE</option>
+        <option>Doha, Qatar</option>
+        <option>Abu Dhabi, UAE</option>
+      </select>
+      <select class="form-control" style="width:auto;padding:10px 14px">
+        <option>All Categories</option>
+        <option>Cleaning</option>
+        <option>Hospitality</option>
+        <option>Construction</option>
+        <option>Logistics</option>
+        <option>Security</option>
+      </select>
+      <a href="signup.html" class="btn btn--primary">Post Application →</a>
+    </div>
+  </div>
+</section>
+
+<!-- ── Job Listings ───────────────────────────────────────── -->
+<section class="section" style="padding-top:32px">
+  <div class="container">
+    <div style="margin-bottom:20px;color:var(--muted);font-size:14px">Showing <strong>12</strong> available positions</div>
+    <div class="job-grid">
+
+      <a href="job-details.html" class="job-card">
+        <div class="job-card__company">AlSafwa Cleaning Co. · Kuwait</div>
+        <div class="job-card__title">Cleaning Supervisor</div>
+        <div class="job-card__meta">
+          <span class="job-card__meta-item">📍 Kuwait City</span>
+          <span class="job-card__meta-item">⏱️ Full-time</span>
+        </div>
+        <div class="job-card__footer">
+          <span class="job-card__salary">$600 / month</span>
+          <span class="badge">Urgent</span>
+        </div>
+      </a>
+
+      <a href="job-details.html" class="job-card">
+        <div class="job-card__company">Gulf Logistics LLC · UAE</div>
+        <div class="job-card__title">Warehouse Associate</div>
+        <div class="job-card__meta">
+          <span class="job-card__meta-item">📍 Dubai</span>
+          <span class="job-card__meta-item">⏱️ Full-time</span>
+        </div>
+        <div class="job-card__footer">
+          <span class="job-card__salary">$750 / month</span>
+          <span class="badge badge--blue">Open</span>
+        </div>
+      </a>
+
+      <a href="job-details.html" class="job-card">
+        <div class="job-card__company">Al Rayyan Hotels · Qatar</div>
+        <div class="job-card__title">Housekeeping Staff</div>
+        <div class="job-card__meta">
+          <span class="job-card__meta-item">📍 Doha</span>
+          <span class="job-card__meta-item">⏱️ Full-time</span>
+        </div>
+        <div class="job-card__footer">
+          <span class="job-card__salary">$700 / month</span>
+          <span class="badge">Urgent</span>
+        </div>
+      </a>
+
+      <a href="job-details.html" class="job-card">
+        <div class="job-card__company">Safeer Mall · Kuwait</div>
+        <div class="job-card__title">Security Guard</div>
+        <div class="job-card__meta">
+          <span class="job-card__meta-item">📍 Kuwait City</span>
+          <span class="job-card__meta-item">⏱️ Full-time</span>
+        </div>
+        <div class="job-card__footer">
+          <span class="job-card__salary">$580 / month</span>
+          <span class="badge badge--blue">Open</span>
+        </div>
+      </a>
+
+      <a href="job-details.html" class="job-card">
+        <div class="job-card__company">Nesto Hypermarket · UAE</div>
+        <div class="job-card__title">Cashier / Sales Staff</div>
+        <div class="job-card__meta">
+          <span class="job-card__meta-item">📍 Abu Dhabi</span>
+          <span class="job-card__meta-item">⏱️ Full-time</span>
+        </div>
+        <div class="job-card__footer">
+          <span class="job-card__salary">$680 / month</span>
+          <span class="badge badge--blue">Open</span>
+        </div>
+      </a>
+
+      <a href="job-details.html" class="job-card">
+        <div class="job-card__company">AlBabtain Construction · Kuwait</div>
+        <div class="job-card__title">General Labourer (20 posts)</div>
+        <div class="job-card__meta">
+          <span class="job-card__meta-item">📍 Kuwait City</span>
+          <span class="job-card__meta-item">⏱️ Full-time</span>
+        </div>
+        <div class="job-card__footer">
+          <span class="job-card__salary">$620 / month</span>
+          <span class="badge">Urgent</span>
+        </div>
+      </a>
+
+      <a href="job-details.html" class="job-card">
+        <div class="job-card__company">Emirates Airlines · UAE</div>
+        <div class="job-card__title">Airport Ground Handler</div>
+        <div class="job-card__meta">
+          <span class="job-card__meta-item">📍 Dubai</span>
+          <span class="job-card__meta-item">⏱️ Full-time</span>
+        </div>
+        <div class="job-card__footer">
+          <span class="job-card__salary">$900 / month</span>
+          <span class="badge badge--blue">Open</span>
+        </div>
+      </a>
+
+      <a href="job-details.html" class="job-card">
+        <div class="job-card__company">Lusail Restaurant · Qatar</div>
+        <div class="job-card__title">Kitchen Helper / Waitstaff</div>
+        <div class="job-card__meta">
+          <span class="job-card__meta-item">📍 Lusail, Qatar</span>
+          <span class="job-card__meta-item">⏱️ Full-time</span>
+        </div>
+        <div class="job-card__footer">
+          <span class="job-card__salary">$650 / month</span>
+          <span class="badge badge--blue">Open</span>
+        </div>
+      </a>
+
+      <a href="job-details.html" class="job-card">
+        <div class="job-card__company">AlNahyan Hospital · UAE</div>
+        <div class="job-card__title">Hospital Cleaner / Orderly</div>
+        <div class="job-card__meta">
+          <span class="job-card__meta-item">📍 Abu Dhabi</span>
+          <span class="job-card__meta-item">⏱️ Full-time</span>
+        </div>
+        <div class="job-card__footer">
+          <span class="job-card__salary">$700 / month</span>
+          <span class="badge">Urgent</span>
+        </div>
+      </a>
+
+    </div>
+  </div>
+</section>
+
+<!-- ── Apply Section ──────────────────────────────────────── -->
+<section class="section section--gray">
+  <div class="container">
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:60px;align-items:center">
+      <div>
+        <span class="section-label">Ready to Apply?</span>
+        <h2 class="section-title">Start Your International Career Today</h2>
+        <p style="color:var(--muted);margin:16px 0 24px;line-height:1.7">
+          Submit your application and our recruitment team will match you with the best-fit roles based on your skills and experience.
+        </p>
+        <a href="signup.html" class="btn btn--primary btn--lg">📋 Submit Your Application →</a>
+      </div>
+      <div class="card">
+        <h3 style="font-size:17px;font-weight:700;margin-bottom:16px">What You'll Need</h3>
+        <ul style="list-style:none;display:flex;flex-direction:column;gap:12px">
+          <li style="display:flex;gap:10px;font-size:14px;color:var(--mid)"><span>📄</span> Valid International Passport</li>
+          <li style="display:flex;gap:10px;font-size:14px;color:var(--mid)"><span>📸</span> Recent Passport Photo</li>
+          <li style="display:flex;gap:10px;font-size:14px;color:var(--mid)"><span>📋</span> Updated CV / Resume</li>
+          <li style="display:flex;gap:10px;font-size:14px;color:var(--mid)"><span>🎓</span> Certificates / Qualifications</li>
+          <li style="display:flex;gap:10px;font-size:14px;color:var(--mid)"><span>🏥</span> Medical Fitness Certificate</li>
+          <li style="display:flex;gap:10px;font-size:14px;color:var(--mid)"><span>🔒</span> Police Clearance Certificate</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+<footer class="footer">
+  <div class="container">
+    <div class="footer__grid">
+      <div>
+        <div class="footer__brand">Kingken <span>Global</span></div>
+        <p class="footer__desc">International recruitment connecting African talent with Gulf employers.</p>
+      </div>
+      <div>
+        <div class="footer__col-title">Company</div>
+        <ul class="footer__links">
+          <li><a href="about.html">About Us</a></li>
+          <li><a href="services.html">Services</a></li>
+          <li><a href="contact.html">Contact</a></li>
+        </ul>
+      </div>
+      <div>
+        <div class="footer__col-title">Platform</div>
+        <ul class="footer__links">
+          <li><a href="jobs.html">Browse Jobs</a></li>
+          <li><a href="hire.html">Hire Workers</a></li>
+          <li><a href="signup.html">Worker Signup</a></li>
+        </ul>
+      </div>
+      <div>
+        <div class="footer__col-title">Contact</div>
+        <ul class="footer__links">
+          <li><a href="tel:+96569048174">📞 +965 6904 8174</a></li>
+          <li><a href="mailto:info@kingkenglobal.com.ng">✉️ info@kingkenglobal.com.ng</a></li>
+          <li><a href="https://wa.me/96569048174">💬 WhatsApp Chat</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="footer__bottom">
+      <span class="footer__copy">© 2026 Kingken Global Travel Agency Ltd. All rights reserved.</span>
+    </div>
+  </div>
+</footer>
+
+<script src="js/main.js"></script>
+</body>
+</html>

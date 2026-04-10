@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Post a Job – Kingken Global</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+<div class="dash-layout">
+
+  <aside class="sidebar">
+    <a href="index.html" class="sidebar__brand">
+      <div class="sidebar__brand-mark">KG</div>
+      <span class="sidebar__brand-name">Kingken <span>Global</span></span>
+    </a>
+    <nav class="sidebar__nav">
+      <div class="sidebar__group">
+        <div class="sidebar__group-label">Overview</div>
+        <a href="employer-dashboard.html"><span class="icon">🏠</span> Dashboard</a>
+      </div>
+      <div class="sidebar__group">
+        <div class="sidebar__group-label">Recruitment</div>
+        <a href="post-job.html" class="active"><span class="icon">➕</span> Post a Job</a>
+        <a href="candidates.html"><span class="icon">👥</span> Candidate List</a>
+        <a href="candidates.html"><span class="icon">📋</span> My Job Posts</a>
+      </div>
+      <div class="sidebar__group">
+        <div class="sidebar__group-label">Business</div>
+        <a href="employer-payments.html"><span class="icon">💳</span> Payments</a>
+        <a href="contact.html"><span class="icon">💬</span> Support</a>
+      </div>
+    </nav>
+    <div class="sidebar__footer">
+      <div class="sidebar__user">
+        <div class="sidebar__avatar">AG</div>
+        <div>
+          <div class="sidebar__user-name">AlSafwa Group</div>
+          <div class="sidebar__user-role">Employer · Kuwait</div>
+        </div>
+      </div>
+    </div>
+  </aside>
+
+  <div class="dash-main">
+    <div class="dash-topbar">
+      <h1 class="dash-topbar__title">Post a Job</h1>
+      <div class="dash-topbar__actions">
+        <a href="employer-dashboard.html" class="btn btn--outline btn--sm">← Back to Dashboard</a>
+      </div>
+    </div>
+
+    <div class="dash-content">
+      <div style="max-width:760px">
+
+        <div class="steps" style="margin-bottom:36px">
+          <div class="step active"><div class="step__num">1</div>Job Details</div>
+          <div class="step__divider"></div>
+          <div class="step"><div class="step__num">2</div>Requirements</div>
+          <div class="step__divider"></div>
+          <div class="step"><div class="step__num">3</div>Review &amp; Publish</div>
+        </div>
+
+        <div class="form-card" style="max-width:none">
+          <h2 class="form-card__title">Job Details</h2>
+          <p class="form-card__sub">Fill in the information about the position you need to fill.</p>
+
+          <form data-submit-to="candidates.html">
+
+            <div class="form-row">
+              <div class="form-group">
+                <label class="form-label">Job Title *</label>
+                <input type="text" class="form-control" placeholder="e.g. Cleaning Supervisor" required>
+              </div>
+              <div class="form-group">
+                <label class="form-label">Number of Positions *</label>
+                <input type="number" class="form-control" placeholder="e.g. 10" min="1" required>
+              </div>
+            </div>
+
+            <div class="form-row">
+              <div class="form-group">
+                <label class="form-label">Job Category *</label>
+                <select class="form-control" required>
+                  <option value="">Select category</option>
+                  <option>Cleaning &amp; Janitorial</option>
+                  <option>Hospitality &amp; Hotels</option>
+                  <option>Construction</option>
+                  <option>Logistics &amp; Delivery</option>
+                  <option>Food &amp; Restaurants</option>
+                  <option>Security</option>
+                  <option>Healthcare Support</option>
+                  <option>Retail &amp; Sales</option>
+                  <option>Manufacturing</option>
+                  <option>Domestic Services</option>
+                  <option>Other</option>
+                </select>
+              </div>
+              <div class="form-group">
+                <label class="form-label">Employment Type *</label>
+                <select class="form-control" required>
+                  <option>Full-time</option>
+                  <option>Part-time</option>
+                  <option>Contract</option>
+                  <option>Seasonal</option>
+                </select>
+              </div>
+            </div>
+
+            <div class="form-row">
+              <div class="form-group">
+                <label class="form-label">Country *</label>
+                <select class="form-control" required>
+                  <option>Kuwait</option>
+                  <option>United Arab Emirates</option>
+                  <option>Qatar</option>
+                  <option>Saudi Arabia</option>
+                  <option>Bahrain</option>
+                  <option>Oman</option>
+                </select>
+              </div>
+              <div class="form-group">
+                <label class="form-label">City / Location *</label>
+                <input type="text" class="form-control" placeholder="e.g. Kuwait City" required>
+              </div>
+            </div>
+
+            <div class="form-row">
+              <div class="form-group">
+                <label class="form-label">Monthly Salary (USD)</label>
+                <input type="text" class="form-control" placeholder="e.g. 600">
+              </div>
+              <div class="form-group">
+                <label class="form-label">Start Date *</label>
+                <select class="form-control" required>
+                  <option>Immediate (within 1 week)</option>
+                  <option>Within 2 weeks</option>
+                  <option>Within 1 month</option>
+                  <option>Flexible / to be confirmed</option>
+                </select>
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label class="form-label">Job Description *</label>
+              <textarea class="form-control" rows="5" placeholder="Describe the role, responsibilities, and working environment…" style="resize:vertical" required></textarea>
+            </div>
+
+            <div class="form-group">
+              <label class="form-label">Requirements</label>
+              <textarea class="form-control" rows="4" placeholder="Experience required, documents needed, language requirements…" style="resize:vertical"></textarea>
+            </div>
+
+            <div style="margin-bottom:20px">
+              <label class="form-label" style="margin-bottom:10px;display:block">Benefits Included</label>
+              <div style="display:flex;flex-wrap:wrap;gap:10px">
+                <label style="display:flex;align-items:center;gap:8px;font-size:14px;cursor:pointer"><input type="checkbox" checked> 🏠 Accommodation</label>
+                <label style="display:flex;align-items:center;gap:8px;font-size:14px;cursor:pointer"><input type="checkbox" checked> ✈️ Air Ticket</label>
+                <label style="display:flex;align-items:center;gap:8px;font-size:14px;cursor:pointer"><input type="checkbox" checked> 🏥 Medical Insurance</label>
+                <label style="display:flex;align-items:center;gap:8px;font-size:14px;cursor:pointer"><input type="checkbox"> 🍽️ Meals Provided</label>
+                <label style="display:flex;align-items:center;gap:8px;font-size:14px;cursor:pointer"><input type="checkbox"> 🚌 Transportation</label>
+                <label style="display:flex;align-items:center;gap:8px;font-size:14px;cursor:pointer"><input type="checkbox"> 💰 Overtime Pay</label>
+              </div>
+            </div>
+
+            <div style="display:flex;gap:12px">
+              <button type="button" class="btn btn--outline" style="flex:1;justify-content:center">
+                💾 Save as Draft
+              </button>
+              <button type="submit" class="btn btn--primary" style="flex:2;justify-content:center">
+                🚀 Publish Job &amp; View Candidates →
+              </button>
+            </div>
+
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script src="js/main.js"></script>
+</body>
+</html>

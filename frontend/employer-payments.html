@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Payments – Employer – Kingken Global</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+<div class="dash-layout">
+
+  <aside class="sidebar">
+    <a href="index.html" class="sidebar__brand">
+      <div class="sidebar__brand-mark">KG</div>
+      <span class="sidebar__brand-name">Kingken <span>Global</span></span>
+    </a>
+    <nav class="sidebar__nav">
+      <div class="sidebar__group">
+        <div class="sidebar__group-label">Overview</div>
+        <a href="employer-dashboard.html"><span class="icon">🏠</span> Dashboard</a>
+      </div>
+      <div class="sidebar__group">
+        <div class="sidebar__group-label">Recruitment</div>
+        <a href="post-job.html"><span class="icon">➕</span> Post a Job</a>
+        <a href="candidates.html"><span class="icon">👥</span> Candidate List</a>
+        <a href="candidates.html"><span class="icon">📋</span> My Job Posts</a>
+      </div>
+      <div class="sidebar__group">
+        <div class="sidebar__group-label">Business</div>
+        <a href="employer-payments.html" class="active"><span class="icon">💳</span> Payments</a>
+        <a href="contact.html"><span class="icon">💬</span> Support</a>
+      </div>
+    </nav>
+    <div class="sidebar__footer">
+      <div class="sidebar__user">
+        <div class="sidebar__avatar">AG</div>
+        <div>
+          <div class="sidebar__user-name">AlSafwa Group</div>
+          <div class="sidebar__user-role">Employer · Kuwait</div>
+        </div>
+      </div>
+    </div>
+  </aside>
+
+  <div class="dash-main">
+    <div class="dash-topbar">
+      <h1 class="dash-topbar__title">Payments</h1>
+      <div class="dash-topbar__actions">
+        <a href="employer-dashboard.html" class="btn btn--outline btn--sm">← Dashboard</a>
+        <a href="contact.html" class="btn btn--primary btn--sm">📞 Contact Us</a>
+      </div>
+    </div>
+
+    <div class="dash-content">
+
+      <div class="stat-cards" style="margin-bottom:24px">
+        <div class="stat-card" style="padding:16px">
+          <div class="stat-card__label">Total Invoiced</div>
+          <div class="stat-card__value">$22,000</div>
+        </div>
+        <div class="stat-card" style="padding:16px">
+          <div class="stat-card__label">Paid</div>
+          <div class="stat-card__value">$14,500</div>
+          <div class="stat-card__change stat-card__change--up">2 invoices settled</div>
+        </div>
+        <div class="stat-card" style="padding:16px">
+          <div class="stat-card__label">Outstanding</div>
+          <div class="stat-card__value">$7,500</div>
+          <div class="stat-card__change stat-card__change--down">Due 15 Apr 2026</div>
+        </div>
+        <div class="stat-card" style="padding:16px">
+          <div class="stat-card__label">Workers Hired</div>
+          <div class="stat-card__value" data-count="22">0</div>
+        </div>
+      </div>
+
+      <div class="panel">
+        <div class="panel__head">
+          <div class="panel__head-title">Invoice History</div>
+          <a href="contact.html" class="btn btn--outline btn--sm">Dispute / Query</a>
+        </div>
+        <div class="panel__body">
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th>Invoice #</th>
+                  <th>Description</th>
+                  <th>Workers</th>
+                  <th>Amount</th>
+                  <th>Due Date</th>
+                  <th>Status</th>
+                  <th>Action</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td class="td-name">#INV-2026-041</td>
+                  <td>Cleaning Supervisor placement (5 workers)</td>
+                  <td>5</td>
+                  <td>$5,000</td>
+                  <td>10 Apr 2026</td>
+                  <td><span class="badge badge--green">Paid</span></td>
+                  <td><a href="#" class="btn btn--outline btn--sm">Download</a></td>
+                </tr>
+                <tr>
+                  <td class="td-name">#INV-2026-036</td>
+                  <td>General Cleaner placement (15 workers)</td>
+                  <td>15</td>
+                  <td>$9,500</td>
+                  <td>20 Mar 2026</td>
+                  <td><span class="badge badge--green">Paid</span></td>
+                  <td><a href="#" class="btn btn--outline btn--sm">Download</a></td>
+                </tr>
+                <tr>
+                  <td class="td-name">#INV-2026-045</td>
+                  <td>Office Cleaner placement (8 workers)</td>
+                  <td>8</td>
+                  <td>$7,500</td>
+                  <td>15 Apr 2026</td>
+                  <td><span class="badge">Pending</span></td>
+                  <td>
+                    <a href="contact.html" class="btn btn--primary btn--sm">Pay Now</a>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <div class="card" style="margin-top:24px;background:var(--blue-light);border-color:transparent">
+        <h3 style="font-size:16px;font-weight:700;color:var(--blue);margin-bottom:8px">💬 Payment Queries</h3>
+        <p style="font-size:14px;color:var(--mid);margin-bottom:14px">
+          For payment arrangements, discounts for bulk orders, or invoice disputes, please contact our accounts team directly.
+        </p>
+        <a href="contact.html" class="btn btn--primary btn--sm">Contact Accounts Team →</a>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<script src="js/main.js"></script>
+</body>
+</html>
