@@ -16,10 +16,10 @@
  *   G  Passport Available?
  *   H  CV Upload (Drive link)
  *
- * Dashboard columns (configurable — see AMOUNT_COL / PAID_COL below):
- *   E  Amount charged (manually entered per applicant)
- *   F  Amount paid    (manually entered per applicant)
- *   G  Balance        (formula: =F-G per row, or total on Dashboard)
+ * Additional columns added manually AFTER the form response columns:
+ *   I  Amount charged (manually entered per applicant)
+ *   J  Amount paid    (manually entered per applicant)
+ *   I  Balance        (formula: =H-I per row on the responses sheet, or =B3-B4 total on Dashboard)
  *
  * Usage:
  *   1. Open the Google Sheet linked to your form.
@@ -30,10 +30,10 @@
 
 // ── Configurable column references ──────────────────────────────────────────
 /** Column letter that holds the "Amount Charged" values in Form Responses. */
-const AMOUNT_COL = 'E';
+const AMOUNT_COL = 'I';
 
 /** Column letter that holds the "Amount Paid" values in Form Responses. */
-const PAID_COL = 'F';
+const PAID_COL = 'J';
 
 /** Name of the raw responses sheet (Google Forms default). */
 const RESPONSES_SHEET_NAME = 'Form Responses 1';

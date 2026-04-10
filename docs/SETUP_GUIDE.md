@@ -48,10 +48,12 @@ It creates a **Dashboard** sheet with the following KPI formulas:
 | Metric | Formula |
 |--------|---------|
 | Total Applicants | `=COUNTA('Form Responses 1'!A2:A)` |
-| Total Revenue | `=SUM('Form Responses 1'!E2:E)` |
-| Total Paid | `=SUM('Form Responses 1'!F2:F)` |
-| Outstanding Balance | `=B3-B4` |
-| Payment Status | `=IF(F2=0,"Pending", IF(F2>=E2,"Paid","Partial"))` |
+| Total Revenue | `=SUM('Form Responses 1'!I2:I)` |
+| Total Paid | `=SUM('Form Responses 1'!J2:J)` |
+| Outstanding Balance | `=B3-B4` (Total Revenue − Total Paid) |
+| Pending (Paid = 0) | `=COUNTIF('Form Responses 1'!J2:J,0)` |
+| Paid in Full | `=SUMPRODUCT((J2:J>0)*(J2:J>=I2:I))` |
+| Partial Payment | `=SUMPRODUCT((J2:J>0)*(J2:J<I2:I))` |
 
 A **Kingken Tools → Rebuild Dashboard** menu is added to the spreadsheet for
 easy refresh.

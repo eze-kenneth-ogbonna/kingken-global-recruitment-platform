@@ -81,7 +81,7 @@ function createApplicationForm() {
   form.addFileUploadItem()
     .setTitle('Upload CV')
     .setHelpText('Upload your CV in PDF or Word format (max 10 MB).')
-    .setAllowedFileTypes([DriveApp.getMimeType('pdf'), DriveApp.getMimeType('doc')])
+    .setAllowedFileTypes(['application/pdf', 'application/msword', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document'])
     .setMaxFileSize(10 * 1024 * 1024) // 10 MB
     .setRequired(true);
 
