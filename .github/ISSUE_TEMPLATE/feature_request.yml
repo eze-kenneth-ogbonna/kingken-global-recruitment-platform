@@ -1,0 +1,65 @@
+name: ✨ Feature Request
+description: Propose a new feature or enhancement for the Kingken Global Recruitment Platform
+labels: ["enhancement"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thank you for suggesting an improvement. Please describe your feature request in as much detail as possible so we can evaluate it effectively.
+
+  - type: textarea
+    id: feature_description
+    attributes:
+      label: Feature Description
+      description: A clear and concise description of the feature you are requesting.
+      placeholder: Describe the feature...
+    validations:
+      required: true
+
+  - type: textarea
+    id: problem_it_solves
+    attributes:
+      label: Problem It Solves
+      description: What problem or gap does this feature address? Why is it needed?
+      placeholder: Describe the problem this feature would solve...
+    validations:
+      required: true
+
+  - type: textarea
+    id: expected_outcome
+    attributes:
+      label: Expected Outcome
+      description: What should the platform do differently once this feature is implemented?
+      placeholder: Describe the expected outcome or behavior...
+    validations:
+      required: true
+
+  - type: dropdown
+    id: platform_area
+    attributes:
+      label: Platform Area
+      description: Which area of the platform does this feature relate to?
+      options:
+        - Frontend
+        - Backend
+        - API
+        - Database
+        - Integrations
+        - Automation
+        - Security
+        - Infrastructure
+        - Analytics
+    validations:
+      required: true
+
+  - type: dropdown
+    id: priority
+    attributes:
+      label: Priority
+      description: How important is this feature to you or your use case?
+      options:
+        - High
+        - Medium
+        - Low
+    validations:
+      required: true
