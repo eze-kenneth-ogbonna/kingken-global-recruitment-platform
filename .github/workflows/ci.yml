@@ -15,6 +15,9 @@ on:
       - staging
       - develop
 
+permissions:
+  contents: read
+
 jobs:
   lint-and-validate:
     name: Lint & Validate
