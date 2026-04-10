@@ -41,6 +41,17 @@ This prevents auto-replies firing for rows updated to "Screened", "Approved", et
 
 ---
 
+## Filter — Only Continue if Email is Present
+
+| Setting | Value |
+|---|---|
+| App | Filter by Zapier |
+| Condition | Email **is not empty** |
+
+Prevents the Gmail action from failing with "No recipients" when no email address was collected.
+
+---
+
 ## Action 1 — Gmail (Send Email)
 
 | Setting | Value |
@@ -52,7 +63,7 @@ This prevents auto-replies firing for rows updated to "Screened", "Approved", et
 
 | Field | Value |
 |---|---|
-| To | *(leave blank if no email collected — skip this action if no email column)* |
+| To | Email address from Master Data (column mapped to **Email** field) |
 | From Name | Kingken Global Travel Agency Ltd. |
 | Subject | `Application Received – Kingken Global Recruitment` |
 | Body Type | HTML |

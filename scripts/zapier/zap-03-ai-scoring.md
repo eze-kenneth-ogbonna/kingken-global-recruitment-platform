@@ -139,7 +139,7 @@ try {
   return;
 }
 
-const score          = String(parsed.score          || 0);
+const score          = Number(parsed.score          || 0);
 const recommendation = String(parsed.recommendation || 'Review');
 const summary        = String(parsed.summary        || '');
 const strengths      = Array.isArray(parsed.strengths)  ? parsed.strengths.join('; ')  : String(parsed.strengths  || '');

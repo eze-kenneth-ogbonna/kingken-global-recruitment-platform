@@ -6,7 +6,7 @@
  */
 
 /** @const {Object.<string, string>} DIAL_CODES Map of country name to dial code */
-var DIAL_CODES = {
+const DIAL_CODES = {
   'nigeria':              '+234',
   'ghana':                '+233',
   'kenya':                '+254',
@@ -26,13 +26,13 @@ var DIAL_CODES = {
 };
 
 /** @const {number} PHONE_COL  Column D (1-indexed) */
-var PHONE_COL   = 4;
+const PHONE_COL   = 4;
 /** @const {number} COUNTRY_COL Column E (1-indexed) */
-var COUNTRY_COL = 5;
+const COUNTRY_COL = 5;
 /** @const {number} NOTES_COL  Column P (1-indexed) */
-var NOTES_COL   = 16;
+const NOTES_COL   = 16;
 /** @const {string} SHEET_NAME Name of the master data sheet */
-var SHEET_NAME  = 'Master Data';
+const SHEET_NAME  = 'Master Data';
 
 /**
  * Normalizes all phone numbers in the Master Data sheet.
@@ -52,8 +52,8 @@ var SHEET_NAME  = 'Master Data';
  * @return {void}
  */
 function normalizeAllPhones() {
-  var ss    = SpreadsheetApp.getActiveSpreadsheet();
-  var sheet = ss.getSheetByName(SHEET_NAME);
+  const ss    = SpreadsheetApp.getActiveSpreadsheet();
+  const sheet = ss.getSheetByName(SHEET_NAME);
 
   if (!sheet) {
     SpreadsheetApp.getUi().alert('Error: Sheet "' + SHEET_NAME + '" not found.');
@@ -61,41 +61,52 @@ function normalizeAllPhones() {
     return;
   }
 
-  var lastRow = sheet.getLastRow();
+  const lastRow = sheet.getLastRow();
   if (lastRow < 2) {
     SpreadsheetApp.getUi().alert('No data rows found in "' + SHEET_NAME + '".');
     return;
   }
 
   // Fetch phone, country, and notes columns in one batch read
-  var phoneRange   = sheet.getRange(2, PHONE_COL,   lastRow - 1, 1);
-  var countryRange = sheet.getRange(2, COUNTRY_COL, lastRow - 1, 1);
-  var notesRange   = sheet.getRange(2, NOTES_COL,   lastRow - 1, 1);
+  const phoneRange   = sheet.getRange(2, PHONE_COL,   lastRow - 1, 1);
+  const countryRange = sheet.getRange(2, COUNTRY_COL, lastRow - 1, 1);
+  const notesRange   = sheet.getRange(2, NOTES_COL,   lastRow - 1, 1);
 
-  var phones    = phoneRange.getValues();
-  var countries = countryRange.getValues();
-  var notes     = notesRange.getValues();
+  const phones    = phoneRange.getValues();
+  const countries = countryRange.getValues();
+  const notes     = notesRange.getValues();
 
-  var changeCount   = 0;
-  var errorCount    = 0;
-  var skippedCount  = 0;
+  let changeCount   = 0;
+  let errorCount    = 0;
+  let skippedCount  = 0;
 
-  for (var i = 0; i < phones.length; i++) {
+  for (let i = 0; i < phones.length; i++) {
     try {
-      var rawPhone = String(phones[i][0]).trim();
+      const rawPhone = String(phones[i][0]).trim();
 
       if (!rawPhone || rawPhone === '') {
         skippedCount++;
         continue;
       }
 
-      var country    = String(countries[i][0]).trim().toLowerCase();
-      var dialCode   = DIAL_CODES[country] || null;
-      var normalized = _stripFormatting(rawPhone);
+      const country    = String(countries[i][0]).trim().toLowerCase();
+      const dialCode   = DIAL_CODES[country] || null;
+      const normalized = _stripFormatting(rawPhone);
 
       if (normalized.charAt(0) === '+') {
-        // Already has country code prefix – validate digits and leave as-is
-        phones[i][0] = normalized;
+        // Already has country code prefix – apply formatting cleanup if needed
+        if (normalized !== rawPhone) {
+          const existingNote = String(notes[i][0]).trim();
+          const noteTag      = '[original phone: ' + rawPhone + ']';
+          if (existingNote.indexOf('[original phone:') === -1) {
+            notes[i][0] = existingNote
+              ? existingNote + ' ' + noteTag
+              : noteTag;
+          }
+          phones[i][0] = normalized;
+          changeCount++;
+          Logger.log('Row ' + (i + 2) + ': ' + rawPhone + ' → ' + normalized);
+        }
         continue;
       }
 
@@ -105,7 +116,7 @@ function normalizeAllPhones() {
         continue;
       }
 
-      var finalPhone;
+      let finalPhone;
       if (normalized.charAt(0) === '0') {
         finalPhone = dialCode + normalized.substring(1);
       } else {
@@ -114,8 +125,8 @@ function normalizeAllPhones() {
 
       if (finalPhone !== rawPhone) {
         // Preserve the original in Notes
-        var existingNote = String(notes[i][0]).trim();
-        var noteTag      = '[original phone: ' + rawPhone + ']';
+        const existingNote = String(notes[i][0]).trim();
+        const noteTag      = '[original phone: ' + rawPhone + ']';
         if (existingNote.indexOf('[original phone:') === -1) {
           notes[i][0] = existingNote
             ? existingNote + ' ' + noteTag
@@ -135,7 +146,7 @@ function normalizeAllPhones() {
   phoneRange.setValues(phones);
   notesRange.setValues(notes);
 
-  var summary =
+  const summary =
     '✅ Phone Normalization Complete\n\n' +
     'Changed:  ' + changeCount  + '\n' +
     'Skipped:  ' + skippedCount + '\n' +
