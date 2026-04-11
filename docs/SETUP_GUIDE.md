@@ -158,18 +158,20 @@ npm run test:coverage
 
 ---
 
-## 🛠 Useful Scripts
+## 🛠 Planned Scripts for Future Node Workspaces
+
+The following `npm run ...` commands are planned for when the Node workspaces are introduced. They are documented here as a preview and are not available in the current repository state. The Prisma commands below can be run directly today.
 
 | Script | Command | Description |
 |---|---|---|
-| Development server | `npm run dev` | Start all services in development mode with hot reload |
-| Build | `npm run build` | Compile TypeScript and build production assets |
-| Lint | `npm run lint` | Run ESLint across the codebase |
-| Lint fix | `npm run lint:fix` | Auto-fix linting issues where possible |
-| Test | `npm run test` | Run the full test suite |
-| DB migrate | `npx prisma migrate dev` | Create and apply a new database migration |
-| DB seed | `npx prisma db seed` | Populate database with seed data |
-| DB studio | `npx prisma studio` | Open a visual database browser at `http://localhost:5555` |
+| Development server | `npm run dev` | Planned workspace script to start all services in development mode with hot reload |
+| Build | `npm run build` | Planned workspace script to compile TypeScript and build production assets |
+| Lint | `npm run lint` | Planned workspace script to run ESLint across the codebase |
+| Lint fix | `npm run lint:fix` | Planned workspace script to auto-fix linting issues where possible |
+| Test | `npm run test` | Planned workspace script to run the full test suite |
+| DB migrate | `npx prisma migrate dev` | Current direct command to create and apply a new database migration |
+| DB seed | `npx prisma db seed` | Current direct command to populate database with seed data |
+| DB studio | `npx prisma studio` | Current direct command to open a visual database browser at `http://localhost:5555` |
 
 ---
 
