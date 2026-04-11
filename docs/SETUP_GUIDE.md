@@ -59,12 +59,12 @@ cp .env.example .env
 
 ## 🔐 Setting Up Environment Variables
 
-The platform uses environment variables for all sensitive configuration. A template file is provided at `.env.example`.
+The platform uses environment variables for all sensitive configuration. Create a `.env` file in the project root for your local development settings.
 
-1. Copy the example file to create your local environment file:
+1. Create your local environment file:
 
 ```bash
-cp .env.example .env
+touch .env
 ```
 
 2. Open `.env` in your editor and fill in the required values:
