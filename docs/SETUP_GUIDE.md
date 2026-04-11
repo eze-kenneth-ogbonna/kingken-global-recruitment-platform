@@ -43,17 +43,16 @@ cd kingken-global-recruitment-platform
 
 ## 📥 Installing Dependencies
 
-Install dependencies for the project from the root directory:
+At the moment, this repository does not include runnable Node.js application packages at the root, `backend/`, or `frontend/` level, so there are currently no `package.json` files for `npm install` to use in those locations.
+
+Because of that, you should **not** run `npm install` in the root, `backend/`, or `frontend/` directories yet.
+
+Once the backend and frontend application code is added with their corresponding `package.json` manifests, installation steps for those directories will be documented here.
+
+For now, after cloning the repository, continue with the environment configuration steps below to prepare your local setup for future development work:
 
 ```bash
-npm install
-```
-
-If working within a specific layer (e.g., backend or frontend), navigate to that directory and run `npm install` there as well:
-
-```bash
-cd backend && npm install
-cd ../frontend && npm install
+cp .env.example .env
 ```
 
 ---
