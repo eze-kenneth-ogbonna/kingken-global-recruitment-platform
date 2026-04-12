@@ -1,0 +1,79 @@
+name: CI
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  validate-repository:
+    name: Validate Repository Structure
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Verify required directories
+        run: |
+          set -e
+          required_dirs=(
+            analytics
+            api
+            automation
+            backend
+            database
+            docs
+            frontend
+            infrastructure
+            integrations
+            ops
+            security
+          )
+
+          for d in "${required_dirs[@]}"; do
+            if [[ ! -d "$d" ]]; then
+              echo "Missing required directory: $d"
+              exit 1
+            fi
+          done
+
+      - name: Verify required documentation files
+        run: |
+          set -e
+          required_files=(
+            README.md
+            ARCHITECTURE.md
+            DEVELOPMENT.md
+            docs/SETUP_GUIDE.md
+          )
+
+          for f in "${required_files[@]}"; do
+            if [[ ! -f "$f" ]]; then
+              echo "Missing required file: $f"
+              exit 1
+            fi
+          done
+
+      - name: Validate Markdown readability baseline
+        run: |
+          set -e
+          # Basic guard: prevent empty markdown files in tracked docs.
+          empty_files=$(find . -type f -name "*.md" -size 0 | wc -l)
+          if [[ "$empty_files" -gt 0 ]]; then
+            echo "Found empty markdown files. Please add content before merging."
+            find . -type f -name "*.md" -size 0
+            exit 1
+          fi
