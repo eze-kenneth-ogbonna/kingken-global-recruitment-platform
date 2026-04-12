@@ -1,0 +1,329 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Manage Users – Kingken Global Admin</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+<div class="dash-layout">
+
+  <aside class="sidebar" style="background:#0F172A">
+    <a href="index.html" class="sidebar__brand">
+      <div class="sidebar__brand-mark" style="background:#D97706">KG</div>
+      <span class="sidebar__brand-name">Admin <span>Panel</span></span>
+    </a>
+    <nav class="sidebar__nav">
+      <div class="sidebar__group">
+        <div class="sidebar__group-label">Overview</div>
+        <a href="admin-dashboard.html"><span class="icon">🏠</span> Dashboard</a>
+        <a href="admin-analytics.html"><span class="icon">📊</span> Analytics</a>
+      </div>
+      <div class="sidebar__group">
+        <div class="sidebar__group-label">Management</div>
+        <a href="admin-users.html" class="active"><span class="icon">👥</span> Manage Users</a>
+        <a href="admin-jobs.html"><span class="icon">📋</span> Manage Jobs</a>
+        <a href="candidates.html"><span class="icon">🎯</span> All Candidates</a>
+        <a href="admin-employers.html"><span class="icon">🏢</span> Employers</a>
+      </div>
+      <div class="sidebar__group">
+        <div class="sidebar__group-label">Finance</div>
+        <a href="admin-payments.html"><span class="icon">💳</span> Payments</a>
+        <a href="admin-payments.html"><span class="icon">📄</span> Invoices</a>
+      </div>
+      <div class="sidebar__group">
+        <div class="sidebar__group-label">System</div>
+        <a href="contact.html"><span class="icon">⚙️</span> Settings</a>
+        <a href="index.html"><span class="icon">🌐</span> Public Site</a>
+      </div>
+    </nav>
+    <div class="sidebar__footer">
+      <div class="sidebar__user">
+        <div class="sidebar__avatar" style="background:#D97706">AD</div>
+        <div>
+          <div class="sidebar__user-name">Admin User</div>
+          <div class="sidebar__user-role">Super Admin</div>
+        </div>
+      </div>
+    </div>
+  </aside>
+
+  <div class="dash-main">
+    <div class="dash-topbar">
+      <h1 class="dash-topbar__title">Manage Users</h1>
+      <div class="dash-topbar__actions">
+        <a href="admin-dashboard.html" class="btn btn--outline btn--sm">← Dashboard</a>
+        <a href="admin-payments.html" class="btn btn--primary btn--sm">View Payments →</a>
+      </div>
+    </div>
+
+    <div class="dash-content">
+
+      <!-- Stats -->
+      <div class="stat-cards" style="margin-bottom:24px">
+        <div class="stat-card" style="padding:16px">
+          <div class="stat-card__label">Total Workers</div>
+          <div class="stat-card__value" data-count="1247">0</div>
+        </div>
+        <div class="stat-card" style="padding:16px">
+          <div class="stat-card__label">Total Employers</div>
+          <div class="stat-card__value" data-count="83">0</div>
+        </div>
+        <div class="stat-card" style="padding:16px">
+          <div class="stat-card__label">Active Workers</div>
+          <div class="stat-card__value" data-count="214">0</div>
+        </div>
+        <div class="stat-card" style="padding:16px">
+          <div class="stat-card__label">Pending Approval</div>
+          <div class="stat-card__value" data-count="42">0</div>
+        </div>
+      </div>
+
+      <!-- Tabs -->
+      <div class="tabs-container">
+        <div class="tabs" style="margin-bottom:24px">
+          <button class="tab-btn active" data-tab="workers">Workers (1,247)</button>
+          <button class="tab-btn" data-tab="employers">Employers (83)</button>
+          <button class="tab-btn" data-tab="pending">Pending Approval (42)</button>
+        </div>
+
+        <!-- Workers Table -->
+        <div class="tab-panel active" data-panel="workers">
+          <div style="display:flex;gap:12px;margin-bottom:16px;flex-wrap:wrap">
+            <div class="search-bar" style="flex:1;min-width:200px">
+              <span>🔍</span>
+              <input type="text" placeholder="Search workers…" data-table-search="workersTable">
+            </div>
+            <select class="form-control" style="width:auto;padding:10px 14px">
+              <option>All Status</option>
+              <option>Active</option>
+              <option>Deployed</option>
+              <option>Pending</option>
+              <option>Suspended</option>
+            </select>
+            <select class="form-control" style="width:auto;padding:10px 14px">
+              <option>All Countries</option>
+              <option>Nigeria</option>
+              <option>Ghana</option>
+              <option>Kenya</option>
+            </select>
+          </div>
+          <div class="panel">
+            <div class="table-wrap">
+              <table id="workersTable">
+                <thead>
+                  <tr>
+                    <th>Name</th>
+                    <th>Country</th>
+                    <th>Position</th>
+                    <th>Experience</th>
+                    <th>Registered</th>
+                    <th>Status</th>
+                    <th>Actions</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td class="td-name">Amara Osei</td>
+                    <td>Ghana</td>
+                    <td>Cleaning Supervisor</td>
+                    <td>5 years</td>
+                    <td>2 Apr 2026</td>
+                    <td><span class="badge badge--green">Active</span></td>
+                    <td>
+                      <a href="#" class="btn btn--outline btn--sm">Edit</a>
+                      <a href="#" class="btn btn--danger btn--sm">Suspend</a>
+                    </td>
+                  </tr>
+                  <tr>
+                    <td class="td-name">Blessing Nwosu</td>
+                    <td>Nigeria</td>
+                    <td>General Cleaner</td>
+                    <td>3 years</td>
+                    <td>28 Mar 2026</td>
+                    <td><span class="badge">Pending</span></td>
+                    <td>
+                      <a href="#" class="btn btn--outline btn--sm">Edit</a>
+                      <a href="#" class="btn btn--primary btn--sm">Approve</a>
+                    </td>
+                  </tr>
+                  <tr>
+                    <td class="td-name">Kofi Mensah</td>
+                    <td>Ghana</td>
+                    <td>Office Cleaner</td>
+                    <td>2 years</td>
+                    <td>20 Mar 2026</td>
+                    <td><span class="badge badge--blue">Deployed</span></td>
+                    <td>
+                      <a href="#" class="btn btn--outline btn--sm">Edit</a>
+                      <a href="#" class="btn btn--outline btn--sm">View</a>
+                    </td>
+                  </tr>
+                  <tr>
+                    <td class="td-name">Fatima Adeyemi</td>
+                    <td>Nigeria</td>
+                    <td>Industrial Cleaner</td>
+                    <td>4 years</td>
+                    <td>15 Mar 2026</td>
+                    <td><span class="badge badge--blue">Deployed</span></td>
+                    <td>
+                      <a href="#" class="btn btn--outline btn--sm">Edit</a>
+                      <a href="#" class="btn btn--outline btn--sm">View</a>
+                    </td>
+                  </tr>
+                  <tr>
+                    <td class="td-name">James Okonkwo</td>
+                    <td>Nigeria</td>
+                    <td>Cleaning Supervisor</td>
+                    <td>6 years</td>
+                    <td>10 Mar 2026</td>
+                    <td><span class="badge badge--green">Active</span></td>
+                    <td>
+                      <a href="#" class="btn btn--outline btn--sm">Edit</a>
+                      <a href="#" class="btn btn--danger btn--sm">Suspend</a>
+                    </td>
+                  </tr>
+                  <tr>
+                    <td class="td-name">Grace Otieno</td>
+                    <td>Kenya</td>
+                    <td>Housekeeping</td>
+                    <td>3 years</td>
+                    <td>5 Mar 2026</td>
+                    <td><span class="badge badge--green">Active</span></td>
+                    <td>
+                      <a href="#" class="btn btn--outline btn--sm">Edit</a>
+                      <a href="#" class="btn btn--danger btn--sm">Suspend</a>
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+
+        <!-- Employers Table -->
+        <div class="tab-panel" data-panel="employers">
+          <div class="panel">
+            <div class="table-wrap">
+              <table>
+                <thead>
+                  <tr>
+                    <th>Company</th>
+                    <th>Country</th>
+                    <th>Industry</th>
+                    <th>Jobs Posted</th>
+                    <th>Workers Hired</th>
+                    <th>Status</th>
+                    <th>Actions</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td class="td-name">AlSafwa Cleaning Co.</td>
+                    <td>Kuwait</td>
+                    <td>Cleaning</td>
+                    <td>4</td>
+                    <td>22</td>
+                    <td><span class="badge badge--green">Verified</span></td>
+                    <td><a href="employer-dashboard.html" class="btn btn--outline btn--sm">View</a></td>
+                  </tr>
+                  <tr>
+                    <td class="td-name">Gulf Logistics LLC</td>
+                    <td>UAE</td>
+                    <td>Logistics</td>
+                    <td>2</td>
+                    <td>8</td>
+                    <td><span class="badge badge--green">Verified</span></td>
+                    <td><a href="employer-dashboard.html" class="btn btn--outline btn--sm">View</a></td>
+                  </tr>
+                  <tr>
+                    <td class="td-name">Al Rayyan Hotels</td>
+                    <td>Qatar</td>
+                    <td>Hospitality</td>
+                    <td>3</td>
+                    <td>15</td>
+                    <td><span class="badge badge--green">Verified</span></td>
+                    <td><a href="employer-dashboard.html" class="btn btn--outline btn--sm">View</a></td>
+                  </tr>
+                  <tr>
+                    <td class="td-name">Nesto Hypermarket</td>
+                    <td>UAE</td>
+                    <td>Retail</td>
+                    <td>1</td>
+                    <td>6</td>
+                    <td><span class="badge">Pending</span></td>
+                    <td><a href="employer-dashboard.html" class="btn btn--outline btn--sm">Review</a></td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+
+        <!-- Pending Approval -->
+        <div class="tab-panel" data-panel="pending">
+          <div class="panel">
+            <div class="table-wrap">
+              <table>
+                <thead>
+                  <tr>
+                    <th>Name</th>
+                    <th>Type</th>
+                    <th>Country</th>
+                    <th>Applied</th>
+                    <th>Documents</th>
+                    <th>Actions</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td class="td-name">Emmanuel Asante</td>
+                    <td><span class="badge badge--blue">Worker</span></td>
+                    <td>Ghana</td>
+                    <td>Today</td>
+                    <td><span class="badge badge--green">Complete</span></td>
+                    <td>
+                      <a href="#" class="btn btn--primary btn--sm">Approve</a>
+                      <a href="#" class="btn btn--danger btn--sm">Reject</a>
+                    </td>
+                  </tr>
+                  <tr>
+                    <td class="td-name">Safeer Catering LLC</td>
+                    <td><span class="badge badge--gold" style="background:var(--gold-light);color:var(--gold)">Employer</span></td>
+                    <td>Kuwait</td>
+                    <td>Yesterday</td>
+                    <td><span class="badge">Incomplete</span></td>
+                    <td>
+                      <a href="#" class="btn btn--outline btn--sm">Request Docs</a>
+                      <a href="#" class="btn btn--danger btn--sm">Reject</a>
+                    </td>
+                  </tr>
+                  <tr>
+                    <td class="td-name">Yaw Darko</td>
+                    <td><span class="badge badge--blue">Worker</span></td>
+                    <td>Ghana</td>
+                    <td>8 Apr 2026</td>
+                    <td><span class="badge badge--green">Complete</span></td>
+                    <td>
+                      <a href="#" class="btn btn--primary btn--sm">Approve</a>
+                      <a href="#" class="btn btn--danger btn--sm">Reject</a>
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<script src="js/main.js"></script>
+</body>
+</html>

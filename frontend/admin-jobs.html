@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Manage Jobs – Kingken Global Admin</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+<div class="dash-layout">
+  <aside class="sidebar" style="background:#0F172A">
+    <a href="index.html" class="sidebar__brand">
+      <div class="sidebar__brand-mark" style="background:#D97706">KG</div>
+      <span class="sidebar__brand-name">Admin <span>Panel</span></span>
+    </a>
+    <nav class="sidebar__nav">
+      <div class="sidebar__group">
+        <div class="sidebar__group-label">Overview</div>
+        <a href="admin-dashboard.html"><span class="icon">🏠</span> Dashboard</a>
+        <a href="admin-analytics.html"><span class="icon">📊</span> Analytics</a>
+      </div>
+      <div class="sidebar__group">
+        <div class="sidebar__group-label">Management</div>
+        <a href="admin-users.html"><span class="icon">👥</span> Manage Users</a>
+        <a href="admin-jobs.html" class="active"><span class="icon">📋</span> Manage Jobs</a>
+        <a href="candidates.html"><span class="icon">🎯</span> All Candidates</a>
+        <a href="admin-employers.html"><span class="icon">🏢</span> Employers</a>
+      </div>
+      <div class="sidebar__group">
+        <div class="sidebar__group-label">Finance</div>
+        <a href="admin-payments.html"><span class="icon">💳</span> Payments</a>
+      </div>
+      <div class="sidebar__group">
+        <div class="sidebar__group-label">System</div>
+        <a href="index.html"><span class="icon">🌐</span> Public Site</a>
+      </div>
+    </nav>
+    <div class="sidebar__footer">
+      <div class="sidebar__user">
+        <div class="sidebar__avatar" style="background:#D97706">AD</div>
+        <div>
+          <div class="sidebar__user-name">Admin User</div>
+          <div class="sidebar__user-role">Super Admin</div>
+        </div>
+      </div>
+    </div>
+  </aside>
+  <div class="dash-main">
+    <div class="dash-topbar">
+      <h1 class="dash-topbar__title">Manage Jobs</h1>
+      <div class="dash-topbar__actions">
+        <a href="post-job.html" class="btn btn--primary btn--sm">+ Add Job Post</a>
+        <a href="admin-dashboard.html" class="btn btn--outline btn--sm">← Dashboard</a>
+      </div>
+    </div>
+    <div class="dash-content">
+      <div class="stat-cards" style="margin-bottom:24px">
+        <div class="stat-card" style="padding:16px"><div class="stat-card__label">Total Job Posts</div><div class="stat-card__value" data-count="24">0</div></div>
+        <div class="stat-card" style="padding:16px"><div class="stat-card__label">Active</div><div class="stat-card__value" data-count="18">0</div></div>
+        <div class="stat-card" style="padding:16px"><div class="stat-card__label">Total Positions</div><div class="stat-card__value" data-count="186">0</div></div>
+        <div class="stat-card" style="padding:16px"><div class="stat-card__label">Filled Positions</div><div class="stat-card__value" data-count="94">0</div></div>
+      </div>
+      <div class="panel">
+        <div class="panel__head">
+          <div class="panel__head-title">All Job Posts</div>
+          <div style="display:flex;gap:10px">
+            <div class="search-bar" style="width:200px"><span>🔍</span><input type="text" placeholder="Search jobs…"></div>
+            <select class="form-control" style="width:auto;padding:8px 12px;font-size:13px"><option>All Status</option><option>Active</option><option>Closed</option><option>Draft</option></select>
+          </div>
+        </div>
+        <div class="panel__body">
+          <div class="table-wrap">
+            <table>
+              <thead><tr><th>Job Title</th><th>Employer</th><th>Location</th><th>Positions</th><th>Applications</th><th>Status</th><th>Actions</th></tr></thead>
+              <tbody>
+                <tr><td class="td-name">Cleaning Supervisor</td><td>AlSafwa Cleaning</td><td>Kuwait</td><td>5</td><td>47</td><td><span class="badge badge--green">Active</span></td><td><a href="job-details.html" class="btn btn--outline btn--sm">View</a><a href="candidates.html" class="btn btn--primary btn--sm" style="margin-left:6px">Candidates</a></td></tr>
+                <tr><td class="td-name">Housekeeping Staff</td><td>Al Rayyan Hotels</td><td>Qatar</td><td>10</td><td>82</td><td><span class="badge badge--green">Active</span></td><td><a href="job-details.html" class="btn btn--outline btn--sm">View</a><a href="candidates.html" class="btn btn--primary btn--sm" style="margin-left:6px">Candidates</a></td></tr>
+                <tr><td class="td-name">Warehouse Associate</td><td>Gulf Logistics LLC</td><td>UAE</td><td>8</td><td>31</td><td><span class="badge badge--green">Active</span></td><td><a href="job-details.html" class="btn btn--outline btn--sm">View</a><a href="candidates.html" class="btn btn--primary btn--sm" style="margin-left:6px">Candidates</a></td></tr>
+                <tr><td class="td-name">Security Guard</td><td>Safeer Mall</td><td>Kuwait</td><td>6</td><td>19</td><td><span class="badge badge--green">Active</span></td><td><a href="job-details.html" class="btn btn--outline btn--sm">View</a><a href="candidates.html" class="btn btn--primary btn--sm" style="margin-left:6px">Candidates</a></td></tr>
+                <tr><td class="td-name">General Labourer</td><td>AlBabtain Construction</td><td>Kuwait</td><td>20</td><td>63</td><td><span class="badge badge--gray">Closed</span></td><td><a href="job-details.html" class="btn btn--outline btn--sm">View</a></td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<script src="js/main.js"></script>
+</body>
+</html>

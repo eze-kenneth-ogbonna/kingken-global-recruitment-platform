@@ -1,0 +1,21 @@
+{
+  "name": "kingken-global-recruitment-platform",
+  "version": "1.0.0",
+  "description": "Kingken Global Travel Agency Ltd – International Recruitment Platform",
+  "scripts": {
+    "start": "npx http-server frontend -p 3000 -o",
+    "serve": "npx http-server frontend -p 3000"
+  },
+  "keywords": [
+    "recruitment",
+    "jobs",
+    "international",
+    "africa",
+    "gulf"
+  ],
+  "author": "Kingken Global Travel Agency Ltd",
+  "license": "MIT",
+  "devDependencies": {
+    "http-server": "^14.1.1"
+  }
+}

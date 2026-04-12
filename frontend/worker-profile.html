@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>My Profile – Kingken Global</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+<div class="dash-layout">
+
+  <aside class="sidebar">
+    <a href="index.html" class="sidebar__brand">
+      <div class="sidebar__brand-mark">KG</div>
+      <span class="sidebar__brand-name">Kingken <span>Global</span></span>
+    </a>
+    <nav class="sidebar__nav">
+      <div class="sidebar__group">
+        <div class="sidebar__group-label">My Account</div>
+        <a href="worker-dashboard.html"><span class="icon">🏠</span> Dashboard</a>
+        <a href="worker-profile.html" class="active"><span class="icon">👤</span> My Profile</a>
+        <a href="worker-applications.html"><span class="icon">📋</span> My Applications</a>
+      </div>
+      <div class="sidebar__group">
+        <div class="sidebar__group-label">Jobs</div>
+        <a href="jobs.html"><span class="icon">🔍</span> Browse Jobs</a>
+        <a href="job-details.html"><span class="icon">⭐</span> Saved Jobs</a>
+      </div>
+      <div class="sidebar__group">
+        <div class="sidebar__group-label">Support</div>
+        <a href="contact.html"><span class="icon">💬</span> Contact Support</a>
+      </div>
+    </nav>
+    <div class="sidebar__footer">
+      <div class="sidebar__user">
+        <div class="sidebar__avatar">AO</div>
+        <div>
+          <div class="sidebar__user-name">Amara Osei</div>
+          <div class="sidebar__user-role">Worker · Ghana</div>
+        </div>
+      </div>
+    </div>
+  </aside>
+
+  <div class="dash-main">
+    <div class="dash-topbar">
+      <h1 class="dash-topbar__title">My Profile</h1>
+      <div class="dash-topbar__actions">
+        <button class="btn btn--primary btn--sm">💾 Save Changes</button>
+        <a href="worker-dashboard.html" class="btn btn--outline btn--sm">← Dashboard</a>
+      </div>
+    </div>
+
+    <div class="dash-content">
+
+      <!-- Profile Completeness -->
+      <div class="alert alert--warning" style="margin-bottom:24px">
+        ⚠️ Your profile is 75% complete. Complete your profile to improve your chances of being shortlisted.
+      </div>
+
+      <div style="display:grid;grid-template-columns:1fr 2fr;gap:24px;align-items:start">
+
+        <!-- Profile Card -->
+        <div class="card" style="text-align:center">
+          <div style="width:90px;height:90px;border-radius:50%;background:var(--blue);display:flex;align-items:center;justify-content:center;font-size:34px;font-weight:800;color:var(--white);margin:0 auto 16px">
+            AO
+          </div>
+          <h2 style="font-size:18px;font-weight:700;margin-bottom:4px">Amara Osei</h2>
+          <p style="font-size:14px;color:var(--muted);margin-bottom:12px">Cleaning Supervisor · Ghana</p>
+          <span class="badge badge--blue" style="margin-bottom:16px;display:inline-block">Profile Under Review</span>
+          <div style="margin-bottom:16px">
+            <div style="font-size:12px;color:var(--muted);margin-bottom:4px;text-align:left">Profile Completeness</div>
+            <div class="progress"><div class="progress__bar" data-width="75"></div></div>
+            <div style="font-size:12px;color:var(--muted);margin-top:4px;text-align:right">75%</div>
+          </div>
+          <button class="btn btn--outline btn--sm" style="width:100%;justify-content:center">📷 Update Photo</button>
+        </div>
+
+        <!-- Profile Form -->
+        <div class="form-card" style="max-width:none">
+          <h3 class="form-card__title" style="font-size:18px">Personal Information</h3>
+
+          <div class="form-row">
+            <div class="form-group">
+              <label class="form-label">First Name</label>
+              <input type="text" class="form-control" value="Amara">
+            </div>
+            <div class="form-group">
+              <label class="form-label">Last Name</label>
+              <input type="text" class="form-control" value="Osei">
+            </div>
+          </div>
+          <div class="form-row">
+            <div class="form-group">
+              <label class="form-label">Email</label>
+              <input type="email" class="form-control" value="amara.osei@email.com">
+            </div>
+            <div class="form-group">
+              <label class="form-label">Phone / WhatsApp</label>
+              <input type="tel" class="form-control" value="+233 24 123 4567">
+            </div>
+          </div>
+          <div class="form-row">
+            <div class="form-group">
+              <label class="form-label">Country of Origin</label>
+              <select class="form-control">
+                <option selected>Ghana</option>
+                <option>Nigeria</option>
+                <option>Kenya</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label class="form-label">Date of Birth</label>
+              <input type="date" class="form-control" value="1994-03-15">
+            </div>
+          </div>
+
+          <h3 style="font-size:16px;font-weight:700;margin:24px 0 16px">Work Information</h3>
+          <div class="form-row">
+            <div class="form-group">
+              <label class="form-label">Job Position</label>
+              <select class="form-control">
+                <option selected>Cleaning Supervisor</option>
+                <option>General Cleaner</option>
+                <option>Housekeeping</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label class="form-label">Years of Experience</label>
+              <select class="form-control">
+                <option>5+ years</option>
+                <option>3–5 years</option>
+                <option>1–2 years</option>
+              </select>
+            </div>
+          </div>
+          <div class="form-row">
+            <div class="form-group">
+              <label class="form-label">Preferred Destination</label>
+              <select class="form-control">
+                <option>Kuwait</option>
+                <option>United Arab Emirates</option>
+                <option>Qatar</option>
+                <option>Any Gulf Country</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label class="form-label">Passport Status</label>
+              <select class="form-control">
+                <option>I have a valid passport</option>
+                <option>My passport has expired</option>
+              </select>
+            </div>
+          </div>
+
+          <h3 style="font-size:16px;font-weight:700;margin:24px 0 16px">Documents</h3>
+          <div style="display:flex;flex-direction:column;gap:12px;margin-bottom:24px">
+            <div style="display:flex;align-items:center;justify-content:space-between;padding:12px 16px;background:var(--bg);border-radius:8px;border:1px solid var(--border)">
+              <div style="display:flex;align-items:center;gap:10px;font-size:14px"><span>📄</span> Passport Copy</div>
+              <span class="badge badge--green">Uploaded</span>
+            </div>
+            <div style="display:flex;align-items:center;justify-content:space-between;padding:12px 16px;background:var(--bg);border-radius:8px;border:1px solid var(--border)">
+              <div style="display:flex;align-items:center;gap:10px;font-size:14px"><span>📋</span> CV / Resume</div>
+              <span class="badge badge--green">Uploaded</span>
+            </div>
+            <div style="display:flex;align-items:center;justify-content:space-between;padding:12px 16px;background:var(--bg);border-radius:8px;border:1.5px dashed var(--border)">
+              <div style="display:flex;align-items:center;gap:10px;font-size:14px"><span>🏥</span> Medical Certificate</div>
+              <button class="btn btn--primary btn--sm">Upload</button>
+            </div>
+            <div style="display:flex;align-items:center;justify-content:space-between;padding:12px 16px;background:var(--bg);border-radius:8px;border:1.5px dashed var(--border)">
+              <div style="display:flex;align-items:center;gap:10px;font-size:14px"><span>🔒</span> Police Clearance</div>
+              <button class="btn btn--primary btn--sm">Upload</button>
+            </div>
+          </div>
+
+          <button class="btn btn--primary btn--lg" style="width:100%;justify-content:center">
+            💾 Save Profile
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script src="js/main.js"></script>
+</body>
+</html>

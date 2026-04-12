@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>My Applications – Kingken Global</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+<div class="dash-layout">
+
+  <aside class="sidebar">
+    <a href="index.html" class="sidebar__brand">
+      <div class="sidebar__brand-mark">KG</div>
+      <span class="sidebar__brand-name">Kingken <span>Global</span></span>
+    </a>
+    <nav class="sidebar__nav">
+      <div class="sidebar__group">
+        <div class="sidebar__group-label">My Account</div>
+        <a href="worker-dashboard.html"><span class="icon">🏠</span> Dashboard</a>
+        <a href="worker-profile.html"><span class="icon">👤</span> My Profile</a>
+        <a href="worker-applications.html" class="active"><span class="icon">📋</span> My Applications</a>
+      </div>
+      <div class="sidebar__group">
+        <div class="sidebar__group-label">Jobs</div>
+        <a href="jobs.html"><span class="icon">🔍</span> Browse Jobs</a>
+        <a href="job-details.html"><span class="icon">⭐</span> Saved Jobs</a>
+      </div>
+      <div class="sidebar__group">
+        <div class="sidebar__group-label">Support</div>
+        <a href="contact.html"><span class="icon">💬</span> Contact Support</a>
+      </div>
+    </nav>
+    <div class="sidebar__footer">
+      <div class="sidebar__user">
+        <div class="sidebar__avatar">AO</div>
+        <div>
+          <div class="sidebar__user-name">Amara Osei</div>
+          <div class="sidebar__user-role">Worker · Ghana</div>
+        </div>
+      </div>
+    </div>
+  </aside>
+
+  <div class="dash-main">
+    <div class="dash-topbar">
+      <h1 class="dash-topbar__title">My Applications</h1>
+      <div class="dash-topbar__actions">
+        <a href="jobs.html" class="btn btn--primary btn--sm">+ Apply to New Job</a>
+        <a href="worker-dashboard.html" class="btn btn--outline btn--sm">← Dashboard</a>
+      </div>
+    </div>
+
+    <div class="dash-content">
+
+      <div class="stat-cards" style="margin-bottom:24px">
+        <div class="stat-card" style="padding:16px"><div class="stat-card__label">Total Applied</div><div class="stat-card__value" data-count="3">0</div></div>
+        <div class="stat-card" style="padding:16px"><div class="stat-card__label">Shortlisted</div><div class="stat-card__value" data-count="1">0</div></div>
+        <div class="stat-card" style="padding:16px"><div class="stat-card__label">Under Review</div><div class="stat-card__value" data-count="1">0</div></div>
+        <div class="stat-card" style="padding:16px"><div class="stat-card__label">Pending Documents</div><div class="stat-card__value" data-count="1">0</div></div>
+      </div>
+
+      <div class="panel">
+        <div class="panel__head"><div class="panel__head-title">Application History</div></div>
+        <div class="panel__body">
+          <div style="display:flex;flex-direction:column;gap:16px">
+
+            <div class="card" style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:16px">
+              <div style="display:flex;gap:16px;align-items:center">
+                <div style="width:48px;height:48px;background:var(--blue-light);border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:22px;flex-shrink:0">🧹</div>
+                <div>
+                  <div style="font-weight:700;font-size:16px">Cleaning Supervisor</div>
+                  <div style="font-size:13px;color:var(--muted)">AlSafwa Cleaning Co. · Kuwait City, Kuwait</div>
+                  <div style="font-size:12px;color:var(--muted);margin-top:2px">Applied: 2 Apr 2026</div>
+                </div>
+              </div>
+              <div style="display:flex;align-items:center;gap:12px">
+                <span class="badge">Under Review</span>
+                <a href="job-details.html" class="btn btn--outline btn--sm">View Job</a>
+              </div>
+            </div>
+
+            <div class="card" style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:16px">
+              <div style="display:flex;gap:16px;align-items:center">
+                <div style="width:48px;height:48px;background:#D1FAE5;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:22px;flex-shrink:0">🏨</div>
+                <div>
+                  <div style="font-weight:700;font-size:16px">Housekeeping Staff</div>
+                  <div style="font-size:13px;color:var(--muted)">Al Rayyan Hotels · Doha, Qatar</div>
+                  <div style="font-size:12px;color:var(--muted);margin-top:2px">Applied: 28 Mar 2026</div>
+                </div>
+              </div>
+              <div style="display:flex;align-items:center;gap:12px">
+                <span class="badge badge--green">Shortlisted ✓</span>
+                <a href="job-details.html" class="btn btn--outline btn--sm">View Job</a>
+              </div>
+            </div>
+
+            <div class="card" style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:16px">
+              <div style="display:flex;gap:16px;align-items:center">
+                <div style="width:48px;height:48px;background:var(--gold-light);border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:22px;flex-shrink:0">📦</div>
+                <div>
+                  <div style="font-weight:700;font-size:16px">Warehouse Associate</div>
+                  <div style="font-size:13px;color:var(--muted)">Gulf Logistics LLC · Dubai, UAE</div>
+                  <div style="font-size:12px;color:var(--muted);margin-top:2px">Applied: 20 Mar 2026</div>
+                </div>
+              </div>
+              <div style="display:flex;align-items:center;gap:12px">
+                <span class="badge badge--gray">Pending Documents</span>
+                <a href="worker-profile.html" class="btn btn--primary btn--sm">Upload Docs</a>
+              </div>
+            </div>
+
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script src="js/main.js"></script>
+</body>
+</html>

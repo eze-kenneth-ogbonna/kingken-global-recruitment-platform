@@ -1,0 +1,268 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Admin Dashboard – Kingken Global</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+<div class="dash-layout">
+
+  <!-- Admin Sidebar -->
+  <aside class="sidebar" style="background:#0F172A">
+    <a href="index.html" class="sidebar__brand">
+      <div class="sidebar__brand-mark" style="background:#D97706">KG</div>
+      <span class="sidebar__brand-name">Admin <span>Panel</span></span>
+    </a>
+    <nav class="sidebar__nav">
+      <div class="sidebar__group">
+        <div class="sidebar__group-label">Overview</div>
+        <a href="admin-dashboard.html" class="active"><span class="icon">🏠</span> Dashboard</a>
+        <a href="admin-analytics.html"><span class="icon">📊</span> Analytics</a>
+      </div>
+      <div class="sidebar__group">
+        <div class="sidebar__group-label">Management</div>
+        <a href="admin-users.html"><span class="icon">👥</span> Manage Users</a>
+        <a href="admin-jobs.html"><span class="icon">📋</span> Manage Jobs</a>
+        <a href="candidates.html"><span class="icon">🎯</span> All Candidates</a>
+        <a href="admin-employers.html"><span class="icon">🏢</span> Employers</a>
+      </div>
+      <div class="sidebar__group">
+        <div class="sidebar__group-label">Finance</div>
+        <a href="admin-payments.html"><span class="icon">💳</span> Payments</a>
+        <a href="admin-payments.html"><span class="icon">📄</span> Invoices</a>
+      </div>
+      <div class="sidebar__group">
+        <div class="sidebar__group-label">System</div>
+        <a href="contact.html"><span class="icon">⚙️</span> Settings</a>
+        <a href="index.html"><span class="icon">🌐</span> Public Site</a>
+      </div>
+    </nav>
+    <div class="sidebar__footer">
+      <div class="sidebar__user">
+        <div class="sidebar__avatar" style="background:#D97706">AD</div>
+        <div>
+          <div class="sidebar__user-name">Admin User</div>
+          <div class="sidebar__user-role">Super Admin</div>
+        </div>
+      </div>
+    </div>
+  </aside>
+
+  <!-- Main -->
+  <div class="dash-main">
+    <div class="dash-topbar">
+      <h1 class="dash-topbar__title">Admin Dashboard</h1>
+      <div class="dash-topbar__actions">
+        <button class="btn btn--outline btn--sm notif-btn">🔔 <span class="notif-dot"></span></button>
+        <a href="index.html" class="btn btn--outline btn--sm">🌐 View Site</a>
+      </div>
+    </div>
+
+    <div class="dash-content">
+
+      <!-- KPI Stats -->
+      <div class="stat-cards">
+        <div class="stat-card">
+          <div class="stat-card__icon stat-card__icon--blue">👷</div>
+          <div class="stat-card__label">Total Workers Registered</div>
+          <div class="stat-card__value" data-count="1247">0</div>
+          <div class="stat-card__change stat-card__change--up">↑ 48 this week</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-card__icon stat-card__icon--gold">🏢</div>
+          <div class="stat-card__label">Total Employers</div>
+          <div class="stat-card__value" data-count="83">0</div>
+          <div class="stat-card__change stat-card__change--up">↑ 5 this month</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-card__icon stat-card__icon--green">✅</div>
+          <div class="stat-card__label">Deals Closed</div>
+          <div class="stat-card__value" data-count="214">0</div>
+          <div class="stat-card__change stat-card__change--up">↑ 12 this month</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-card__icon stat-card__icon--red">💰</div>
+          <div class="stat-card__label">Revenue (USD)</div>
+          <div class="stat-card__value">$84K</div>
+          <div class="stat-card__change stat-card__change--up">↑ 22% vs last month</div>
+        </div>
+      </div>
+
+      <div style="display:grid;grid-template-columns:2fr 1fr;gap:24px;margin-bottom:24px">
+
+        <!-- Recent Activity -->
+        <div class="panel">
+          <div class="panel__head">
+            <div class="panel__head-title">Recent Activity</div>
+            <a href="admin-users.html" class="btn btn--outline btn--sm">View All</a>
+          </div>
+          <div class="panel__body">
+            <div class="table-wrap">
+              <table>
+                <thead>
+                  <tr>
+                    <th>Event</th>
+                    <th>User</th>
+                    <th>Type</th>
+                    <th>Date</th>
+                    <th>Status</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td class="td-name">New Application</td>
+                    <td>Amara Osei</td>
+                    <td><span class="badge badge--blue">Worker</span></td>
+                    <td>Today, 09:42</td>
+                    <td><span class="badge">Pending</span></td>
+                  </tr>
+                  <tr>
+                    <td class="td-name">Employer Registration</td>
+                    <td>Gulf Logistics LLC</td>
+                    <td><span class="badge badge--gold" style="background:var(--gold-light);color:var(--gold)">Employer</span></td>
+                    <td>Today, 08:15</td>
+                    <td><span class="badge badge--green">Active</span></td>
+                  </tr>
+                  <tr>
+                    <td class="td-name">Deal Confirmed</td>
+                    <td>AlSafwa Group</td>
+                    <td><span class="badge badge--gold" style="background:var(--gold-light);color:var(--gold)">Employer</span></td>
+                    <td>Yesterday</td>
+                    <td><span class="badge badge--green">Closed</span></td>
+                  </tr>
+                  <tr>
+                    <td class="td-name">Payment Received</td>
+                    <td>Al Rayyan Hotels</td>
+                    <td><span class="badge badge--blue">Finance</span></td>
+                    <td>9 Apr 2026</td>
+                    <td><span class="badge badge--green">Paid</span></td>
+                  </tr>
+                  <tr>
+                    <td class="td-name">Worker Deployed</td>
+                    <td>Blessing Nwosu</td>
+                    <td><span class="badge badge--blue">Worker</span></td>
+                    <td>8 Apr 2026</td>
+                    <td><span class="badge badge--green">Deployed</span></td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+
+        <!-- Quick Actions & Pipeline -->
+        <div style="display:flex;flex-direction:column;gap:20px">
+          <div class="panel">
+            <div class="panel__head"><div class="panel__head-title">Quick Actions</div></div>
+            <div class="panel__body" style="display:flex;flex-direction:column;gap:10px">
+              <a href="admin-users.html" class="btn btn--outline" style="justify-content:center">👥 Manage Users</a>
+              <a href="admin-payments.html" class="btn btn--outline" style="justify-content:center">💳 View Payments</a>
+              <a href="candidates.html" class="btn btn--outline" style="justify-content:center">🎯 Review Candidates</a>
+              <a href="post-job.html" class="btn btn--primary" style="justify-content:center">➕ Post New Job</a>
+            </div>
+          </div>
+
+          <div class="panel">
+            <div class="panel__head"><div class="panel__head-title">Pipeline Summary</div></div>
+            <div class="panel__body">
+              <div style="display:flex;flex-direction:column;gap:14px;font-size:14px">
+                <div>
+                  <div style="display:flex;justify-content:space-between;margin-bottom:4px">
+                    <span>Contacted</span><strong>248</strong>
+                  </div>
+                  <div class="progress"><div class="progress__bar" data-width="100" style="background:var(--border)"></div></div>
+                </div>
+                <div>
+                  <div style="display:flex;justify-content:space-between;margin-bottom:4px">
+                    <span>Interested</span><strong>74</strong>
+                  </div>
+                  <div class="progress"><div class="progress__bar" data-width="30"></div></div>
+                </div>
+                <div>
+                  <div style="display:flex;justify-content:space-between;margin-bottom:4px">
+                    <span>Active Leads</span><strong>37</strong>
+                  </div>
+                  <div class="progress"><div class="progress__bar" data-width="15" style="background:var(--gold)"></div></div>
+                </div>
+                <div>
+                  <div style="display:flex;justify-content:space-between;margin-bottom:4px">
+                    <span>Deals Closed</span><strong>14</strong>
+                  </div>
+                  <div class="progress"><div class="progress__bar" data-width="6" style="background:#065F46"></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- Revenue Overview -->
+      <div class="panel">
+        <div class="panel__head">
+          <div class="panel__head-title">Revenue Overview – April 2026</div>
+          <a href="admin-payments.html" class="btn btn--outline btn--sm">View All Payments →</a>
+        </div>
+        <div class="panel__body">
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th>Client / Employer</th>
+                  <th>Workers Placed</th>
+                  <th>Invoice Amount</th>
+                  <th>Date</th>
+                  <th>Status</th>
+                  <th>Action</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td class="td-name">AlSafwa Cleaning Co.</td>
+                  <td>5</td>
+                  <td>$5,000</td>
+                  <td>5 Apr 2026</td>
+                  <td><span class="badge badge--green">Paid</span></td>
+                  <td><a href="admin-payments.html" class="btn btn--outline btn--sm">View</a></td>
+                </tr>
+                <tr>
+                  <td class="td-name">Al Rayyan Hotels</td>
+                  <td>10</td>
+                  <td>$9,500</td>
+                  <td>3 Apr 2026</td>
+                  <td><span class="badge badge--green">Paid</span></td>
+                  <td><a href="admin-payments.html" class="btn btn--outline btn--sm">View</a></td>
+                </tr>
+                <tr>
+                  <td class="td-name">Gulf Logistics LLC</td>
+                  <td>8</td>
+                  <td>$7,200</td>
+                  <td>1 Apr 2026</td>
+                  <td><span class="badge">Pending</span></td>
+                  <td><a href="admin-payments.html" class="btn btn--outline btn--sm">View</a></td>
+                </tr>
+                <tr>
+                  <td class="td-name">Nesto Hypermarket</td>
+                  <td>6</td>
+                  <td>$5,400</td>
+                  <td>28 Mar 2026</td>
+                  <td><span class="badge badge--red" style="background:#FEE2E2;color:#991B1B">Overdue</span></td>
+                  <td><a href="admin-payments.html" class="btn btn--danger btn--sm">Follow Up</a></td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<script src="js/main.js"></script>
+</body>
+</html>

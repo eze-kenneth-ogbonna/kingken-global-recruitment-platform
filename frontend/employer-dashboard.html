@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Employer Dashboard – Kingken Global</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+<div class="dash-layout">
+
+  <!-- Sidebar -->
+  <aside class="sidebar">
+    <a href="index.html" class="sidebar__brand">
+      <div class="sidebar__brand-mark">KG</div>
+      <span class="sidebar__brand-name">Kingken <span>Global</span></span>
+    </a>
+    <nav class="sidebar__nav">
+      <div class="sidebar__group">
+        <div class="sidebar__group-label">Overview</div>
+        <a href="employer-dashboard.html" class="active"><span class="icon">🏠</span> Dashboard</a>
+      </div>
+      <div class="sidebar__group">
+        <div class="sidebar__group-label">Recruitment</div>
+        <a href="post-job.html"><span class="icon">➕</span> Post a Job</a>
+        <a href="candidates.html"><span class="icon">👥</span> Candidate List</a>
+        <a href="candidates.html"><span class="icon">📋</span> My Job Posts</a>
+      </div>
+      <div class="sidebar__group">
+        <div class="sidebar__group-label">Business</div>
+        <a href="employer-payments.html"><span class="icon">💳</span> Payments</a>
+        <a href="contact.html"><span class="icon">💬</span> Support</a>
+      </div>
+    </nav>
+    <div class="sidebar__footer">
+      <div class="sidebar__user">
+        <div class="sidebar__avatar">AG</div>
+        <div>
+          <div class="sidebar__user-name">AlSafwa Group</div>
+          <div class="sidebar__user-role">Employer · Kuwait</div>
+        </div>
+      </div>
+    </div>
+  </aside>
+
+  <!-- Main -->
+  <div class="dash-main">
+    <div class="dash-topbar">
+      <h1 class="dash-topbar__title">Employer Dashboard</h1>
+      <div class="dash-topbar__actions">
+        <a href="post-job.html" class="btn btn--primary btn--sm">+ Post a Job</a>
+        <button class="btn btn--outline btn--sm notif-btn">🔔 <span class="notif-dot"></span></button>
+        <a href="index.html" class="btn btn--outline btn--sm">← Home</a>
+      </div>
+    </div>
+
+    <div class="dash-content">
+
+      <div class="alert alert--success">
+        ✅ Your staffing request has been received. Our team is sourcing candidates — expect profiles within 48 hours.
+      </div>
+
+      <!-- Stats -->
+      <div class="stat-cards">
+        <div class="stat-card">
+          <div class="stat-card__icon stat-card__icon--blue">📋</div>
+          <div class="stat-card__label">Active Job Posts</div>
+          <div class="stat-card__value" data-count="4">0</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-card__icon stat-card__icon--gold">👥</div>
+          <div class="stat-card__label">Total Candidates</div>
+          <div class="stat-card__value" data-count="38">0</div>
+          <div class="stat-card__change stat-card__change--up">↑ 12 new this week</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-card__icon stat-card__icon--green">✅</div>
+          <div class="stat-card__label">Workers Hired</div>
+          <div class="stat-card__value" data-count="22">0</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-card__icon stat-card__icon--red">💳</div>
+          <div class="stat-card__label">Pending Invoices</div>
+          <div class="stat-card__value" data-count="2">0</div>
+        </div>
+      </div>
+
+      <!-- Job Posts -->
+      <div class="panel" style="margin-bottom:28px">
+        <div class="panel__head">
+          <div class="panel__head-title">My Job Posts</div>
+          <a href="post-job.html" class="btn btn--primary btn--sm">+ New Job Post</a>
+        </div>
+        <div class="panel__body">
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th>Job Title</th>
+                  <th>Positions</th>
+                  <th>Applicants</th>
+                  <th>Posted</th>
+                  <th>Status</th>
+                  <th>Action</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td class="td-name">Cleaning Supervisor</td>
+                  <td>5</td>
+                  <td>47</td>
+                  <td>1 Apr 2026</td>
+                  <td><span class="badge badge--green">Active</span></td>
+                  <td>
+                    <a href="candidates.html" class="btn btn--outline btn--sm">View Candidates</a>
+                  </td>
+                </tr>
+                <tr>
+                  <td class="td-name">General Cleaner</td>
+                  <td>15</td>
+                  <td>82</td>
+                  <td>28 Mar 2026</td>
+                  <td><span class="badge badge--green">Active</span></td>
+                  <td>
+                    <a href="candidates.html" class="btn btn--outline btn--sm">View Candidates</a>
+                  </td>
+                </tr>
+                <tr>
+                  <td class="td-name">Office Cleaner (Night Shift)</td>
+                  <td>8</td>
+                  <td>31</td>
+                  <td>15 Mar 2026</td>
+                  <td><span class="badge">Reviewing</span></td>
+                  <td>
+                    <a href="candidates.html" class="btn btn--outline btn--sm">View Candidates</a>
+                  </td>
+                </tr>
+                <tr>
+                  <td class="td-name">Industrial Cleaner</td>
+                  <td>10</td>
+                  <td>19</td>
+                  <td>10 Mar 2026</td>
+                  <td><span class="badge badge--gray">Draft</span></td>
+                  <td>
+                    <a href="post-job.html" class="btn btn--outline btn--sm">Edit &amp; Publish</a>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <!-- Recent Candidates -->
+      <div class="panel">
+        <div class="panel__head">
+          <div class="panel__head-title">Recently Submitted Candidates</div>
+          <a href="candidates.html" class="btn btn--outline btn--sm">View All →</a>
+        </div>
+        <div class="panel__body">
+          <div class="candidate-grid">
+
+            <div class="candidate-card">
+              <div class="candidate-card__avatar">AO</div>
+              <div class="candidate-card__name">Amara Osei</div>
+              <div class="candidate-card__role">Cleaning Supervisor · Ghana</div>
+              <div class="candidate-card__tags">
+                <span class="badge badge--blue">5 yrs exp</span>
+                <span class="badge badge--green">Docs Ready</span>
+              </div>
+              <div class="candidate-card__actions">
+                <a href="candidates.html" class="btn btn--primary btn--sm" style="flex:1;justify-content:center">View</a>
+                <a href="candidates.html" class="btn btn--outline btn--sm" style="flex:1;justify-content:center">✅ Approve</a>
+              </div>
+            </div>
+
+            <div class="candidate-card">
+              <div class="candidate-card__avatar" style="background:var(--gold)">BN</div>
+              <div class="candidate-card__name">Blessing Nwosu</div>
+              <div class="candidate-card__role">General Cleaner · Nigeria</div>
+              <div class="candidate-card__tags">
+                <span class="badge badge--blue">3 yrs exp</span>
+                <span class="badge">Pending Docs</span>
+              </div>
+              <div class="candidate-card__actions">
+                <a href="candidates.html" class="btn btn--primary btn--sm" style="flex:1;justify-content:center">View</a>
+                <a href="candidates.html" class="btn btn--outline btn--sm" style="flex:1;justify-content:center">✅ Approve</a>
+              </div>
+            </div>
+
+            <div class="candidate-card">
+              <div class="candidate-card__avatar" style="background:#065F46">KM</div>
+              <div class="candidate-card__name">Kofi Mensah</div>
+              <div class="candidate-card__role">Office Cleaner · Ghana</div>
+              <div class="candidate-card__tags">
+                <span class="badge badge--blue">2 yrs exp</span>
+                <span class="badge badge--green">Docs Ready</span>
+              </div>
+              <div class="candidate-card__actions">
+                <a href="candidates.html" class="btn btn--primary btn--sm" style="flex:1;justify-content:center">View</a>
+                <a href="candidates.html" class="btn btn--outline btn--sm" style="flex:1;justify-content:center">✅ Approve</a>
+              </div>
+            </div>
+
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<script src="js/main.js"></script>
+</body>
+</html>

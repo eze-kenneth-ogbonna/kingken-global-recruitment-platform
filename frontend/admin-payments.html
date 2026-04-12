@@ -1,0 +1,260 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Payments – Kingken Global Admin</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+<div class="dash-layout">
+
+  <aside class="sidebar" style="background:#0F172A">
+    <a href="index.html" class="sidebar__brand">
+      <div class="sidebar__brand-mark" style="background:#D97706">KG</div>
+      <span class="sidebar__brand-name">Admin <span>Panel</span></span>
+    </a>
+    <nav class="sidebar__nav">
+      <div class="sidebar__group">
+        <div class="sidebar__group-label">Overview</div>
+        <a href="admin-dashboard.html"><span class="icon">🏠</span> Dashboard</a>
+        <a href="admin-analytics.html"><span class="icon">📊</span> Analytics</a>
+      </div>
+      <div class="sidebar__group">
+        <div class="sidebar__group-label">Management</div>
+        <a href="admin-users.html"><span class="icon">👥</span> Manage Users</a>
+        <a href="admin-jobs.html"><span class="icon">📋</span> Manage Jobs</a>
+        <a href="candidates.html"><span class="icon">🎯</span> All Candidates</a>
+        <a href="admin-employers.html"><span class="icon">🏢</span> Employers</a>
+      </div>
+      <div class="sidebar__group">
+        <div class="sidebar__group-label">Finance</div>
+        <a href="admin-payments.html" class="active"><span class="icon">💳</span> Payments</a>
+        <a href="admin-payments.html"><span class="icon">📄</span> Invoices</a>
+      </div>
+      <div class="sidebar__group">
+        <div class="sidebar__group-label">System</div>
+        <a href="contact.html"><span class="icon">⚙️</span> Settings</a>
+        <a href="index.html"><span class="icon">🌐</span> Public Site</a>
+      </div>
+    </nav>
+    <div class="sidebar__footer">
+      <div class="sidebar__user">
+        <div class="sidebar__avatar" style="background:#D97706">AD</div>
+        <div>
+          <div class="sidebar__user-name">Admin User</div>
+          <div class="sidebar__user-role">Super Admin</div>
+        </div>
+      </div>
+    </div>
+  </aside>
+
+  <div class="dash-main">
+    <div class="dash-topbar">
+      <h1 class="dash-topbar__title">Payments &amp; Revenue</h1>
+      <div class="dash-topbar__actions">
+        <a href="admin-dashboard.html" class="btn btn--outline btn--sm">← Dashboard</a>
+        <button class="btn btn--primary btn--sm">+ Create Invoice</button>
+      </div>
+    </div>
+
+    <div class="dash-content">
+
+      <!-- Revenue Stats -->
+      <div class="stat-cards">
+        <div class="stat-card">
+          <div class="stat-card__icon stat-card__icon--green">💰</div>
+          <div class="stat-card__label">Total Revenue</div>
+          <div class="stat-card__value">$84,200</div>
+          <div class="stat-card__change stat-card__change--up">↑ 22% vs last month</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-card__icon stat-card__icon--blue">✅</div>
+          <div class="stat-card__label">Payments Received</div>
+          <div class="stat-card__value" data-count="47">0</div>
+          <div class="stat-card__change stat-card__change--up">↑ 8 this month</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-card__icon stat-card__icon--gold">⏳</div>
+          <div class="stat-card__label">Pending Payments</div>
+          <div class="stat-card__value">$12,600</div>
+          <div class="stat-card__change stat-card__change--down">↑ 3 overdue</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-card__icon stat-card__icon--red">📊</div>
+          <div class="stat-card__label">Avg. Deal Value</div>
+          <div class="stat-card__value">$1,790</div>
+          <div class="stat-card__change stat-card__change--up">↑ $120 vs last month</div>
+        </div>
+      </div>
+
+      <!-- Revenue Breakdown -->
+      <div style="display:grid;grid-template-columns:2fr 1fr;gap:24px;margin-bottom:24px">
+        <div class="panel">
+          <div class="panel__head">
+            <div class="panel__head-title">Monthly Revenue Tracker</div>
+          </div>
+          <div class="panel__body">
+            <div style="display:flex;flex-direction:column;gap:16px">
+              <div style="display:flex;align-items:center;gap:16px;font-size:14px">
+                <div style="width:80px;color:var(--muted)">Jan 2026</div>
+                <div class="progress" style="flex:1"><div class="progress__bar" data-width="45"></div></div>
+                <div style="width:80px;text-align:right;font-weight:700">$38,000</div>
+              </div>
+              <div style="display:flex;align-items:center;gap:16px;font-size:14px">
+                <div style="width:80px;color:var(--muted)">Feb 2026</div>
+                <div class="progress" style="flex:1"><div class="progress__bar" data-width="52"></div></div>
+                <div style="width:80px;text-align:right;font-weight:700">$44,200</div>
+              </div>
+              <div style="display:flex;align-items:center;gap:16px;font-size:14px">
+                <div style="width:80px;color:var(--muted)">Mar 2026</div>
+                <div class="progress" style="flex:1"><div class="progress__bar" data-width="62"></div></div>
+                <div style="width:80px;text-align:right;font-weight:700">$52,800</div>
+              </div>
+              <div style="display:flex;align-items:center;gap:16px;font-size:14px">
+                <div style="width:80px;color:var(--muted)">Apr 2026</div>
+                <div class="progress" style="flex:1"><div class="progress__bar" data-width="99" style="background:var(--gold)"></div></div>
+                <div style="width:80px;text-align:right;font-weight:700;color:var(--gold)">$84,200</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="panel">
+          <div class="panel__head"><div class="panel__head-title">Revenue by Country</div></div>
+          <div class="panel__body">
+            <div style="display:flex;flex-direction:column;gap:14px;font-size:14px">
+              <div style="display:flex;justify-content:space-between;align-items:center">
+                <span>🇰🇼 Kuwait</span>
+                <div style="display:flex;align-items:center;gap:8px">
+                  <div class="progress" style="width:80px"><div class="progress__bar" data-width="55"></div></div>
+                  <strong>55%</strong>
+                </div>
+              </div>
+              <div style="display:flex;justify-content:space-between;align-items:center">
+                <span>🇦🇪 UAE</span>
+                <div style="display:flex;align-items:center;gap:8px">
+                  <div class="progress" style="width:80px"><div class="progress__bar" data-width="30" style="background:var(--gold)"></div></div>
+                  <strong>30%</strong>
+                </div>
+              </div>
+              <div style="display:flex;justify-content:space-between;align-items:center">
+                <span>🇶🇦 Qatar</span>
+                <div style="display:flex;align-items:center;gap:8px">
+                  <div class="progress" style="width:80px"><div class="progress__bar" data-width="15" style="background:#065F46"></div></div>
+                  <strong>15%</strong>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Transactions Table -->
+      <div class="panel">
+        <div class="panel__head">
+          <div class="panel__head-title">All Transactions</div>
+          <div style="display:flex;gap:10px">
+            <div class="search-bar" style="width:200px">
+              <span>🔍</span>
+              <input type="text" placeholder="Search…">
+            </div>
+            <select class="form-control" style="width:auto;padding:8px 12px;font-size:13px">
+              <option>All Status</option>
+              <option>Paid</option>
+              <option>Pending</option>
+              <option>Overdue</option>
+            </select>
+          </div>
+        </div>
+        <div class="panel__body">
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th>Invoice #</th>
+                  <th>Client</th>
+                  <th>Workers</th>
+                  <th>Amount</th>
+                  <th>Due Date</th>
+                  <th>Paid On</th>
+                  <th>Status</th>
+                  <th>Action</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td class="td-name">#INV-2026-041</td>
+                  <td>AlSafwa Cleaning Co.</td>
+                  <td>5</td>
+                  <td>$5,000</td>
+                  <td>10 Apr 2026</td>
+                  <td>5 Apr 2026</td>
+                  <td><span class="badge badge--green">Paid</span></td>
+                  <td><a href="#" class="btn btn--outline btn--sm">Receipt</a></td>
+                </tr>
+                <tr>
+                  <td class="td-name">#INV-2026-040</td>
+                  <td>Al Rayyan Hotels</td>
+                  <td>10</td>
+                  <td>$9,500</td>
+                  <td>8 Apr 2026</td>
+                  <td>3 Apr 2026</td>
+                  <td><span class="badge badge--green">Paid</span></td>
+                  <td><a href="#" class="btn btn--outline btn--sm">Receipt</a></td>
+                </tr>
+                <tr>
+                  <td class="td-name">#INV-2026-039</td>
+                  <td>Gulf Logistics LLC</td>
+                  <td>8</td>
+                  <td>$7,200</td>
+                  <td>5 Apr 2026</td>
+                  <td>—</td>
+                  <td><span class="badge">Pending</span></td>
+                  <td><a href="#" class="btn btn--primary btn--sm">Send Reminder</a></td>
+                </tr>
+                <tr>
+                  <td class="td-name">#INV-2026-038</td>
+                  <td>Nesto Hypermarket</td>
+                  <td>6</td>
+                  <td>$5,400</td>
+                  <td>1 Apr 2026</td>
+                  <td>—</td>
+                  <td><span class="badge badge--red" style="background:#FEE2E2;color:#991B1B">Overdue</span></td>
+                  <td><a href="#" class="btn btn--danger btn--sm">Escalate</a></td>
+                </tr>
+                <tr>
+                  <td class="td-name">#INV-2026-037</td>
+                  <td>AlBabtain Construction</td>
+                  <td>20</td>
+                  <td>$18,000</td>
+                  <td>28 Mar 2026</td>
+                  <td>25 Mar 2026</td>
+                  <td><span class="badge badge--green">Paid</span></td>
+                  <td><a href="#" class="btn btn--outline btn--sm">Receipt</a></td>
+                </tr>
+                <tr>
+                  <td class="td-name">#INV-2026-036</td>
+                  <td>Safeer Mall</td>
+                  <td>12</td>
+                  <td>$10,800</td>
+                  <td>20 Mar 2026</td>
+                  <td>18 Mar 2026</td>
+                  <td><span class="badge badge--green">Paid</span></td>
+                  <td><a href="#" class="btn btn--outline btn--sm">Receipt</a></td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<script src="js/main.js"></script>
+</body>
+</html>
