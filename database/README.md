@@ -44,19 +44,31 @@ database/
 
 ---
 
-## 🚀 Common Commands
+## 🚀 Planned Commands
+
+> **⚠️ Placeholder Notice:** The commands below require the Prisma schema and migration files to exist in `database/schemas/` and `database/migrations/`. These have not been created yet. They are documented here as a reference for when Prisma is added to the project.
+
+**Planned (once Prisma is added):** Generate the Prisma client from schema:
 
 ```bash
-# Generate Prisma client from schema
 npx prisma generate
+```
 
-# Apply all pending migrations
+**Planned (once Prisma is added):** Apply all pending migrations:
+
+```bash
 npx prisma migrate deploy
+```
 
-# Create a new migration
+**Planned (once Prisma is added):** Create a new migration:
+
+```bash
 npx prisma migrate dev --name <migration-name>
+```
 
-# Seed the database
+**Planned (once Prisma is added):** Seed the database:
+
+```bash
 npx prisma db seed
 ```
 

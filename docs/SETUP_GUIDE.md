@@ -1,5 +1,7 @@
 # Setup Guide
 
+> **⚠️ Placeholder Notice:** The commands in this guide assume the backend and frontend application code, as well as the Prisma schema and migration files, already exist in the repository. In the current state — scaffolding and documentation only — many of these commands will not work yet. They are documented here as a reference for when the application code is introduced.
+
 This guide walks you through setting up the Kingken Global Recruitment Platform on your local machine for development.
 
 ---
@@ -95,6 +97,8 @@ PORT=3000
 
 ## 🗄 Database Setup
 
+> **⚠️ Placeholder Notice:** The steps below require the Prisma schema and migration files to exist in `database/schemas/` and `database/migrations/`. These have not been created yet. The commands are documented here as a planned reference.
+
 ### 1. Create the database
 
 Connect to PostgreSQL and create the development database:
@@ -105,7 +109,7 @@ psql -U postgres -c "CREATE DATABASE kingken_dev;"
 
 ### 2. Run migrations
 
-Apply all schema migrations using Prisma:
+**Planned (once Prisma is added):** Apply all schema migrations:
 
 ```bash
 npx prisma migrate deploy
@@ -113,7 +117,7 @@ npx prisma migrate deploy
 
 ### 3. Seed the database
 
-Populate the database with development seed data:
+**Planned (once Prisma is added):** Populate the database with development seed data:
 
 ```bash
 npx prisma db seed
@@ -123,13 +127,13 @@ npx prisma db seed
 
 ## 🚀 Running Locally
 
-Start the development server:
+**Planned (once the backend and frontend apps are implemented):** Start the development server:
 
 ```bash
 npm run dev
 ```
 
-The application will be available at:
+These endpoints will be available after the backend/frontend apps are implemented:
 - **Frontend**: `http://localhost:5173`
 - **Backend API**: `http://localhost:3000`
 - **API Docs (Swagger)**: `http://localhost:3000/api/docs`
@@ -138,7 +142,7 @@ The application will be available at:
 
 ## 🧪 Running Tests
 
-Run the full test suite:
+**Planned (once the application code and test suites are implemented):** Run the full test suite:
 
 ```bash
 npm run test
