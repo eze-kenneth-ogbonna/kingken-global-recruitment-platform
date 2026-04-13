@@ -74,6 +74,12 @@ function sanitizeUptimeStatus(status: Record<string, unknown> | null) {
         down_count: status.down_count,
         total_count: status.total_count,
         threshold_ms: status.threshold_ms,
+        degraded_streak: status.degraded_streak,
+        down_streak: status.down_streak,
+        degraded_threshold: status.degraded_threshold,
+        previous_overall_status: status.previous_overall_status,
+        should_alert_degraded: status.should_alert_degraded,
+        should_alert_recovery: status.should_alert_recovery,
         failed_endpoint: status.failed_endpoint,
         endpoints: Array.isArray(status.endpoints)
             ? status.endpoints.map((entry) => {
@@ -85,6 +91,13 @@ function sanitizeUptimeStatus(status: Record<string, unknown> | null) {
                     url: "url" in entry ? entry.url : null,
                     latency_ms: "latency_ms" in entry ? entry.latency_ms : null,
                     status: "status" in entry ? entry.status : null,
+                    slow_streak:
+                        "name" in entry && typeof entry.name === "string" &&
+                            status.endpoint_slow_streaks &&
+                            typeof status.endpoint_slow_streaks === "object" &&
+                            entry.name in status.endpoint_slow_streaks
+                            ? status.endpoint_slow_streaks[entry.name as keyof typeof status.endpoint_slow_streaks]
+                            : null,
                 };
             })
             : [],

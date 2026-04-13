@@ -130,6 +130,8 @@ export default function MonitoringPage() {
                         <MetricRow label="Slow endpoints" value={uptime?.slow_count} />
                         <MetricRow label="Down endpoints" value={uptime?.down_count} />
                         <MetricRow label="Threshold" value={uptime?.threshold_ms ? `${uptime.threshold_ms}ms` : null} />
+                        <MetricRow label="Degraded streak" value={uptime?.degraded_streak} />
+                        <MetricRow label="Alert threshold" value={uptime?.degraded_threshold ? `${uptime.degraded_threshold} runs` : null} />
                         <MetricRow label="Checked at" value={uptime?.checked_at} />
                     </MetricCard>
                 </div>
@@ -148,6 +150,9 @@ export default function MonitoringPage() {
                                     <div style={styles.endpointMeta}>
                                         Latency: {endpoint.latency_ms === null || endpoint.latency_ms === undefined ? 'n/a' : `${endpoint.latency_ms}ms`}
                                     </div>
+                                    <div style={styles.endpointMeta}>
+                                        Slow streak: {endpoint.slow_streak ?? 0}
+                                    </div>
                                 </div>
                             ))}
                         </div>
@@ -161,6 +166,7 @@ export default function MonitoringPage() {
                     <MetricRow label="Overall status" value={publicUptime?.overall_status} />
                     <MetricRow label="Slow count" value={publicUptime?.slow_count} />
                     <MetricRow label="Down count" value={publicUptime?.down_count} />
+                    <MetricRow label="Degraded streak" value={publicUptime?.degraded_streak} />
                     <MetricRow label="Failed endpoint" value={publicUptime?.failed_endpoint} />
                 </section>
             </div>
