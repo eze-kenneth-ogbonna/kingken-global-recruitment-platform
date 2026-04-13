@@ -1,9 +1,8 @@
 name: CD
 
 on:
-  workflow_run:
-    workflows: ["CI"]
-    types: [completed]
+  push:
+    branches: [main]
 
 permissions:
   contents: read
@@ -19,7 +18,6 @@ concurrency:
 jobs:
   build-and-push-images:
     name: Build and Push Docker Images
-    if: ${{ github.event.workflow_run.conclusion == 'success' && github.event.workflow_run.head_branch == 'main' }}
     runs-on: ubuntu-latest
 
     outputs:
@@ -27,18 +25,21 @@ jobs:
       frontend_image: ${{ steps.meta.outputs.frontend_image }}
 
     steps:
-      - name: Checkout main
+      - name: Checkout
         uses: actions/checkout@v5
-        with:
-          ref: ${{ github.event.workflow_run.head_sha }}
+
+      - name: Debug environment
+        run: |
+          echo "Branch: $GITHUB_REF"
+          echo "SHA: $GITHUB_SHA"
+          echo "Actor: $GITHUB_ACTOR"
 
       - name: Derive image metadata
         id: meta
         run: |
           OWNER_LC="${GITHUB_REPOSITORY_OWNER,,}"
-          SHA_TAG="${{ github.event.workflow_run.head_sha }}"
-          echo "backend_image=ghcr.io/${OWNER_LC}/kingken-backend:${SHA_TAG}" >> "$GITHUB_OUTPUT"
-          echo "frontend_image=ghcr.io/${OWNER_LC}/kingken-frontend:${SHA_TAG}" >> "$GITHUB_OUTPUT"
+          echo "backend_image=ghcr.io/${OWNER_LC}/kingken-backend:${GITHUB_SHA}" >> "$GITHUB_OUTPUT"
+          echo "frontend_image=ghcr.io/${OWNER_LC}/kingken-frontend:${GITHUB_SHA}" >> "$GITHUB_OUTPUT"
           echo "backend_latest=ghcr.io/${OWNER_LC}/kingken-backend:latest" >> "$GITHUB_OUTPUT"
           echo "frontend_latest=ghcr.io/${OWNER_LC}/kingken-frontend:latest" >> "$GITHUB_OUTPUT"
 
@@ -66,7 +67,6 @@ jobs:
   deploy-vps:
     name: Deploy to VPS
     needs: build-and-push-images
-    if: ${{ github.event.workflow_run.conclusion == 'success' && github.event.workflow_run.head_branch == 'main' }}
     runs-on: ubuntu-latest
 
     steps:
@@ -84,28 +84,24 @@ jobs:
             echo "ℹ️ Deploy skipped: missing one or more required secrets (VPS_HOST, VPS_USER, VPS_SSH_KEY)." >> "$GITHUB_STEP_SUMMARY"
           fi
 
-      - name: Checkout main
+      - name: Checkout
         if: ${{ steps.precheck.outputs.ready == 'true' }}
         uses: actions/checkout@v5
+
+      - name: Upload compose file to VPS
+        if: ${{ steps.precheck.outputs.ready == 'true' }}
+        uses: appleboy/scp-action@v0.1.7
         with:
-          ref: ${{ github.event.workflow_run.head_sha }}
+          host: ${{ secrets.VPS_HOST }}
+          username: ${{ secrets.VPS_USER }}
+          key: ${{ secrets.VPS_SSH_KEY }}
+          source: ops/docker-compose.prod.yml
+          target: ~/kingken/
+          strip_components: 1
 
-      - name: Prepare SSH
+      - name: Deploy via SSH
         if: ${{ steps.precheck.outputs.ready == 'true' }}
-        run: |
-          mkdir -p ~/.ssh
-          printf '%s' "${{ secrets.VPS_SSH_KEY }}" > ~/.ssh/id_rsa
-          chmod 600 ~/.ssh/id_rsa
-          ssh-keyscan -H "${{ secrets.VPS_HOST }}" >> ~/.ssh/known_hosts
-
-      - name: Upload compose file to server
-        if: ${{ steps.precheck.outputs.ready == 'true' }}
-        run: |
-          ssh "${{ secrets.VPS_USER }}@${{ secrets.VPS_HOST }}" "mkdir -p ~/kingken"
-          scp ops/docker-compose.prod.yml "${{ secrets.VPS_USER }}@${{ secrets.VPS_HOST }}:~/kingken/docker-compose.prod.yml"
-
-      - name: Zero-downtime deploy with health checks
-        if: ${{ steps.precheck.outputs.ready == 'true' }}
+        uses: appleboy/ssh-action@v1.0.3
         env:
           BACKEND_IMAGE: ${{ needs.build-and-push-images.outputs.backend_image }}
           FRONTEND_IMAGE: ${{ needs.build-and-push-images.outputs.frontend_image }}
@@ -120,24 +116,15 @@ jobs:
           SMTP_SECURE: ${{ secrets.SMTP_SECURE }}
           SMTP_USER: ${{ secrets.SMTP_USER }}
           SMTP_PASS: ${{ secrets.SMTP_PASS }}
-        run: |
-          ssh "${{ secrets.VPS_USER }}@${{ secrets.VPS_HOST }}" "
+        with:
+          host: ${{ secrets.VPS_HOST }}
+          username: ${{ secrets.VPS_USER }}
+          key: ${{ secrets.VPS_SSH_KEY }}
+          envs: BACKEND_IMAGE,FRONTEND_IMAGE,GHCR_USER,GHCR_TOKEN,DATABASE_URL,JWT_SECRET,MAIL_FROM,APP_BASE_URL,SMTP_HOST,SMTP_PORT,SMTP_SECURE,SMTP_USER,SMTP_PASS
+          script: |
             set -euo pipefail
-
-            has_cmd() { command -v \"\$1\" >/dev/null 2>&1; }
-
-            check_health() {
-              if has_cmd curl; then
-                curl -fsS http://127.0.0.1/health >/dev/null
-              elif has_cmd wget; then
-                wget -q -O /dev/null http://127.0.0.1/health
-              else
-                echo 'Neither curl nor wget found on VPS for health verification.'
-                return 1
-              fi
-            }
-
             mkdir -p ~/kingken
+            cd ~/kingken
 
             printf '%s\n' \
               "BACKEND_IMAGE=${BACKEND_IMAGE}" \
@@ -151,55 +138,40 @@ jobs:
               "SMTP_SECURE=${SMTP_SECURE}" \
               "SMTP_USER=${SMTP_USER}" \
               "SMTP_PASS=${SMTP_PASS}" \
-              > ~/kingken/.env.deploy
+              > .env.deploy
 
-            cd ~/kingken
-            echo '${GHCR_TOKEN}' | docker login ghcr.io -u '${GHCR_USER}' --password-stdin
-
-            PREV_BACKEND_IMAGE=\$(docker inspect -f '{{.Config.Image}}' kingken-backend 2>/dev/null || true)
-            PREV_FRONTEND_IMAGE=\$(docker inspect -f '{{.Config.Image}}' kingken-frontend 2>/dev/null || true)
+            echo "${GHCR_TOKEN}" | docker login ghcr.io -u "${GHCR_USER}" --password-stdin
 
             docker compose -f docker-compose.prod.yml --env-file .env.deploy pull
-
-            # docker rollout (if installed) provides start-new, wait-healthy, then switch behavior.
-            cp docker-compose.prod.yml compose.yaml
-            if docker rollout --help >/dev/null 2>&1; then
-              echo 'Using docker rollout for backend and frontend'
-              if ! docker rollout backend; then
-                echo 'Backend rollout failed. Keeping previous backend image.'
-                if [ -n \"\$PREV_BACKEND_IMAGE\" ]; then
-                  sed -i \"s|^BACKEND_IMAGE=.*|BACKEND_IMAGE=\$PREV_BACKEND_IMAGE|\" .env.deploy
-                  docker compose -f docker-compose.prod.yml --env-file .env.deploy up -d --wait backend
-                fi
-                exit 1
-              fi
-
-              if ! docker rollout frontend; then
-                echo 'Frontend rollout failed. Keeping previous frontend image.'
-                if [ -n \"\$PREV_FRONTEND_IMAGE\" ]; then
-                  sed -i \"s|^FRONTEND_IMAGE=.*|FRONTEND_IMAGE=\$PREV_FRONTEND_IMAGE|\" .env.deploy
-                  docker compose -f docker-compose.prod.yml --env-file .env.deploy up -d --wait frontend
-                fi
-                exit 1
-              fi
-            else
-              echo 'docker rollout not found. Falling back to compose health-gated update.'
-              docker compose -f docker-compose.prod.yml --env-file .env.deploy up -d --wait backend
-              docker compose -f docker-compose.prod.yml --env-file .env.deploy up -d --wait frontend
-            fi
-
-            # End-to-end health verification through frontend -> backend proxy
-            check_health
+            docker compose -f docker-compose.prod.yml --env-file .env.deploy up -d --wait backend
+            docker compose -f docker-compose.prod.yml --env-file .env.deploy up -d --wait frontend
 
             docker compose -f docker-compose.prod.yml --env-file .env.deploy ps
-            docker compose -f docker-compose.prod.yml --env-file .env.deploy logs --tail=50
             docker image prune -f
-          "
+
+      - name: Verify deployment
+        if: ${{ steps.precheck.outputs.ready == 'true' }}
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ secrets.VPS_HOST }}
+          username: ${{ secrets.VPS_USER }}
+          key: ${{ secrets.VPS_SSH_KEY }}
+          script: |
+            sleep 10
+            if curl -f http://localhost/health; then
+              echo "Health check passed"
+            else
+              echo "❌ Health check failed — rolling back"
+              cd ~/kingken
+              docker compose -f docker-compose.prod.yml --env-file .env.deploy down
+              docker compose -f docker-compose.prod.yml --env-file .env.deploy up -d
+              exit 1
+            fi
 
       - name: Notify on deploy failure
         if: ${{ failure() && steps.precheck.outputs.ready == 'true' }}
         env:
-          SHA: ${{ github.event.workflow_run.head_sha }}
+          SHA: ${{ github.sha }}
           VPS_HOST: ${{ secrets.VPS_HOST }}
           SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
         run: |
@@ -212,7 +184,7 @@ jobs:
       - name: Notify on deploy success
         if: ${{ success() && steps.precheck.outputs.ready == 'true' }}
         env:
-          SHA: ${{ github.event.workflow_run.head_sha }}
+          SHA: ${{ github.sha }}
           VPS_HOST: ${{ secrets.VPS_HOST }}
           SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
         run: |
