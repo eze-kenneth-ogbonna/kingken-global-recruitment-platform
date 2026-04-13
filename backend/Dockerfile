@@ -3,9 +3,9 @@ FROM node:24-alpine AS builder
 
 WORKDIR /app
 
-# Install dependencies
+# Install dependencies (deterministic)
 COPY package*.json ./
-RUN npm install --no-audit --no-fund
+RUN npm ci --no-audit --no-fund
 
 # Copy TypeScript config and source
 COPY tsconfig.json ./
@@ -25,7 +25,7 @@ WORKDIR /app
 COPY package*.json ./
 
 # Install production dependencies only
-RUN npm install --no-audit --no-fund --omit=dev
+RUN npm ci --no-audit --no-fund --omit=dev
 
 # Copy compiled JavaScript and Prisma files from builder
 COPY --from=builder /app/dist ./dist
@@ -43,4 +43,4 @@ ENV DATABASE_URL=file:/app/data/dev.db
 EXPOSE 3001
 
 # Run the compiled application
-CMD ["node", "dist/index.js"]
+CMD ["node", "dist/server.js"]
