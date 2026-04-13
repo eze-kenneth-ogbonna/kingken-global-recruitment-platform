@@ -1,0 +1,127 @@
+name: CD
+
+on:
+  workflow_run:
+    workflows: ["CI"]
+    types: [completed]
+
+permissions:
+  contents: read
+  packages: write
+
+env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
+
+concurrency:
+  group: cd-main
+  cancel-in-progress: true
+
+jobs:
+  build-and-push-images:
+    name: Build and Push Docker Images
+    if: ${{ github.event.workflow_run.conclusion == 'success' && github.event.workflow_run.head_branch == 'main' }}
+    runs-on: ubuntu-latest
+
+    outputs:
+      backend_image: ${{ steps.meta.outputs.backend_image }}
+      frontend_image: ${{ steps.meta.outputs.frontend_image }}
+
+    steps:
+      - name: Checkout main
+        uses: actions/checkout@v5
+        with:
+          ref: ${{ github.event.workflow_run.head_sha }}
+
+      - name: Derive image metadata
+        id: meta
+        run: |
+          OWNER_LC="${GITHUB_REPOSITORY_OWNER,,}"
+          SHA_TAG="${{ github.event.workflow_run.head_sha }}"
+          echo "backend_image=ghcr.io/${OWNER_LC}/kingken-backend:${SHA_TAG}" >> "$GITHUB_OUTPUT"
+          echo "frontend_image=ghcr.io/${OWNER_LC}/kingken-frontend:${SHA_TAG}" >> "$GITHUB_OUTPUT"
+          echo "backend_latest=ghcr.io/${OWNER_LC}/kingken-backend:latest" >> "$GITHUB_OUTPUT"
+          echo "frontend_latest=ghcr.io/${OWNER_LC}/kingken-frontend:latest" >> "$GITHUB_OUTPUT"
+
+      - name: Login to GHCR
+        run: echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io -u "${{ github.actor }}" --password-stdin
+
+      - name: Build and push backend image
+        run: |
+          docker build \
+            -t "${{ steps.meta.outputs.backend_image }}" \
+            -t "${{ steps.meta.outputs.backend_latest }}" \
+            ./backend
+          docker push "${{ steps.meta.outputs.backend_image }}"
+          docker push "${{ steps.meta.outputs.backend_latest }}"
+
+      - name: Build and push frontend image
+        run: |
+          docker build \
+            -t "${{ steps.meta.outputs.frontend_image }}" \
+            -t "${{ steps.meta.outputs.frontend_latest }}" \
+            ./frontend
+          docker push "${{ steps.meta.outputs.frontend_image }}"
+          docker push "${{ steps.meta.outputs.frontend_latest }}"
+
+  deploy-vps:
+    name: Deploy to VPS
+    needs: build-and-push-images
+    if: ${{ github.event.workflow_run.conclusion == 'success' && github.event.workflow_run.head_branch == 'main' && secrets.VPS_HOST != '' && secrets.VPS_USER != '' && secrets.VPS_SSH_KEY != '' }}
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout main
+        uses: actions/checkout@v5
+        with:
+          ref: ${{ github.event.workflow_run.head_sha }}
+
+      - name: Prepare SSH
+        run: |
+          mkdir -p ~/.ssh
+          printf '%s' "${{ secrets.VPS_SSH_KEY }}" > ~/.ssh/id_rsa
+          chmod 600 ~/.ssh/id_rsa
+          ssh-keyscan -H "${{ secrets.VPS_HOST }}" >> ~/.ssh/known_hosts
+
+      - name: Upload compose file to server
+        run: |
+          ssh "${{ secrets.VPS_USER }}@${{ secrets.VPS_HOST }}" "mkdir -p ~/kingken"
+          scp ops/docker-compose.prod.yml "${{ secrets.VPS_USER }}@${{ secrets.VPS_HOST }}:~/kingken/docker-compose.prod.yml"
+
+      - name: Deploy with Docker Compose
+        env:
+          BACKEND_IMAGE: ${{ needs.build-and-push-images.outputs.backend_image }}
+          FRONTEND_IMAGE: ${{ needs.build-and-push-images.outputs.frontend_image }}
+          GHCR_USER: ${{ github.actor }}
+          GHCR_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          DATABASE_URL: ${{ secrets.DATABASE_URL }}
+          JWT_SECRET: ${{ secrets.JWT_SECRET }}
+          MAIL_FROM: ${{ secrets.MAIL_FROM }}
+          APP_BASE_URL: ${{ secrets.APP_BASE_URL }}
+          SMTP_HOST: ${{ secrets.SMTP_HOST }}
+          SMTP_PORT: ${{ secrets.SMTP_PORT }}
+          SMTP_SECURE: ${{ secrets.SMTP_SECURE }}
+          SMTP_USER: ${{ secrets.SMTP_USER }}
+          SMTP_PASS: ${{ secrets.SMTP_PASS }}
+        run: |
+          ssh "${{ secrets.VPS_USER }}@${{ secrets.VPS_HOST }}" "
+            set -e
+            mkdir -p ~/kingken
+            cat > ~/kingken/.env.deploy <<'EOF'
+BACKEND_IMAGE=${BACKEND_IMAGE}
+FRONTEND_IMAGE=${FRONTEND_IMAGE}
+DATABASE_URL=${DATABASE_URL}
+JWT_SECRET=${JWT_SECRET}
+MAIL_FROM=${MAIL_FROM}
+APP_BASE_URL=${APP_BASE_URL}
+SMTP_HOST=${SMTP_HOST}
+SMTP_PORT=${SMTP_PORT}
+SMTP_SECURE=${SMTP_SECURE}
+SMTP_USER=${SMTP_USER}
+SMTP_PASS=${SMTP_PASS}
+EOF
+            cd ~/kingken
+            echo '${GHCR_TOKEN}' | docker login ghcr.io -u '${GHCR_USER}' --password-stdin
+            docker compose -f docker-compose.prod.yml --env-file .env.deploy pull
+            docker compose -f docker-compose.prod.yml --env-file .env.deploy up -d
+            docker image prune -f
+          "

@@ -5,6 +5,8 @@
 !/.github/**
 !/backend
 !/frontend
+!/ops
+!/ops/**
 
 # Node modules
 backend/node_modules/

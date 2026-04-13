@@ -1,0 +1,26 @@
+services:
+  backend:
+    image: ${BACKEND_IMAGE}
+    container_name: kingken-backend
+    restart: unless-stopped
+    env_file:
+      - .env.deploy
+    environment:
+      PORT: 3001
+      DATABASE_URL: ${DATABASE_URL}
+    volumes:
+      - kingken_data:/app/data
+      - kingken_uploads:/app/uploads
+
+  frontend:
+    image: ${FRONTEND_IMAGE}
+    container_name: kingken-frontend
+    restart: unless-stopped
+    depends_on:
+      - backend
+    ports:
+      - "80:80"
+
+volumes:
+  kingken_data:
+  kingken_uploads:
