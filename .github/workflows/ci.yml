@@ -111,11 +111,9 @@ jobs:
           npm run --if-present test
 
       - name: Prisma format and validate
-        env:
-          DATABASE_URL: postgresql://postgres:postgres@localhost:5432/kingken_dev?schema=public
         run: |
-          npm run prisma:format
-          npm run prisma:validate
+          npx prisma format --schema prisma/schema.prisma
+          npx prisma validate --schema prisma/schema.prisma
 
   frontend-checks:
     name: Frontend Checks
