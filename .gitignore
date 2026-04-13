@@ -1,6 +1,8 @@
 ﻿# ── Whitelist: only project folders ──
 /*
 !/.gitignore
+!/.github
+!/.github/**
 !/backend
 !/frontend
 
