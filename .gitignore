@@ -1,0 +1,25 @@
+﻿# ── Whitelist: only project folders ──
+/*
+!/.gitignore
+!/backend
+!/frontend
+
+# Node modules
+backend/node_modules/
+frontend/node_modules/
+
+# Build output
+frontend/dist/
+
+# Secrets / env
+backend/.env
+*.env.local
+
+# Database & uploads (runtime data)
+backend/prisma/dev.db
+backend/prisma/dev.db-journal
+backend/uploads/
+
+# Logs
+*.log
+npm-debug.log*

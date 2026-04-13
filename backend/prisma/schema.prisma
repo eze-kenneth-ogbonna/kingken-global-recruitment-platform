@@ -1,0 +1,42 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model Document {
+  id        String   @id @default(uuid())
+  userId    String
+  uploaderEmail String?
+  type      String   // CV | PASSPORT | CERTIFICATES
+  filePath  String
+  status    String   @default("PENDING") // PENDING | APPROVED | REJECTED
+  createdAt DateTime @default(now())
+}
+
+model AuditLog {
+  id        String   @id @default(uuid())
+  actorId   String
+  action    AuditAction
+  targetId  String
+  version   Int      @default(1)
+  metadata  Json?
+  ipAddress String?
+  userAgent String?
+  prevHash  String?
+  hash      String   @unique
+  createdAt DateTime @default(now())
+
+  @@index([actorId, createdAt])
+  @@index([action, createdAt])
+}
+
+enum AuditAction {
+  APPROVE_DOC
+  REJECT_DOC
+  SET_PENDING_DOC
+  DOWNLOAD_DOC
+}
