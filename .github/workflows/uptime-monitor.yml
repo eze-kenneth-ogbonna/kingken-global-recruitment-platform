@@ -13,47 +13,76 @@ env:
 
 jobs:
   healthcheck:
-    name: Check Production Health Endpoint
+    name: Check Production Endpoints
     runs-on: ubuntu-latest
     timeout-minutes: 5
 
     steps:
-      - name: Validate HEALTHCHECK_URL configured
+      - name: Validate uptime monitor configuration
         id: precheck
         env:
           HEALTHCHECK_URL: ${{ secrets.HEALTHCHECK_URL }}
+          FRONTEND_URL: ${{ secrets.FRONTEND_URL }}
+          OPS_STATUS_URL: ${{ secrets.OPS_STATUS_URL }}
         run: |
           if [ -z "${HEALTHCHECK_URL}" ]; then
             echo "ready=false" >> "$GITHUB_OUTPUT"
-            echo "ℹ️ Uptime monitor skipped: set the HEALTHCHECK_URL secret to enable scheduled health checks." >> "$GITHUB_STEP_SUMMARY"
+            echo "ℹ️ Uptime monitor skipped: set the HEALTHCHECK_URL secret to enable backend health checks. Optional extras: FRONTEND_URL and OPS_STATUS_URL." >> "$GITHUB_STEP_SUMMARY"
           else
             echo "ready=true" >> "$GITHUB_OUTPUT"
           fi
 
-      - name: Run uptime check
+      - name: Run uptime checks
         id: probe
         if: ${{ steps.precheck.outputs.ready == 'true' }}
         env:
           HEALTHCHECK_URL: ${{ secrets.HEALTHCHECK_URL }}
+          FRONTEND_URL: ${{ secrets.FRONTEND_URL }}
+          OPS_STATUS_URL: ${{ secrets.OPS_STATUS_URL }}
         run: |
           set -euo pipefail
-          curl --fail --show-error --silent --max-time 15 --retry 3 --retry-delay 2 "${HEALTHCHECK_URL}" >/dev/null
+
+          ENDPOINTS=(
+            "backend|${HEALTHCHECK_URL}"
+          )
+
+          if [ -n "${FRONTEND_URL}" ]; then
+            ENDPOINTS+=("frontend|${FRONTEND_URL}")
+          fi
+
+          if [ -n "${OPS_STATUS_URL}" ]; then
+            ENDPOINTS+=("ops|${OPS_STATUS_URL}")
+          fi
+
+          printf '## Uptime checks\n\n' >> "$GITHUB_STEP_SUMMARY"
+
+          for entry in "${ENDPOINTS[@]}"; do
+            name="${entry%%|*}"
+            url="${entry#*|}"
+
+            if curl --fail --show-error --silent --max-time 15 --retry 3 --retry-delay 2 "${url}" >/dev/null; then
+              echo "- ✅ ${name}: ${url}" >> "$GITHUB_STEP_SUMMARY"
+            else
+              echo "- ❌ ${name}: ${url}" >> "$GITHUB_STEP_SUMMARY"
+              echo "failed_endpoint=${name}" >> "$GITHUB_OUTPUT"
+              echo "failed_url=${url}" >> "$GITHUB_OUTPUT"
+              exit 1
+            fi
+          done
+
           echo "status=ok" >> "$GITHUB_OUTPUT"
 
       - name: Notify Slack on failure
         if: ${{ failure() && steps.precheck.outputs.ready == 'true' }}
         env:
-          HEALTHCHECK_URL: ${{ secrets.HEALTHCHECK_URL }}
           SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
         run: |
-          echo "🚨 Uptime monitor failed for ${HEALTHCHECK_URL}" >> "$GITHUB_STEP_SUMMARY"
+          echo "🚨 Uptime monitor failed for ${{ steps.probe.outputs.failed_endpoint }} (${{ steps.probe.outputs.failed_url }})" >> "$GITHUB_STEP_SUMMARY"
           if [ -n "${SLACK_WEBHOOK_URL}" ]; then
-            payload=$(printf '{"text":"🚨 Uptime check failed: %s"}' "${HEALTHCHECK_URL}")
+            payload=$(printf '{"text":"🚨 Uptime check failed: %s (%s)"}' "${{ steps.probe.outputs.failed_endpoint }}" "${{ steps.probe.outputs.failed_url }}")
             curl -sS -X POST -H 'Content-type: application/json' --data "${payload}" "${SLACK_WEBHOOK_URL}" >/dev/null
           fi
 
       - name: Write success summary
         if: ${{ success() && steps.precheck.outputs.ready == 'true' }}
-        env:
-          HEALTHCHECK_URL: ${{ secrets.HEALTHCHECK_URL }}
-        run: echo "✅ Uptime check passed for ${HEALTHCHECK_URL}" >> "$GITHUB_STEP_SUMMARY"
+        run: echo "✅ All configured uptime checks passed." >> "$GITHUB_STEP_SUMMARY"
