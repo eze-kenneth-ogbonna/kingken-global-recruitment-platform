@@ -33,6 +33,21 @@ jobs:
           echo "Branch: $GITHUB_REF"
           echo "SHA: $GITHUB_SHA"
           echo "Actor: $GITHUB_ACTOR"
+          echo ""
+          echo "=== Repository structure ==="
+          ls -la
+          echo ""
+          echo "=== Backend structure ==="
+          ls -la backend/
+          echo ""
+          echo "=== Frontend structure ==="
+          ls -la frontend/
+          echo ""
+          echo "=== Backend src ==="
+          ls -la backend/src/
+          echo ""
+          echo "=== Backend files ==="
+          find backend -name "Dockerfile" -o -name "package.json" -o -name "tsconfig.json" | head -20
 
       - name: Derive image metadata
         id: meta
@@ -53,6 +68,14 @@ jobs:
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
 
+      - name: Set up Docker Build Cache
+        uses: actions/cache@v4
+        with:
+          path: /tmp/.buildx-cache
+          key: ${{ runner.os }}-buildx-${{ github.sha }}
+          restore-keys: |
+            ${{ runner.os }}-buildx-
+
       - name: Build and push backend image
         uses: docker/build-push-action@v6
         with:
@@ -61,6 +84,8 @@ jobs:
           tags: |
             ${{ steps.meta.outputs.backend_image }}
             ${{ steps.meta.outputs.backend_latest }}
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
 
       - name: Build and push frontend image
         uses: docker/build-push-action@v6
@@ -70,6 +95,8 @@ jobs:
           tags: |
             ${{ steps.meta.outputs.frontend_image }}
             ${{ steps.meta.outputs.frontend_latest }}
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
 
   deploy-vps:
     name: Deploy to VPS
