@@ -14,7 +14,7 @@ COPY prisma ./prisma
 
 # Generate Prisma client and compile TypeScript
 RUN npx prisma generate --schema prisma/schema.prisma
-RUN npx tsc
+RUN npm run build
 
 # ── Stage 2: lean production image ────────────────────────────────────────────
 FROM node:24-alpine AS runtime
