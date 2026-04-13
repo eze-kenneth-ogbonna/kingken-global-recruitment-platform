@@ -1,0 +1,48 @@
+name: Initialize Repo Labels
+
+on:
+  workflow_dispatch:
+
+permissions:
+  issues: write
+
+jobs:
+  init-labels:
+    name: Create standard labels
+    runs-on: ubuntu-latest
+    steps:
+      - name: Create or update labels
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const labels = [
+              { name: 'good first issue',  color: '7057ff', description: 'Good for newcomers' },
+              { name: 'help wanted',       color: '008672', description: 'Extra attention is needed' },
+              { name: 'bug',               color: 'd73a4a', description: 'Something is not working' },
+              { name: 'enhancement',       color: 'a2eeef', description: 'New feature or request' },
+              { name: 'documentation',     color: '0075ca', description: 'Improvements or additions to docs' },
+              { name: 'question',          color: 'd876e3', description: 'Further information is requested' },
+              { name: 'wontfix',           color: 'ffffff', description: 'This will not be worked on' },
+              { name: 'duplicate',         color: 'cfd3d7', description: 'This issue or PR already exists' },
+              { name: 'onboarding',        color: 'f9d0c4', description: 'Worker onboarding process' },
+              { name: 'worker',            color: 'fef2c0', description: 'Related to worker experience' },
+              { name: 'security',          color: 'e4e669', description: 'Security-related issue or fix' },
+              { name: 'ci/cd',             color: '1d76db', description: 'CI/CD pipeline changes' },
+            ];
+
+            const { owner, repo } = context.repo;
+
+            for (const label of labels) {
+              try {
+                await github.rest.issues.getLabel({ owner, repo, name: label.name });
+                await github.rest.issues.updateLabel({ owner, repo, ...label });
+                console.log(`Updated: ${label.name}`);
+              } catch (e) {
+                if (e.status === 404) {
+                  await github.rest.issues.createLabel({ owner, repo, ...label });
+                  console.log(`Created: ${label.name}`);
+                } else {
+                  throw e;
+                }
+              }
+            }

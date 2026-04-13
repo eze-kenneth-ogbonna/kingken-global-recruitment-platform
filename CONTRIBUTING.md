@@ -1,17 +1,68 @@
 # Contributing to KingKen Global Recruitment Platform
 
-Thank you for your interest in contributing to the KingKen Global Recruitment Platform! This document outlines our branching strategy, commit conventions, and pull request process.
+Thank you for your interest in contributing to the KingKen Global Recruitment Platform! This document covers local setup, how to find good first issues, and our branching and PR conventions.
 
 ---
 
 ## 📋 Table of Contents
 
+- [Quick Start — Local Setup](#-quick-start--local-setup)
+- [Good First Issues](#-good-first-issues)
 - [Branching Strategy](#branching-strategy)
 - [Branch Naming Conventions](#branch-naming-conventions)
 - [Commit Message Guidelines](#commit-message-guidelines)
 - [Pull Request Process](#pull-request-process)
 - [Code Review Guidelines](#code-review-guidelines)
 - [Development Workflow](#development-workflow)
+
+---
+
+## 🚀 Quick Start — Local Setup
+
+```bash
+# 1. Fork the repo on GitHub, then clone your fork
+git clone https://github.com/<your-username>/kingken-global-recruitment-platform.git
+cd kingken-global-recruitment-platform
+
+# 2. Add the upstream remote
+git remote add upstream https://github.com/eze-kenneth-ogbonna/kingken-global-recruitment-platform.git
+
+# 3. Install dependencies
+cd backend && npm install
+cd ../frontend && npm install
+
+# 4. Set up the backend environment
+cp ops/.env.deploy.example backend/.env
+# Edit backend/.env — set DATABASE_URL=file:./prisma/dev.db at minimum
+
+# 5. Run database migrations
+cd backend && npx prisma migrate dev
+
+# 6. Start the dev servers (two separate terminals)
+cd backend && npm run dev      # → http://localhost:3001
+cd frontend && npm run dev     # → http://localhost:5173
+```
+
+**SQLite constraint:** the backend runs SQLite. Do not add `Json` field types or `enum` blocks to `prisma/schema.prisma` — SQLite does not support them.
+
+---
+
+## 🌱 Good First Issues
+
+New to the codebase? Start here:
+
+👉 **[Browse `good first issue` labels](https://github.com/eze-kenneth-ogbonna/kingken-global-recruitment-platform/labels/good%20first%20issue)**
+👉 **[Browse `help wanted` labels](https://github.com/eze-kenneth-ogbonna/kingken-global-recruitment-platform/labels/help%20wanted)**
+
+These issues are:
+
+- Small in scope (usually one file or component)
+- Self-contained with clear acceptance criteria
+- A great way to learn the codebase without deep context
+
+**How to claim an issue:** Comment on it before starting — say "I'd like to work on this." This avoids duplicated effort.
+
+---
 
 ---
 
@@ -52,11 +103,13 @@ All branch names must follow this pattern:
 ```
 
 **Rules:**
+
 - Use lowercase letters only
 - Use hyphens `-` to separate words
 - Be concise but descriptive
 
 **Examples:**
+
 ```
 feature/employer-portal
 feature/ai-job-matching
@@ -91,6 +144,7 @@ We follow the **Conventional Commits** specification:
 | `hotfix` | Urgent production fix |
 
 ### Examples
+
 ```
 feat(employer-portal): add employer registration form
 fix(auth): resolve JWT token expiry issue
@@ -128,11 +182,13 @@ chore(ci): add security scan to GitHub Actions workflow
 ## 👀 Code Review Guidelines
 
 **As a reviewer:**
+
 - Review within 24 hours of being assigned
 - Be constructive and specific in feedback
 - Approve only when genuinely satisfied
 
 **As an author:**
+
 - Keep PRs small and focused
 - Respond to all comments
 - Do not merge your own PR without review
@@ -164,7 +220,7 @@ git branch -d feature/your-feature-name
 
 ## 📞 Contact
 
-For questions, open a [GitHub Discussion](https://github.com/eze-kenneth-ogbonna/kingken-global-recruitment-platform/discussions) or email **info@kingkenglobal.com.ng**.
+For questions, open a [GitHub Discussion](https://github.com/eze-kenneth-ogbonna/kingken-global-recruitment-platform/discussions) or email **<info@kingkenglobal.com.ng>**.
 
 ---
 
