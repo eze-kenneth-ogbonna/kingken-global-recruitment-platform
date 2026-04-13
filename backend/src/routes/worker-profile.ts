@@ -52,9 +52,10 @@ workerProfileRouter.put("/me", async (req: AuthenticatedRequest, res) => {
     return res.status(400).json({ error: "Invalid payload", details: parsed.error.flatten() });
   }
 
+  const { skills, ...rest } = parsed.data;
   const updateData = {
-    ...parsed.data,
-    ...(parsed.data.skills ? { skills: JSON.stringify(parsed.data.skills) } : {}),
+    ...rest,
+    ...(skills ? { skills: JSON.stringify(skills) } : {}),
   };
 
   const profile = await prisma.workerProfile.update({

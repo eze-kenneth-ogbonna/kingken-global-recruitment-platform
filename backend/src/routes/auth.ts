@@ -10,6 +10,7 @@ export const authRouter = Router();
 
 const ROLES = ["ADMIN", "WORKER", "EMPLOYER"] as const;
 type Role = (typeof ROLES)[number];
+const roleSchema = z.enum(ROLES);
 
 const registerSchema = z.object({
   email: z.string().email(),
@@ -26,6 +27,10 @@ function signToken(user: { id: string; email: string; role: Role }) {
   return jwt.sign({ sub: user.id, email: user.email, role: user.role }, env.JWT_SECRET, {
     expiresIn: "1d"
   });
+}
+
+function normalizeRole(role: string): Role {
+  return roleSchema.parse(role);
 }
 
 authRouter.post("/register", async (req, res) => {
@@ -46,7 +51,7 @@ authRouter.post("/register", async (req, res) => {
     select: { id: true, email: true, role: true, createdAt: true }
   });
 
-  const token = signToken({ id: user.id, email: user.email, role: user.role });
+  const token = signToken({ id: user.id, email: user.email, role: normalizeRole(user.role) });
   return res.status(201).json({ token, user });
 });
 
@@ -67,7 +72,7 @@ authRouter.post("/login", async (req, res) => {
     return res.status(401).json({ error: "Invalid credentials" });
   }
 
-  const token = signToken({ id: user.id, email: user.email, role: user.role });
+  const token = signToken({ id: user.id, email: user.email, role: normalizeRole(user.role) });
   return res.json({
     token,
     user: {
