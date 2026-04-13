@@ -1,0 +1,41 @@
+name: 🧑‍💼 Worker Onboarding Issue
+description: Report a problem encountered during the worker onboarding process
+labels: ["onboarding", "worker"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Use this form to report any issues experienced during the worker onboarding journey. Your report helps us improve the experience for all workers joining the platform.
+
+  - type: input
+    id: worker_id
+    attributes:
+      label: Worker ID or Reference
+      description: Your worker ID or application reference number (if available).
+      placeholder: e.g. WKR-2026-00123
+    validations:
+      required: false
+
+  - type: dropdown
+    id: onboarding_step
+    attributes:
+      label: Onboarding Step That Failed
+      description: Select the step in the onboarding process where the issue occurred.
+      options:
+        - Registration
+        - Document Upload
+        - Identity Verification
+        - Job Matching
+        - Employer Connection
+        - Contract Signing
+    validations:
+      required: true
+
+  - type: textarea
+    id: issue_description
+    attributes:
+      label: Issue Description
+      description: Describe what happened and any error messages you received.
+      placeholder: Describe the issue in detail...
+    validations:
+      required: true
