@@ -202,6 +202,12 @@ jobs:
         env:
           BACKEND_IMAGE: ${{ needs.build-and-push-images.outputs.backend_image }}
           FRONTEND_IMAGE: ${{ needs.build-and-push-images.outputs.frontend_image }}
+          RELEASE_TAG: ${{ needs.build-and-push-images.outputs.release_tag }}
+          RUN_ID: ${{ github.run_id }}
+          RUN_ATTEMPT: ${{ github.run_attempt }}
+          REPOSITORY: ${{ github.repository }}
+          ACTOR: ${{ github.actor }}
+          RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
           GHCR_USER: ${{ github.actor }}
           GHCR_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           DATABASE_URL: ${{ secrets.DATABASE_URL }}
@@ -218,7 +224,7 @@ jobs:
           username: ${{ secrets.VPS_USER }}
           key: ${{ secrets.VPS_SSH_KEY }}
           capture_stdout: true
-          envs: BACKEND_IMAGE,FRONTEND_IMAGE,GHCR_USER,GHCR_TOKEN,DATABASE_URL,JWT_SECRET,MAIL_FROM,APP_BASE_URL,SMTP_HOST,SMTP_PORT,SMTP_SECURE,SMTP_USER,SMTP_PASS
+          envs: BACKEND_IMAGE,FRONTEND_IMAGE,RELEASE_TAG,RUN_ID,RUN_ATTEMPT,REPOSITORY,ACTOR,RUN_URL,GHCR_USER,GHCR_TOKEN,DATABASE_URL,JWT_SECRET,MAIL_FROM,APP_BASE_URL,SMTP_HOST,SMTP_PORT,SMTP_SECURE,SMTP_USER,SMTP_PASS
           script: |
             set -uo pipefail
             mkdir -p ~/kingken
@@ -227,6 +233,12 @@ jobs:
             DEPLOY_STATUS="success"
             ROLLBACK_STATUS="not_needed"
             FAILURE_REASON="none"
+            DEPLOY_STARTED_AT="$(date -u +"%Y-%m-%dT%H:%M:%SZ")"
+
+            HISTORY_DIR="$PWD/deploy-history"
+            DEPLOY_HISTORY_FILE="$HISTORY_DIR/deployments.log"
+            ROLLBACK_AUDIT_FILE="$HISTORY_DIR/rollback-audit.log"
+            mkdir -p "$HISTORY_DIR"
 
             PREV_BACKEND_IMAGE="$(docker inspect --format='{{.Config.Image}}' kingken-backend 2>/dev/null || true)"
             PREV_FRONTEND_IMAGE="$(docker inspect --format='{{.Config.Image}}' kingken-frontend 2>/dev/null || true)"
@@ -319,6 +331,35 @@ jobs:
 
             ACTIVE_BACKEND_IMAGE="$(docker inspect --format='{{.Config.Image}}' kingken-backend 2>/dev/null || true)"
             ACTIVE_FRONTEND_IMAGE="$(docker inspect --format='{{.Config.Image}}' kingken-frontend 2>/dev/null || true)"
+            DEPLOY_FINISHED_AT="$(date -u +"%Y-%m-%dT%H:%M:%SZ")"
+
+            printf '%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\n' \
+              "$DEPLOY_FINISHED_AT" \
+              "run_id=$RUN_ID" \
+              "attempt=$RUN_ATTEMPT" \
+              "repo=$REPOSITORY" \
+              "actor=$ACTOR" \
+              "release_tag=$RELEASE_TAG" \
+              "deploy_status=$DEPLOY_STATUS" \
+              "rollback_status=$ROLLBACK_STATUS" \
+              "failure_reason=$FAILURE_REASON" \
+              "backend_image=$ACTIVE_BACKEND_IMAGE" \
+              "frontend_image=$ACTIVE_FRONTEND_IMAGE" \
+              >> "$DEPLOY_HISTORY_FILE"
+
+            if [ "$ROLLBACK_STATUS" != "not_needed" ]; then
+              printf '%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\n' \
+                "$DEPLOY_FINISHED_AT" \
+                "run_id=$RUN_ID" \
+                "attempt=$RUN_ATTEMPT" \
+                "release_tag=$RELEASE_TAG" \
+                "failure_reason=$FAILURE_REASON" \
+                "rollback_status=$ROLLBACK_STATUS" \
+                "prev_backend=$PREV_BACKEND_IMAGE" \
+                "prev_frontend=$PREV_FRONTEND_IMAGE" \
+                "run_url=$RUN_URL" \
+                >> "$ROLLBACK_AUDIT_FILE"
+            fi
 
             docker compose -f docker-compose.prod.yml --env-file .env.deploy ps || true
 
@@ -329,6 +370,10 @@ jobs:
             echo "PREV_FRONTEND_IMAGE=${PREV_FRONTEND_IMAGE}"
             echo "ACTIVE_BACKEND_IMAGE=${ACTIVE_BACKEND_IMAGE}"
             echo "ACTIVE_FRONTEND_IMAGE=${ACTIVE_FRONTEND_IMAGE}"
+            echo "DEPLOY_STARTED_AT=${DEPLOY_STARTED_AT}"
+            echo "DEPLOY_FINISHED_AT=${DEPLOY_FINISHED_AT}"
+            echo "DEPLOY_HISTORY_FILE=${DEPLOY_HISTORY_FILE}"
+            echo "ROLLBACK_AUDIT_FILE=${ROLLBACK_AUDIT_FILE}"
 
       - name: Parse remote deployment result
         if: ${{ always() && steps.precheck.outputs.ready == 'true' }}
@@ -351,6 +396,10 @@ jobs:
               "prev_frontend_image": "",
               "active_backend_image": "",
               "active_frontend_image": "",
+              "deploy_started_at": "",
+              "deploy_finished_at": "",
+              "deploy_history_file": "",
+              "rollback_audit_file": "",
           }
 
           for line in stdout.splitlines():
@@ -367,6 +416,10 @@ jobs:
                   "PREV_FRONTEND_IMAGE": "prev_frontend_image",
                   "ACTIVE_BACKEND_IMAGE": "active_backend_image",
                   "ACTIVE_FRONTEND_IMAGE": "active_frontend_image",
+                  "DEPLOY_STARTED_AT": "deploy_started_at",
+                  "DEPLOY_FINISHED_AT": "deploy_finished_at",
+                  "DEPLOY_HISTORY_FILE": "deploy_history_file",
+                  "ROLLBACK_AUDIT_FILE": "rollback_audit_file",
               }
               if key in mapping:
                   values[mapping[key]] = value
@@ -394,6 +447,9 @@ jobs:
             echo "- Rollback outcome: not needed"
             echo "- Active backend image: ${{ steps.deploy_result.outputs.active_backend_image }}"
             echo "- Active frontend image: ${{ steps.deploy_result.outputs.active_frontend_image }}"
+            echo "- Deploy history file: ${{ steps.deploy_result.outputs.deploy_history_file }}"
+            echo "- Deploy started at: ${{ steps.deploy_result.outputs.deploy_started_at }}"
+            echo "- Deploy finished at: ${{ steps.deploy_result.outputs.deploy_finished_at }}"
           } >> "$GITHUB_STEP_SUMMARY"
 
       - name: Record deployment failure summary
@@ -415,8 +471,80 @@ jobs:
             echo "- Previous frontend image: ${{ steps.deploy_result.outputs.prev_frontend_image }}"
             echo "- Active backend image after incident: ${{ steps.deploy_result.outputs.active_backend_image }}"
             echo "- Active frontend image after incident: ${{ steps.deploy_result.outputs.active_frontend_image }}"
+            echo "- Deploy history file: ${{ steps.deploy_result.outputs.deploy_history_file }}"
+            echo "- Rollback audit file: ${{ steps.deploy_result.outputs.rollback_audit_file }}"
+            echo "- Deploy started at: ${{ steps.deploy_result.outputs.deploy_started_at }}"
+            echo "- Deploy finished at: ${{ steps.deploy_result.outputs.deploy_finished_at }}"
             echo "- Next step: inspect remote deploy logs and rollback state details"
           } >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Generate deployment trace artifact
+        if: ${{ always() && steps.precheck.outputs.ready == 'true' }}
+        env:
+          REMOTE_STDOUT: ${{ steps.remote_deploy.outputs.stdout }}
+        run: |
+          mkdir -p deployment-trace
+          cat > deployment-trace/deployment-report.md <<EOF
+          # Deployment Incident Report
+
+          - Repository: ${{ github.repository }}
+          - Run ID: ${{ github.run_id }}
+          - Run attempt: ${{ github.run_attempt }}
+          - Run URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+          - Commit: ${{ github.sha }}
+          - Release tag: ${{ needs.build-and-push-images.outputs.release_tag }}
+          - Actor: ${{ github.actor }}
+          - Host: ${{ secrets.VPS_HOST }}
+          - Deploy status: ${{ steps.deploy_result.outputs.deploy_status }}
+          - Rollback status: ${{ steps.deploy_result.outputs.rollback_status }}
+          - Failure reason: ${{ steps.deploy_result.outputs.failure_reason }}
+          - Backend target image: ${{ needs.build-and-push-images.outputs.backend_image }}
+          - Frontend target image: ${{ needs.build-and-push-images.outputs.frontend_image }}
+          - Active backend image: ${{ steps.deploy_result.outputs.active_backend_image }}
+          - Active frontend image: ${{ steps.deploy_result.outputs.active_frontend_image }}
+          - Previous backend image: ${{ steps.deploy_result.outputs.prev_backend_image }}
+          - Previous frontend image: ${{ steps.deploy_result.outputs.prev_frontend_image }}
+          - Deploy started at: ${{ steps.deploy_result.outputs.deploy_started_at }}
+          - Deploy finished at: ${{ steps.deploy_result.outputs.deploy_finished_at }}
+          - Deploy history file: ${{ steps.deploy_result.outputs.deploy_history_file }}
+          - Rollback audit file: ${{ steps.deploy_result.outputs.rollback_audit_file }}
+          EOF
+
+          cat > deployment-trace/deployment-report.json <<EOF
+          {
+            "repository": "${{ github.repository }}",
+            "run_id": "${{ github.run_id }}",
+            "run_attempt": "${{ github.run_attempt }}",
+            "run_url": "${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}",
+            "commit": "${{ github.sha }}",
+            "release_tag": "${{ needs.build-and-push-images.outputs.release_tag }}",
+            "actor": "${{ github.actor }}",
+            "host": "${{ secrets.VPS_HOST }}",
+            "deploy_status": "${{ steps.deploy_result.outputs.deploy_status }}",
+            "rollback_status": "${{ steps.deploy_result.outputs.rollback_status }}",
+            "failure_reason": "${{ steps.deploy_result.outputs.failure_reason }}",
+            "backend_target_image": "${{ needs.build-and-push-images.outputs.backend_image }}",
+            "frontend_target_image": "${{ needs.build-and-push-images.outputs.frontend_image }}",
+            "active_backend_image": "${{ steps.deploy_result.outputs.active_backend_image }}",
+            "active_frontend_image": "${{ steps.deploy_result.outputs.active_frontend_image }}",
+            "previous_backend_image": "${{ steps.deploy_result.outputs.prev_backend_image }}",
+            "previous_frontend_image": "${{ steps.deploy_result.outputs.prev_frontend_image }}",
+            "deploy_started_at": "${{ steps.deploy_result.outputs.deploy_started_at }}",
+            "deploy_finished_at": "${{ steps.deploy_result.outputs.deploy_finished_at }}",
+            "deploy_history_file": "${{ steps.deploy_result.outputs.deploy_history_file }}",
+            "rollback_audit_file": "${{ steps.deploy_result.outputs.rollback_audit_file }}"
+          }
+          EOF
+
+          printf '%s\n' "$REMOTE_STDOUT" > deployment-trace/remote-deploy-stdout.log
+
+      - name: Upload deployment trace artifact
+        if: ${{ always() && steps.precheck.outputs.ready == 'true' }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: deployment-trace-${{ github.run_id }}-${{ github.run_attempt }}
+          path: deployment-trace/
+          retention-days: 30
 
       - name: Enforce deployment outcome
         if: ${{ always() && steps.precheck.outputs.ready == 'true' }}
