@@ -1,6 +1,12 @@
 name: Initialize Repo Labels
 
 on:
+  push:
+    branches: [main]
+    paths:
+      - .github/workflows/init-labels.yml
+      - .github/ISSUE_TEMPLATE/**
+      - CONTRIBUTING.md
   workflow_dispatch:
 
 permissions:
