@@ -1,4 +1,3 @@
-import { Role } from "@prisma/client";
 import { Router } from "express";
 import { z } from "zod";
 import { prisma } from "../lib/prisma.js";
@@ -13,14 +12,23 @@ const workerProfileSchema = z.object({
   skills: z.array(z.string()).default([])
 });
 
-workerProfileRouter.use(requireAuth, requireRole([Role.WORKER, Role.ADMIN]));
+workerProfileRouter.use(requireAuth, requireRole(["WORKER", "ADMIN"]));
+
+function parseSkills(value: string | null | undefined): string[] {
+  try {
+    const parsed = JSON.parse(value ?? "[]");
+    return Array.isArray(parsed) ? parsed.filter((item): item is string => typeof item === "string") : [];
+  } catch {
+    return [];
+  }
+}
 
 workerProfileRouter.get("/me", async (req: AuthenticatedRequest, res) => {
   const profile = await prisma.workerProfile.findUnique({ where: { userId: req.user!.id } });
   if (!profile) {
     return res.status(404).json({ error: "Worker profile not found" });
   }
-  return res.json({ profile });
+  return res.json({ profile: { ...profile, skills: parseSkills(profile.skills) } });
 });
 
 workerProfileRouter.post("/me", async (req: AuthenticatedRequest, res) => {
@@ -31,11 +39,11 @@ workerProfileRouter.post("/me", async (req: AuthenticatedRequest, res) => {
 
   const profile = await prisma.workerProfile.upsert({
     where: { userId: req.user!.id },
-    update: parsed.data,
-    create: { userId: req.user!.id, ...parsed.data }
+    update: { ...parsed.data, skills: JSON.stringify(parsed.data.skills) },
+    create: { userId: req.user!.id, ...parsed.data, skills: JSON.stringify(parsed.data.skills) }
   });
 
-  return res.status(201).json({ profile });
+  return res.status(201).json({ profile: { ...profile, skills: parseSkills(profile.skills) } });
 });
 
 workerProfileRouter.put("/me", async (req: AuthenticatedRequest, res) => {
@@ -44,12 +52,17 @@ workerProfileRouter.put("/me", async (req: AuthenticatedRequest, res) => {
     return res.status(400).json({ error: "Invalid payload", details: parsed.error.flatten() });
   }
 
+  const updateData = {
+    ...parsed.data,
+    ...(parsed.data.skills ? { skills: JSON.stringify(parsed.data.skills) } : {}),
+  };
+
   const profile = await prisma.workerProfile.update({
     where: { userId: req.user!.id },
-    data: parsed.data
+    data: updateData
   });
 
-  return res.json({ profile });
+  return res.json({ profile: { ...profile, skills: parseSkills(profile.skills) } });
 });
 
 workerProfileRouter.delete("/me", async (req: AuthenticatedRequest, res) => {

@@ -1,4 +1,3 @@
-import { Role } from "@prisma/client";
 import { Router } from "express";
 import { z } from "zod";
 import { prisma } from "../lib/prisma.js";
@@ -12,7 +11,7 @@ const employerProfileSchema = z.object({
   country: z.string().optional()
 });
 
-employerProfileRouter.use(requireAuth, requireRole([Role.EMPLOYER, Role.ADMIN]));
+employerProfileRouter.use(requireAuth, requireRole(["EMPLOYER", "ADMIN"]));
 
 employerProfileRouter.get("/me", async (req: AuthenticatedRequest, res) => {
   const profile = await prisma.employerProfile.findUnique({ where: { userId: req.user!.id } });

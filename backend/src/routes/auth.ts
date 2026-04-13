@@ -1,4 +1,3 @@
-import { Role } from "@prisma/client";
 import bcrypt from "bcryptjs";
 import { Router } from "express";
 import jwt from "jsonwebtoken";
@@ -9,10 +8,13 @@ import { prisma } from "../lib/prisma.js";
 
 export const authRouter = Router();
 
+const ROLES = ["ADMIN", "WORKER", "EMPLOYER"] as const;
+type Role = (typeof ROLES)[number];
+
 const registerSchema = z.object({
   email: z.string().email(),
   password: z.string().min(8),
-  role: z.nativeEnum(Role)
+  role: z.enum(ROLES)
 });
 
 const loginSchema = z.object({

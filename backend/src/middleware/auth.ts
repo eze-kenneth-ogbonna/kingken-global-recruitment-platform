@@ -1,7 +1,8 @@
-import { Role } from "@prisma/client";
 import jwt from "jsonwebtoken";
 import type { NextFunction, Request, Response } from "express";
 import { env } from "../config/env.js";
+
+type Role = "ADMIN" | "WORKER" | "EMPLOYER";
 
 type JwtPayload = {
   sub: string;
