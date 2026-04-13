@@ -23,6 +23,7 @@ jobs:
     outputs:
       backend_image: ${{ steps.meta.outputs.backend_image }}
       frontend_image: ${{ steps.meta.outputs.frontend_image }}
+      release_tag: ${{ steps.meta.outputs.release_tag }}
 
     steps:
       - name: Checkout
@@ -53,10 +54,15 @@ jobs:
         id: meta
         run: |
           OWNER_LC="${GITHUB_REPOSITORY_OWNER,,}"
+          RELEASE_TAG="$(git tag --points-at "$GITHUB_SHA" | head -n 1 || true)"
+          if [ -z "${RELEASE_TAG}" ]; then
+            RELEASE_TAG="none"
+          fi
           echo "backend_image=ghcr.io/${OWNER_LC}/kingken-backend:${GITHUB_SHA}" >> "$GITHUB_OUTPUT"
           echo "frontend_image=ghcr.io/${OWNER_LC}/kingken-frontend:${GITHUB_SHA}" >> "$GITHUB_OUTPUT"
           echo "backend_latest=ghcr.io/${OWNER_LC}/kingken-backend:latest" >> "$GITHUB_OUTPUT"
           echo "frontend_latest=ghcr.io/${OWNER_LC}/kingken-frontend:latest" >> "$GITHUB_OUTPUT"
+          echo "release_tag=${RELEASE_TAG}" >> "$GITHUB_OUTPUT"
 
       - name: Record build plan summary
         run: |
@@ -64,6 +70,7 @@ jobs:
             echo "## Build plan"
             echo ""
             echo "- Commit: ${GITHUB_SHA}"
+            echo "- Release tag: ${{ steps.meta.outputs.release_tag }}"
             echo "- Backend image: ${{ steps.meta.outputs.backend_image }}"
             echo "- Frontend image: ${{ steps.meta.outputs.frontend_image }}"
           } >> "$GITHUB_STEP_SUMMARY"
@@ -162,10 +169,16 @@ jobs:
             echo "## Deployment target"
             echo ""
             echo "- Host: ${{ secrets.VPS_HOST }}"
+            echo "- Release tag: ${{ needs.build-and-push-images.outputs.release_tag }}"
             echo "- Backend image: ${{ needs.build-and-push-images.outputs.backend_image }}"
             echo "- Frontend image: ${{ needs.build-and-push-images.outputs.frontend_image }}"
             echo "- Strategy: health-checked deploy with rollback to previous running images"
           } >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Record deploy start time
+        if: ${{ steps.precheck.outputs.ready == 'true' }}
+        id: deploy_start
+        run: echo "epoch=$(date +%s)" >> "$GITHUB_OUTPUT"
 
       - name: Checkout
         if: ${{ steps.precheck.outputs.ready == 'true' }}
@@ -184,6 +197,7 @@ jobs:
 
       - name: Deploy and verify with rollback via SSH
         if: ${{ steps.precheck.outputs.ready == 'true' }}
+        id: remote_deploy
         uses: appleboy/ssh-action@v1.0.3
         env:
           BACKEND_IMAGE: ${{ needs.build-and-push-images.outputs.backend_image }}
@@ -203,11 +217,16 @@ jobs:
           host: ${{ secrets.VPS_HOST }}
           username: ${{ secrets.VPS_USER }}
           key: ${{ secrets.VPS_SSH_KEY }}
+          capture_stdout: true
           envs: BACKEND_IMAGE,FRONTEND_IMAGE,GHCR_USER,GHCR_TOKEN,DATABASE_URL,JWT_SECRET,MAIL_FROM,APP_BASE_URL,SMTP_HOST,SMTP_PORT,SMTP_SECURE,SMTP_USER,SMTP_PASS
           script: |
-            set -euo pipefail
+            set -uo pipefail
             mkdir -p ~/kingken
             cd ~/kingken
+
+            DEPLOY_STATUS="success"
+            ROLLBACK_STATUS="not_needed"
+            FAILURE_REASON="none"
 
             PREV_BACKEND_IMAGE="$(docker inspect --format='{{.Config.Image}}' kingken-backend 2>/dev/null || true)"
             PREV_FRONTEND_IMAGE="$(docker inspect --format='{{.Config.Image}}' kingken-frontend 2>/dev/null || true)"
@@ -231,79 +250,186 @@ jobs:
               "SMTP_PASS=${SMTP_PASS}" \
               > .env.deploy
 
-            echo "${GHCR_TOKEN}" | docker login ghcr.io -u "${GHCR_USER}" --password-stdin
+            if ! echo "${GHCR_TOKEN}" | docker login ghcr.io -u "${GHCR_USER}" --password-stdin; then
+              DEPLOY_STATUS="failed"
+              FAILURE_REASON="ghcr_login_failed"
+            fi
 
-            docker compose -f docker-compose.prod.yml --env-file .env.deploy pull
-            docker compose -f docker-compose.prod.yml --env-file .env.deploy up -d --wait backend
-            docker compose -f docker-compose.prod.yml --env-file .env.deploy up -d --wait frontend
+            if [ "${DEPLOY_STATUS}" = "success" ] && ! docker compose -f docker-compose.prod.yml --env-file .env.deploy pull; then
+              DEPLOY_STATUS="failed"
+              FAILURE_REASON="compose_pull_failed"
+            fi
 
-            if curl -fsS http://localhost/health >/dev/null && curl -fsS http://localhost/ >/dev/null; then
+            if [ "${DEPLOY_STATUS}" = "success" ] && ! docker compose -f docker-compose.prod.yml --env-file .env.deploy up -d --wait backend; then
+              DEPLOY_STATUS="failed"
+              FAILURE_REASON="backend_deploy_failed"
+            fi
+
+            if [ "${DEPLOY_STATUS}" = "success" ] && ! docker compose -f docker-compose.prod.yml --env-file .env.deploy up -d --wait frontend; then
+              DEPLOY_STATUS="failed"
+              FAILURE_REASON="frontend_deploy_failed"
+            fi
+
+            if [ "${DEPLOY_STATUS}" = "success" ] && curl -fsS http://localhost/health >/dev/null && curl -fsS http://localhost/ >/dev/null; then
               echo "Deployment health checks passed"
               docker compose -f docker-compose.prod.yml --env-file .env.deploy ps
               docker image prune -f
-              exit 0
-            fi
-
-            echo "Deployment health checks failed. Attempting rollback to previous images..."
-
-            if [ -z "${PREV_BACKEND_IMAGE}" ] || [ -z "${PREV_FRONTEND_IMAGE}" ]; then
-              echo "Rollback unavailable: previous running images were not detected."
-              exit 1
-            fi
-
-            printf '%s\n' \
-              "BACKEND_IMAGE=${PREV_BACKEND_IMAGE}" \
-              "FRONTEND_IMAGE=${PREV_FRONTEND_IMAGE}" \
-              "DATABASE_URL=${DATABASE_URL}" \
-              "JWT_SECRET=${JWT_SECRET}" \
-              "MAIL_FROM=${MAIL_FROM}" \
-              "APP_BASE_URL=${APP_BASE_URL}" \
-              "SMTP_HOST=${SMTP_HOST}" \
-              "SMTP_PORT=${SMTP_PORT}" \
-              "SMTP_SECURE=${SMTP_SECURE}" \
-              "SMTP_USER=${SMTP_USER}" \
-              "SMTP_PASS=${SMTP_PASS}" \
-              > .env.deploy
-
-            docker compose -f docker-compose.prod.yml --env-file .env.deploy up -d --wait backend
-            docker compose -f docker-compose.prod.yml --env-file .env.deploy up -d --wait frontend
-
-            if curl -fsS http://localhost/health >/dev/null && curl -fsS http://localhost/ >/dev/null; then
-              echo "Rollback succeeded and previous production images are healthy again."
-              docker compose -f docker-compose.prod.yml --env-file .env.deploy ps
             else
-              echo "Rollback failed: previous images did not recover healthy service state."
-              docker compose -f docker-compose.prod.yml --env-file .env.deploy ps || true
+              if [ "${FAILURE_REASON}" = "none" ]; then
+                FAILURE_REASON="post_deploy_healthcheck_failed"
+              fi
+              DEPLOY_STATUS="failed"
             fi
 
-            exit 1
+            if [ "${DEPLOY_STATUS}" != "success" ]; then
+              echo "Deployment failed. Attempting rollback to previous images..."
+
+              if [ -z "${PREV_BACKEND_IMAGE}" ] || [ -z "${PREV_FRONTEND_IMAGE}" ]; then
+                ROLLBACK_STATUS="unavailable"
+              else
+                ROLLBACK_STATUS="attempted"
+
+                printf '%s\n' \
+                  "BACKEND_IMAGE=${PREV_BACKEND_IMAGE}" \
+                  "FRONTEND_IMAGE=${PREV_FRONTEND_IMAGE}" \
+                  "DATABASE_URL=${DATABASE_URL}" \
+                  "JWT_SECRET=${JWT_SECRET}" \
+                  "MAIL_FROM=${MAIL_FROM}" \
+                  "APP_BASE_URL=${APP_BASE_URL}" \
+                  "SMTP_HOST=${SMTP_HOST}" \
+                  "SMTP_PORT=${SMTP_PORT}" \
+                  "SMTP_SECURE=${SMTP_SECURE}" \
+                  "SMTP_USER=${SMTP_USER}" \
+                  "SMTP_PASS=${SMTP_PASS}" \
+                  > .env.deploy
+
+                if docker compose -f docker-compose.prod.yml --env-file .env.deploy up -d --wait backend && \
+                   docker compose -f docker-compose.prod.yml --env-file .env.deploy up -d --wait frontend && \
+                   curl -fsS http://localhost/health >/dev/null && \
+                   curl -fsS http://localhost/ >/dev/null; then
+                  ROLLBACK_STATUS="success"
+                  DEPLOY_STATUS="rolled_back"
+                  echo "Rollback succeeded and previous production images are healthy again."
+                else
+                  ROLLBACK_STATUS="failed"
+                  echo "Rollback failed: previous images did not recover healthy service state."
+                fi
+              fi
+            fi
+
+            ACTIVE_BACKEND_IMAGE="$(docker inspect --format='{{.Config.Image}}' kingken-backend 2>/dev/null || true)"
+            ACTIVE_FRONTEND_IMAGE="$(docker inspect --format='{{.Config.Image}}' kingken-frontend 2>/dev/null || true)"
+
+            docker compose -f docker-compose.prod.yml --env-file .env.deploy ps || true
+
+            echo "DEPLOY_STATUS=${DEPLOY_STATUS}"
+            echo "ROLLBACK_STATUS=${ROLLBACK_STATUS}"
+            echo "FAILURE_REASON=${FAILURE_REASON}"
+            echo "PREV_BACKEND_IMAGE=${PREV_BACKEND_IMAGE}"
+            echo "PREV_FRONTEND_IMAGE=${PREV_FRONTEND_IMAGE}"
+            echo "ACTIVE_BACKEND_IMAGE=${ACTIVE_BACKEND_IMAGE}"
+            echo "ACTIVE_FRONTEND_IMAGE=${ACTIVE_FRONTEND_IMAGE}"
+
+      - name: Parse remote deployment result
+        if: ${{ always() && steps.precheck.outputs.ready == 'true' }}
+        id: deploy_result
+        env:
+          REMOTE_STDOUT: ${{ steps.remote_deploy.outputs.stdout }}
+          REMOTE_OUTCOME: ${{ steps.remote_deploy.outcome }}
+        run: |
+          python - <<'PY'
+          import os
+          from pathlib import Path
+
+          stdout = os.environ.get("REMOTE_STDOUT", "")
+          outcome = os.environ.get("REMOTE_OUTCOME", "")
+          values = {
+              "deploy_status": "unknown",
+              "rollback_status": "unknown",
+              "failure_reason": "ssh_action_failed" if outcome == "failure" else "unknown",
+              "prev_backend_image": "",
+              "prev_frontend_image": "",
+              "active_backend_image": "",
+              "active_frontend_image": "",
+          }
+
+          for line in stdout.splitlines():
+              if "=" not in line:
+                  continue
+              key, value = line.split("=", 1)
+              key = key.strip()
+              value = value.strip()
+              mapping = {
+                  "DEPLOY_STATUS": "deploy_status",
+                  "ROLLBACK_STATUS": "rollback_status",
+                  "FAILURE_REASON": "failure_reason",
+                  "PREV_BACKEND_IMAGE": "prev_backend_image",
+                  "PREV_FRONTEND_IMAGE": "prev_frontend_image",
+                  "ACTIVE_BACKEND_IMAGE": "active_backend_image",
+                  "ACTIVE_FRONTEND_IMAGE": "active_frontend_image",
+              }
+              if key in mapping:
+                  values[mapping[key]] = value
+
+          output_path = Path(os.environ["GITHUB_OUTPUT"])
+          with output_path.open("a", encoding="utf-8") as fh:
+              for key, value in values.items():
+                  fh.write(f"{key}={value}\n")
+          PY
 
       - name: Record deployment success summary
-        if: ${{ success() && steps.precheck.outputs.ready == 'true' }}
+        if: ${{ always() && steps.precheck.outputs.ready == 'true' && steps.deploy_result.outputs.deploy_status == 'success' }}
         run: |
+          duration=$(( $(date +%s) - ${{ steps.deploy_start.outputs.epoch }} ))
           {
             echo "## Deployment result"
             echo ""
             echo "- Status: success"
             echo "- Host: ${{ secrets.VPS_HOST }}"
+            echo "- Release tag: ${{ needs.build-and-push-images.outputs.release_tag }}"
             echo "- Backend image: ${{ needs.build-and-push-images.outputs.backend_image }}"
             echo "- Frontend image: ${{ needs.build-and-push-images.outputs.frontend_image }}"
             echo "- Health checks: backend and frontend passed"
+            echo "- Deploy duration: ${duration}s"
+            echo "- Rollback outcome: not needed"
+            echo "- Active backend image: ${{ steps.deploy_result.outputs.active_backend_image }}"
+            echo "- Active frontend image: ${{ steps.deploy_result.outputs.active_frontend_image }}"
           } >> "$GITHUB_STEP_SUMMARY"
 
       - name: Record deployment failure summary
-        if: ${{ failure() && steps.precheck.outputs.ready == 'true' }}
+        if: ${{ always() && steps.precheck.outputs.ready == 'true' && steps.deploy_result.outputs.deploy_status != 'success' }}
         run: |
+          duration=$(( $(date +%s) - ${{ steps.deploy_start.outputs.epoch }} ))
           {
             echo "## Deployment result"
             echo ""
-            echo "- Status: failed"
+            echo "- Status: ${{ steps.deploy_result.outputs.deploy_status }}"
             echo "- Host: ${{ secrets.VPS_HOST }}"
+            echo "- Release tag: ${{ needs.build-and-push-images.outputs.release_tag }}"
             echo "- Target backend image: ${{ needs.build-and-push-images.outputs.backend_image }}"
             echo "- Target frontend image: ${{ needs.build-and-push-images.outputs.frontend_image }}"
-            echo "- Rollback mode: attempted restore to previously running images"
-            echo "- Next step: inspect SSH deploy logs for rollback health details"
+            echo "- Deploy duration: ${duration}s"
+            echo "- Failure reason: ${{ steps.deploy_result.outputs.failure_reason }}"
+            echo "- Rollback outcome: ${{ steps.deploy_result.outputs.rollback_status }}"
+            echo "- Previous backend image: ${{ steps.deploy_result.outputs.prev_backend_image }}"
+            echo "- Previous frontend image: ${{ steps.deploy_result.outputs.prev_frontend_image }}"
+            echo "- Active backend image after incident: ${{ steps.deploy_result.outputs.active_backend_image }}"
+            echo "- Active frontend image after incident: ${{ steps.deploy_result.outputs.active_frontend_image }}"
+            echo "- Next step: inspect remote deploy logs and rollback state details"
           } >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Enforce deployment outcome
+        if: ${{ always() && steps.precheck.outputs.ready == 'true' }}
+        run: |
+          if [ "${{ steps.remote_deploy.outcome }}" = "failure" ]; then
+            echo "::error title=Deploy SSH Execution Failed::Remote deployment command did not complete successfully."
+            exit 1
+          fi
+
+          if [ "${{ steps.deploy_result.outputs.deploy_status }}" != "success" ]; then
+            echo "::error title=Deployment Incident::Deployment status=${{ steps.deploy_result.outputs.deploy_status }}, rollback=${{ steps.deploy_result.outputs.rollback_status }}, reason=${{ steps.deploy_result.outputs.failure_reason }}"
+            exit 1
+          fi
 
       - name: Notify on deploy failure
         if: ${{ failure() && steps.precheck.outputs.ready == 'true' }}
