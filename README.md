@@ -6,10 +6,25 @@ Global recruitment technology platform connecting African talent with verified i
 
 Building the infrastructure for the future of global workforce mobility.
 
-Website: https://www.kingkenglobal.com.ng  
-Contact: info@kingkenglobal.com.ng
+Website: <https://www.kingkenglobal.com.ng>  
+Contact: <info@kingkenglobal.com.ng>
 
 </div>
+
+---
+
+## 🚀 Contributing
+
+We welcome contributors!
+
+Start here:
+
+- Look for issues labeled **[good first issue](https://github.com/eze-kenneth-ogbonna/kingken-global-recruitment-platform/labels/good%20first%20issue)**
+- Browse **[help wanted](https://github.com/eze-kenneth-ogbonna/kingken-global-recruitment-platform/labels/help%20wanted)** tasks
+- Follow the setup guide in **[CONTRIBUTING.md](./CONTRIBUTING.md)**
+- Submit a pull request with a clear description of your change
+
+First-time contributors are welcome 💙
 
 ---
 
@@ -70,4 +85,3 @@ kingken-global-recruitment-platform
 └── docs
 
 ---
-
