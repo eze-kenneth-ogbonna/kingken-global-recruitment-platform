@@ -20,10 +20,10 @@ model Document {
 model AuditLog {
   id        String   @id @default(uuid())
   actorId   String
-  action    AuditAction
+  action    String
   targetId  String
   version   Int      @default(1)
-  metadata  Json?
+  metadata  String?
   ipAddress String?
   userAgent String?
   prevHash  String?
@@ -32,11 +32,4 @@ model AuditLog {
 
   @@index([actorId, createdAt])
   @@index([action, createdAt])
-}
-
-enum AuditAction {
-  APPROVE_DOC
-  REJECT_DOC
-  SET_PENDING_DOC
-  DOWNLOAD_DOC
 }

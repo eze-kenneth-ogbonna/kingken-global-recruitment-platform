@@ -1,4 +1,4 @@
-import { AuditAction, PrismaClient } from '@prisma/client';
+import { PrismaClient } from '@prisma/client';
 import { createHash } from 'crypto';
 import path from 'path';
 import { fileURLToPath } from 'url';
@@ -7,6 +7,13 @@ import { sendDocumentReviewedEmail, sendUploadReceivedEmail } from '../services/
 const prisma = new PrismaClient();
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const UPLOADS_ROOT = path.resolve(__dirname, '..', '..', 'uploads');
+
+const AuditAction = {
+    APPROVE_DOC: 'APPROVE_DOC',
+    REJECT_DOC: 'REJECT_DOC',
+    SET_PENDING_DOC: 'SET_PENDING_DOC',
+    DOWNLOAD_DOC: 'DOWNLOAD_DOC',
+};
 
 const ALLOWED_STATUS = new Set(['PENDING', 'APPROVED', 'REJECTED']);
 
@@ -54,6 +61,25 @@ function buildAuditPayload({ actorId, action, targetId, metadata, ipAddress, use
     };
 }
 
+function serializeMetadata(metadata) {
+    if (metadata === null || metadata === undefined) return null;
+    try {
+        return JSON.stringify(metadata);
+    } catch {
+        return JSON.stringify({ value: String(metadata) });
+    }
+}
+
+function parseMetadata(metadata) {
+    if (metadata === null || metadata === undefined) return null;
+    if (typeof metadata !== 'string') return metadata;
+    try {
+        return JSON.parse(metadata);
+    } catch {
+        return metadata;
+    }
+}
+
 async function writeAuditLog(req, { actorId, action, targetId, metadata = null }) {
     // Append-only pattern: only create/read, never update/delete.
     const latest = await prisma.auditLog.findFirst({
@@ -81,7 +107,7 @@ async function writeAuditLog(req, { actorId, action, targetId, metadata = null }
             action,
             targetId,
             version: 2,
-            metadata,
+            metadata: serializeMetadata(metadata),
             ipAddress: context.ipAddress,
             userAgent: context.userAgent,
             prevHash: latest?.hash ?? null,
@@ -97,7 +123,7 @@ function tryLegacyVerification(log, previousHash) {
             actorId: log.actorId,
             action: log.action,
             targetId: log.targetId,
-            metadata: log.metadata ?? null,
+            metadata: parseMetadata(log.metadata),
             createdAt: new Date(log.createdAt).toISOString(),
         },
         {
@@ -145,7 +171,7 @@ async function verifyChainInternal(logs) {
             actorId: log.actorId,
             action: log.action,
             targetId: log.targetId,
-            metadata: log.metadata,
+            metadata: parseMetadata(log.metadata),
             ipAddress: log.ipAddress,
             userAgent: log.userAgent,
             createdAt: new Date(log.createdAt).toISOString(),
@@ -375,7 +401,12 @@ export async function listAuditLogs(req, res) {
         take: 200,
     });
 
-    res.json(logs);
+    const normalized = logs.map((log) => ({
+        ...log,
+        metadata: parseMetadata(log.metadata),
+    }));
+
+    res.json(normalized);
 }
 
 export async function verifyAuditChain(_req, res) {
