@@ -25,12 +25,21 @@ jobs:
           HEALTHCHECK_URL: ${{ secrets.HEALTHCHECK_URL }}
           FRONTEND_URL: ${{ secrets.FRONTEND_URL }}
           OPS_STATUS_URL: ${{ secrets.OPS_STATUS_URL }}
+          VPS_HOST: ${{ secrets.VPS_HOST }}
+          VPS_USER: ${{ secrets.VPS_USER }}
+          VPS_SSH_KEY: ${{ secrets.VPS_SSH_KEY }}
         run: |
           if [ -z "${HEALTHCHECK_URL}" ]; then
             echo "ready=false" >> "$GITHUB_OUTPUT"
             echo "ℹ️ Uptime monitor skipped: set the HEALTHCHECK_URL secret to enable backend health checks. Optional extras: FRONTEND_URL and OPS_STATUS_URL." >> "$GITHUB_STEP_SUMMARY"
           else
             echo "ready=true" >> "$GITHUB_OUTPUT"
+          fi
+
+          if [ -n "${VPS_HOST}" ] && [ -n "${VPS_USER}" ] && [ -n "${VPS_SSH_KEY}" ]; then
+            echo "persist_ready=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "persist_ready=false" >> "$GITHUB_OUTPUT"
           fi
 
       - name: Run uptime checks
@@ -46,6 +55,13 @@ jobs:
 
           slow_count=0
           total_count=0
+          down_count=0
+          overall_status="healthy"
+          checked_at="$(date -u +"%Y-%m-%dT%H:%M:%SZ")"
+          failed_endpoint=""
+          failed_url=""
+
+          mkdir -p uptime-artifacts
 
           ENDPOINTS=(
             "backend|${HEALTHCHECK_URL}"
@@ -62,33 +78,64 @@ jobs:
           printf '## Uptime checks\n\n' >> "$GITHUB_STEP_SUMMARY"
           printf '| Endpoint | URL | Latency | Status |\n' >> "$GITHUB_STEP_SUMMARY"
           printf '|---|---|---:|---|\n' >> "$GITHUB_STEP_SUMMARY"
+          printf '[' > uptime-artifacts/endpoints.json
+          first_entry=true
 
           for entry in "${ENDPOINTS[@]}"; do
             name="${entry%%|*}"
             url="${entry#*|}"
             total_count=$((total_count + 1))
 
-            latency_seconds=$(curl --fail --show-error --silent --output /dev/null --write-out '%{time_total}' --max-time 15 --retry 3 --retry-delay 2 "${url}") || {
+            latency_seconds=""
+            endpoint_status="healthy"
+            if ! latency_seconds=$(curl --fail --show-error --silent --output /dev/null --write-out '%{time_total}' --max-time 15 --retry 3 --retry-delay 2 "${url}"); then
+              down_count=$((down_count + 1))
+              overall_status="down"
+              endpoint_status="down"
+              latency_ms="null"
+              failed_endpoint="${name}"
+              failed_url="${url}"
               printf '| %s | %s | n/a | ❌ Down |\n' "${name}" "${url}" >> "$GITHUB_STEP_SUMMARY"
               echo "failed_endpoint=${name}" >> "$GITHUB_OUTPUT"
               echo "failed_url=${url}" >> "$GITHUB_OUTPUT"
-              exit 1
-            }
-
-            latency_ms=$(awk "BEGIN { printf \"%d\", (${latency_seconds} * 1000) + 0.5 }")
-
-            if [ "${latency_ms}" -gt "${UPTIME_SLOW_THRESHOLD_MS}" ]; then
-              slow_count=$((slow_count + 1))
-              printf '| %s | %s | %sms | ⚠️ Slow |\n' "${name}" "${url}" "${latency_ms}" >> "$GITHUB_STEP_SUMMARY"
             else
+              latency_ms=$(awk "BEGIN { printf \"%d\", (${latency_seconds} * 1000) + 0.5 }")
+            fi
+
+            if [ "${endpoint_status}" != "down" ] && [ "${latency_ms}" -gt "${UPTIME_SLOW_THRESHOLD_MS}" ]; then
+              slow_count=$((slow_count + 1))
+              if [ "${overall_status}" != "down" ]; then
+                overall_status="degraded"
+              fi
+              endpoint_status="slow"
+              printf '| %s | %s | %sms | ⚠️ Slow |\n' "${name}" "${url}" "${latency_ms}" >> "$GITHUB_STEP_SUMMARY"
+            elif [ "${endpoint_status}" = "healthy" ]; then
               printf '| %s | %s | %sms | ✅ Healthy |\n' "${name}" "${url}" "${latency_ms}" >> "$GITHUB_STEP_SUMMARY"
+            fi
+
+            if [ "$first_entry" = false ]; then
+              printf ',' >> uptime-artifacts/endpoints.json
+            fi
+            first_entry=false
+
+            if [ "${latency_ms}" = "null" ]; then
+              printf '{"name":"%s","url":"%s","latency_ms":null,"status":"%s"}' "${name}" "${url}" "${endpoint_status}" >> uptime-artifacts/endpoints.json
+            else
+              printf '{"name":"%s","url":"%s","latency_ms":%s,"status":"%s"}' "${name}" "${url}" "${latency_ms}" "${endpoint_status}" >> uptime-artifacts/endpoints.json
             fi
           done
 
+          printf ']' >> uptime-artifacts/endpoints.json
+
           echo "slow_count=${slow_count}" >> "$GITHUB_OUTPUT"
           echo "total_count=${total_count}" >> "$GITHUB_OUTPUT"
+          echo "down_count=${down_count}" >> "$GITHUB_OUTPUT"
+          echo "overall_status=${overall_status}" >> "$GITHUB_OUTPUT"
 
-          if [ "${slow_count}" -gt 0 ]; then
+          if [ "${down_count}" -gt 0 ]; then
+            echo "" >> "$GITHUB_STEP_SUMMARY"
+            echo "❌ ${down_count}/${total_count} endpoint(s) are down." >> "$GITHUB_STEP_SUMMARY"
+          elif [ "${slow_count}" -gt 0 ]; then
             echo "" >> "$GITHUB_STEP_SUMMARY"
             echo "⚠️ ${slow_count}/${total_count} endpoint(s) are responding slowly (threshold: ${UPTIME_SLOW_THRESHOLD_MS}ms)." >> "$GITHUB_STEP_SUMMARY"
           else
@@ -96,7 +143,70 @@ jobs:
             echo "✅ All ${total_count} configured endpoint(s) are within the healthy latency threshold (${UPTIME_SLOW_THRESHOLD_MS}ms)." >> "$GITHUB_STEP_SUMMARY"
           fi
 
+          cat > uptime-artifacts/latest-uptime.json <<EOF
+          {
+            "checked_at": "${checked_at}",
+            "overall_status": "${overall_status}",
+            "slow_count": ${slow_count},
+            "down_count": ${down_count},
+            "total_count": ${total_count},
+            "threshold_ms": ${UPTIME_SLOW_THRESHOLD_MS},
+            "failed_endpoint": "${failed_endpoint}",
+            "failed_url": "${failed_url}",
+            "run_id": "${{ github.run_id }}",
+            "run_attempt": "${{ github.run_attempt }}",
+            "run_url": "${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}",
+            "endpoints": $(cat uptime-artifacts/endpoints.json)
+          }
+          EOF
+
           echo "status=ok" >> "$GITHUB_OUTPUT"
+
+          if [ "${down_count}" -gt 0 ]; then
+            exit 1
+          fi
+
+      - name: Ensure uptime artifact exists on failure
+        if: ${{ failure() && steps.precheck.outputs.ready == 'true' && steps.probe.conclusion == 'failure' }}
+        run: |
+          mkdir -p uptime-artifacts
+          if [ ! -f uptime-artifacts/latest-uptime.json ]; then
+            cat > uptime-artifacts/latest-uptime.json <<EOF
+            {
+              "checked_at": "$(date -u +"%Y-%m-%dT%H:%M:%SZ")",
+              "overall_status": "down",
+              "slow_count": 0,
+              "down_count": 1,
+              "total_count": 1,
+              "threshold_ms": ${UPTIME_SLOW_THRESHOLD_MS},
+              "failed_endpoint": "${{ steps.probe.outputs.failed_endpoint || 'unknown' }}",
+              "failed_url": "${{ steps.probe.outputs.failed_url || 'unknown' }}",
+              "run_id": "${{ github.run_id }}",
+              "run_attempt": "${{ github.run_attempt }}",
+              "run_url": "${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}",
+              "endpoints": []
+            }
+            EOF
+          fi
+
+      - name: Persist latest uptime to VPS
+        if: ${{ always() && steps.precheck.outputs.ready == 'true' && steps.precheck.outputs.persist_ready == 'true' }}
+        uses: appleboy/scp-action@v0.1.7
+        with:
+          host: ${{ secrets.VPS_HOST }}
+          username: ${{ secrets.VPS_USER }}
+          key: ${{ secrets.VPS_SSH_KEY }}
+          source: uptime-artifacts/latest-uptime.json
+          target: ~/kingken/deploy-history/
+          strip_components: 1
+
+      - name: Upload uptime trace artifact
+        if: ${{ always() && steps.precheck.outputs.ready == 'true' }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: uptime-trace-${{ github.run_id }}-${{ github.run_attempt }}
+          path: uptime-artifacts/
+          retention-days: 14
 
       - name: Notify Slack on failure
         if: ${{ failure() && steps.precheck.outputs.ready == 'true' }}

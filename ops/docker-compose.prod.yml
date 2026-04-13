@@ -9,6 +9,7 @@ services:
       PORT: 3001
       DATABASE_URL: ${DATABASE_URL}
       OPS_STATUS_FILE: /app/ops/latest-status.json
+      OPS_UPTIME_FILE: /app/ops/latest-uptime.json
     healthcheck:
       test:
         [

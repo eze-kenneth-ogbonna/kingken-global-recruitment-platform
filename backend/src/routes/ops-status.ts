@@ -5,6 +5,7 @@ import { requireAuth, requireRole } from "../middleware/auth.js";
 export const opsStatusRouter = Router();
 
 const opsStatusFile = process.env.OPS_STATUS_FILE ?? "/app/ops/latest-status.json";
+const uptimeStatusFile = process.env.OPS_UPTIME_FILE ?? "/app/ops/latest-uptime.json";
 
 function toEpoch(value: unknown): number | null {
     if (typeof value !== "string") {
@@ -49,10 +50,52 @@ async function readStatus() {
     return withDerivedStatus(status);
 }
 
+async function readUptimeStatus() {
+    try {
+        const raw = await readFile(uptimeStatusFile, "utf8");
+        return JSON.parse(raw) as Record<string, unknown>;
+    } catch (error) {
+        if (error && typeof error === "object" && "code" in error && error.code === "ENOENT") {
+            return null;
+        }
+        throw error;
+    }
+}
+
+function sanitizeUptimeStatus(status: Record<string, unknown> | null) {
+    if (!status) {
+        return null;
+    }
+
+    return {
+        checked_at: status.checked_at,
+        overall_status: status.overall_status,
+        slow_count: status.slow_count,
+        down_count: status.down_count,
+        total_count: status.total_count,
+        threshold_ms: status.threshold_ms,
+        failed_endpoint: status.failed_endpoint,
+        endpoints: Array.isArray(status.endpoints)
+            ? status.endpoints.map((entry) => {
+                if (!entry || typeof entry !== "object") {
+                    return entry;
+                }
+                return {
+                    name: "name" in entry ? entry.name : null,
+                    url: "url" in entry ? entry.url : null,
+                    latency_ms: "latency_ms" in entry ? entry.latency_ms : null,
+                    status: "status" in entry ? entry.status : null,
+                };
+            })
+            : [],
+    };
+}
+
 opsStatusRouter.get("/ops/status", async (_req, res) => {
     try {
         const status = await readStatus();
-        return res.json({ status: sanitizeStatus(status) });
+        const uptime = sanitizeUptimeStatus(await readUptimeStatus());
+        return res.json({ status: sanitizeStatus(status), uptime });
     } catch (error) {
         if (error && typeof error === "object" && "code" in error && error.code === "ENOENT") {
             return res.status(503).json({ error: "Deployment status not available yet" });
@@ -70,7 +113,8 @@ opsStatusRouter.get("/ops/status", async (_req, res) => {
 opsStatusRouter.get("/admin/ops/deployment-status", requireAuth, requireRole(["ADMIN"]), async (_req, res) => {
     try {
         const status = await readStatus();
-        return res.json({ status });
+        const uptime = await readUptimeStatus();
+        return res.json({ status, uptime });
     } catch (error) {
         if (error && typeof error === "object" && "code" in error && error.code === "ENOENT") {
             return res.status(503).json({ error: "Deployment status not available yet" });

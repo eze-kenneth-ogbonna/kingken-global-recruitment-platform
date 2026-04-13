@@ -17,7 +17,9 @@ function statusTone(status) {
 
 export default function MonitoringPage() {
     const [status, setStatus] = useState(null);
+    const [uptime, setUptime] = useState(null);
     const [publicStatus, setPublicStatus] = useState(null);
+    const [publicUptime, setPublicUptime] = useState(null);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState('');
     const [lastUpdated, setLastUpdated] = useState('');
@@ -38,6 +40,7 @@ export default function MonitoringPage() {
             const publicPayload = await publicRes.json().catch(() => null);
             if (publicRes.ok) {
                 setPublicStatus(publicPayload?.status ?? null);
+                setPublicUptime(publicPayload?.uptime ?? null);
             }
 
             const payload = await adminRes.json().catch(() => null);
@@ -46,6 +49,7 @@ export default function MonitoringPage() {
             }
 
             setStatus(payload?.status ?? null);
+            setUptime(payload?.uptime ?? null);
             setLastUpdated(new Date().toLocaleTimeString());
         } catch (err) {
             setError(err.message || 'Unable to load monitoring status.');
@@ -120,10 +124,58 @@ export default function MonitoringPage() {
                         <MetricRow label="Release tag" value={publicStatus?.release_tag} />
                         <MetricRow label="Public age" value={publicStatus?.age_seconds ? `${publicStatus.age_seconds}s` : null} />
                     </MetricCard>
+
+                    <MetricCard title="Uptime latency states">
+                        <MetricRow label="Overall uptime" value={uptime?.overall_status} />
+                        <MetricRow label="Slow endpoints" value={uptime?.slow_count} />
+                        <MetricRow label="Down endpoints" value={uptime?.down_count} />
+                        <MetricRow label="Threshold" value={uptime?.threshold_ms ? `${uptime.threshold_ms}ms` : null} />
+                        <MetricRow label="Checked at" value={uptime?.checked_at} />
+                    </MetricCard>
                 </div>
+
+                <section style={styles.card}>
+                    <h2 style={styles.cardTitle}>Endpoint health matrix</h2>
+                    {Array.isArray(uptime?.endpoints) && uptime.endpoints.length > 0 ? (
+                        <div style={styles.endpointList}>
+                            {uptime.endpoints.map((endpoint) => (
+                                <div key={`${endpoint.name}-${endpoint.url}`} style={styles.endpointCard}>
+                                    <div style={styles.endpointHeader}>
+                                        <strong>{formatValue(endpoint.name)}</strong>
+                                        <span style={endpointBadge(endpoint.status)}>{formatValue(endpoint.status)}</span>
+                                    </div>
+                                    <div style={styles.endpointUrl}>{formatValue(endpoint.url)}</div>
+                                    <div style={styles.endpointMeta}>
+                                        Latency: {endpoint.latency_ms === null || endpoint.latency_ms === undefined ? 'n/a' : `${endpoint.latency_ms}ms`}
+                                    </div>
+                                </div>
+                            ))}
+                        </div>
+                    ) : (
+                        <p style={styles.empty}>No uptime samples recorded yet.</p>
+                    )}
+                </section>
+
+                <section style={styles.card}>
+                    <h2 style={styles.cardTitle}>Public uptime mirror</h2>
+                    <MetricRow label="Overall status" value={publicUptime?.overall_status} />
+                    <MetricRow label="Slow count" value={publicUptime?.slow_count} />
+                    <MetricRow label="Down count" value={publicUptime?.down_count} />
+                    <MetricRow label="Failed endpoint" value={publicUptime?.failed_endpoint} />
+                </section>
             </div>
         </main>
     );
+}
+
+function endpointBadge(status) {
+    if (status === 'healthy') {
+        return { ...styles.badge, background: '#dcfce7', color: '#166534', borderColor: '#86efac' };
+    }
+    if (status === 'slow') {
+        return { ...styles.badge, background: '#fef3c7', color: '#92400e', borderColor: '#fcd34d' };
+    }
+    return { ...styles.badge, background: '#fee2e2', color: '#991b1b', borderColor: '#fca5a5' };
 }
 
 function MetricCard({ title, children }) {
@@ -250,5 +302,46 @@ const styles = {
         border: '1px solid #fecaca',
         borderRadius: 10,
         padding: '0.75rem 1rem',
+    },
+    endpointList: {
+        display: 'grid',
+        gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))',
+        gap: '0.9rem',
+    },
+    endpointCard: {
+        border: '1px solid #e2e8f0',
+        borderRadius: 12,
+        padding: '0.9rem',
+        background: '#f8fafc',
+        display: 'grid',
+        gap: 8,
+    },
+    endpointHeader: {
+        display: 'flex',
+        justifyContent: 'space-between',
+        alignItems: 'center',
+        gap: 8,
+    },
+    endpointUrl: {
+        fontFamily: 'Consolas, Monaco, monospace',
+        fontSize: '0.8rem',
+        wordBreak: 'break-all',
+        color: '#334155',
+    },
+    endpointMeta: {
+        color: '#475569',
+        fontSize: '0.9rem',
+    },
+    badge: {
+        border: '1px solid',
+        borderRadius: 999,
+        padding: '0.15rem 0.55rem',
+        fontSize: '0.75rem',
+        fontWeight: 700,
+        textTransform: 'capitalize',
+    },
+    empty: {
+        margin: 0,
+        color: '#64748b',
     },
 };
