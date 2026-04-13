@@ -87,7 +87,7 @@ jobs:
           ssh "${{ secrets.VPS_USER }}@${{ secrets.VPS_HOST }}" "mkdir -p ~/kingken"
           scp ops/docker-compose.prod.yml "${{ secrets.VPS_USER }}@${{ secrets.VPS_HOST }}:~/kingken/docker-compose.prod.yml"
 
-      - name: Deploy with Docker Compose
+      - name: Zero-downtime deploy with health checks
         env:
           BACKEND_IMAGE: ${{ needs.build-and-push-images.outputs.backend_image }}
           FRONTEND_IMAGE: ${{ needs.build-and-push-images.outputs.frontend_image }}
@@ -104,7 +104,21 @@ jobs:
           SMTP_PASS: ${{ secrets.SMTP_PASS }}
         run: |
           ssh "${{ secrets.VPS_USER }}@${{ secrets.VPS_HOST }}" "
-            set -e
+            set -euo pipefail
+
+            has_cmd() { command -v \"\$1\" >/dev/null 2>&1; }
+
+            check_health() {
+              if has_cmd curl; then
+                curl -fsS http://127.0.0.1/health >/dev/null
+              elif has_cmd wget; then
+                wget -q -O /dev/null http://127.0.0.1/health
+              else
+                echo 'Neither curl nor wget found on VPS for health verification.'
+                return 1
+              fi
+            }
+
             mkdir -p ~/kingken
             cat > ~/kingken/.env.deploy <<'EOF'
 BACKEND_IMAGE=${BACKEND_IMAGE}
@@ -121,7 +135,43 @@ SMTP_PASS=${SMTP_PASS}
 EOF
             cd ~/kingken
             echo '${GHCR_TOKEN}' | docker login ghcr.io -u '${GHCR_USER}' --password-stdin
+
+            PREV_BACKEND_IMAGE=\$(docker inspect -f '{{.Config.Image}}' kingken-backend 2>/dev/null || true)
+            PREV_FRONTEND_IMAGE=\$(docker inspect -f '{{.Config.Image}}' kingken-frontend 2>/dev/null || true)
+
             docker compose -f docker-compose.prod.yml --env-file .env.deploy pull
-            docker compose -f docker-compose.prod.yml --env-file .env.deploy up -d
+
+            # docker rollout (if installed) provides start-new, wait-healthy, then switch behavior.
+            cp docker-compose.prod.yml compose.yaml
+            if docker rollout --help >/dev/null 2>&1; then
+              echo 'Using docker rollout for backend and frontend'
+              if ! docker rollout backend; then
+                echo 'Backend rollout failed. Keeping previous backend image.'
+                if [ -n \"\$PREV_BACKEND_IMAGE\" ]; then
+                  sed -i \"s|^BACKEND_IMAGE=.*|BACKEND_IMAGE=\$PREV_BACKEND_IMAGE|\" .env.deploy
+                  docker compose -f docker-compose.prod.yml --env-file .env.deploy up -d --wait backend
+                fi
+                exit 1
+              fi
+
+              if ! docker rollout frontend; then
+                echo 'Frontend rollout failed. Keeping previous frontend image.'
+                if [ -n \"\$PREV_FRONTEND_IMAGE\" ]; then
+                  sed -i \"s|^FRONTEND_IMAGE=.*|FRONTEND_IMAGE=\$PREV_FRONTEND_IMAGE|\" .env.deploy
+                  docker compose -f docker-compose.prod.yml --env-file .env.deploy up -d --wait frontend
+                fi
+                exit 1
+              fi
+            else
+              echo 'docker rollout not found. Falling back to compose health-gated update.'
+              docker compose -f docker-compose.prod.yml --env-file .env.deploy up -d --wait backend
+              docker compose -f docker-compose.prod.yml --env-file .env.deploy up -d --wait frontend
+            fi
+
+            # End-to-end health verification through frontend -> backend proxy
+            check_health
+
+            docker compose -f docker-compose.prod.yml --env-file .env.deploy ps
+            docker compose -f docker-compose.prod.yml --env-file .env.deploy logs --tail=50
             docker image prune -f
           "
