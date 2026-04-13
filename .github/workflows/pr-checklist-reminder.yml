@@ -1,0 +1,42 @@
+name: PR Checklist Reminder
+
+on:
+  pull_request:
+    types: [opened]
+
+permissions:
+  issues: write
+  pull-requests: write
+
+jobs:
+  reminder:
+    name: Post PR checklist comment
+    runs-on: ubuntu-latest
+    steps:
+      - name: Add checklist reminder comment
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const body = [
+              '👋 Thanks for opening this PR!',
+              '',
+              'Before review, please confirm:',
+              '',
+              '- [ ] I ran relevant tests locally',
+              '- [ ] I updated docs/README/CONTRIBUTING if behavior changed',
+              '- [ ] I kept this PR focused and linked the related issue',
+              '- [ ] I followed branch and commit conventions in `CONTRIBUTING.md`',
+              '',
+              'Helpful links:',
+              '- Contribution guide: https://github.com/eze-kenneth-ogbonna/kingken-global-recruitment-platform/blob/main/CONTRIBUTING.md',
+              '- Open issues: https://github.com/eze-kenneth-ogbonna/kingken-global-recruitment-platform/issues',
+              '',
+              'Thanks for contributing 💙',
+            ].join('\n');
+
+            await github.rest.issues.createComment({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: context.payload.pull_request.number,
+              body,
+            });

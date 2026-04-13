@@ -9,7 +9,16 @@ app.use(express.json());
 
 app.get('/health', (_req, res) => res.json({ status: 'ok' }));
 
+app.use('/api', documentRoutes);
 app.use('/', documentRoutes);
+
+app.use('/api/*', (_req, res) => {
+    res.status(404).json({
+        code: 'ROUTE_NOT_FOUND',
+        message: 'API route not found',
+        status: 404,
+    });
+});
 
 // Global error handler — must be last
 app.use((err, _req, res, _next) => {

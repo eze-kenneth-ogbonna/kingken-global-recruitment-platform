@@ -7,6 +7,7 @@ Thank you for your interest in contributing to the KingKen Global Recruitment Pl
 ## 📋 Table of Contents
 
 - [Quick Start — Local Setup](#-quick-start--local-setup)
+- [Troubleshooting](#-troubleshooting)
 - [Good First Issues](#-good-first-issues)
 - [Branching Strategy](#branching-strategy)
 - [Branch Naming Conventions](#branch-naming-conventions)
@@ -44,6 +45,30 @@ cd frontend && npm run dev     # → http://localhost:5173
 ```
 
 **SQLite constraint:** the backend runs SQLite. Do not add `Json` field types or `enum` blocks to `prisma/schema.prisma` — SQLite does not support them.
+
+---
+
+## 🛠 Troubleshooting
+
+If setup fails locally, try these quick fixes before opening an issue.
+
+### Node version mismatch
+
+- Verify your Node.js version matches project/CI expectations.
+- If you use nvm, switch to the project version, then reinstall dependencies.
+- Re-run installs in both `backend` and `frontend` after switching Node versions.
+
+### npm install failures
+
+- Delete `node_modules` and reinstall dependencies.
+- Ensure lockfiles are committed and in sync with `package.json`.
+- Retry with a clean install if dependency resolution fails.
+
+### Prisma/database path issues
+
+- Confirm `backend/.env` exists and includes `DATABASE_URL=file:./prisma/dev.db`.
+- Run Prisma migration commands from the `backend` directory.
+- If DB path errors persist, verify relative paths resolve from `backend/`.
 
 ---
 
