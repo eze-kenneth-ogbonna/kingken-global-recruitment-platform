@@ -58,6 +58,16 @@ jobs:
           echo "backend_latest=ghcr.io/${OWNER_LC}/kingken-backend:latest" >> "$GITHUB_OUTPUT"
           echo "frontend_latest=ghcr.io/${OWNER_LC}/kingken-frontend:latest" >> "$GITHUB_OUTPUT"
 
+      - name: Record build plan summary
+        run: |
+          {
+            echo "## Build plan"
+            echo ""
+            echo "- Commit: ${GITHUB_SHA}"
+            echo "- Backend image: ${{ steps.meta.outputs.backend_image }}"
+            echo "- Frontend image: ${{ steps.meta.outputs.frontend_image }}"
+          } >> "$GITHUB_STEP_SUMMARY"
+
       - name: Login to GHCR
         uses: docker/login-action@v3
         with:
@@ -145,6 +155,18 @@ jobs:
             echo "ℹ️ Deploy skipped: missing one or more required secrets (VPS_HOST, VPS_USER, VPS_SSH_KEY)." >> "$GITHUB_STEP_SUMMARY"
           fi
 
+      - name: Record deployment target summary
+        if: ${{ steps.precheck.outputs.ready == 'true' }}
+        run: |
+          {
+            echo "## Deployment target"
+            echo ""
+            echo "- Host: ${{ secrets.VPS_HOST }}"
+            echo "- Backend image: ${{ needs.build-and-push-images.outputs.backend_image }}"
+            echo "- Frontend image: ${{ needs.build-and-push-images.outputs.frontend_image }}"
+            echo "- Strategy: health-checked deploy with rollback to previous running images"
+          } >> "$GITHUB_STEP_SUMMARY"
+
       - name: Checkout
         if: ${{ steps.precheck.outputs.ready == 'true' }}
         uses: actions/checkout@v5
@@ -160,7 +182,7 @@ jobs:
           target: ~/kingken/
           strip_components: 1
 
-      - name: Deploy via SSH
+      - name: Deploy and verify with rollback via SSH
         if: ${{ steps.precheck.outputs.ready == 'true' }}
         uses: appleboy/ssh-action@v1.0.3
         env:
@@ -187,6 +209,14 @@ jobs:
             mkdir -p ~/kingken
             cd ~/kingken
 
+            PREV_BACKEND_IMAGE="$(docker inspect --format='{{.Config.Image}}' kingken-backend 2>/dev/null || true)"
+            PREV_FRONTEND_IMAGE="$(docker inspect --format='{{.Config.Image}}' kingken-frontend 2>/dev/null || true)"
+
+            printf '%s\n' \
+              "PREV_BACKEND_IMAGE=${PREV_BACKEND_IMAGE}" \
+              "PREV_FRONTEND_IMAGE=${PREV_FRONTEND_IMAGE}" \
+              > .env.rollback.images
+
             printf '%s\n' \
               "BACKEND_IMAGE=${BACKEND_IMAGE}" \
               "FRONTEND_IMAGE=${FRONTEND_IMAGE}" \
@@ -207,27 +237,73 @@ jobs:
             docker compose -f docker-compose.prod.yml --env-file .env.deploy up -d --wait backend
             docker compose -f docker-compose.prod.yml --env-file .env.deploy up -d --wait frontend
 
-            docker compose -f docker-compose.prod.yml --env-file .env.deploy ps
-            docker image prune -f
+            if curl -fsS http://localhost/health >/dev/null && curl -fsS http://localhost/ >/dev/null; then
+              echo "Deployment health checks passed"
+              docker compose -f docker-compose.prod.yml --env-file .env.deploy ps
+              docker image prune -f
+              exit 0
+            fi
 
-      - name: Verify deployment
-        if: ${{ steps.precheck.outputs.ready == 'true' }}
-        uses: appleboy/ssh-action@v1.0.3
-        with:
-          host: ${{ secrets.VPS_HOST }}
-          username: ${{ secrets.VPS_USER }}
-          key: ${{ secrets.VPS_SSH_KEY }}
-          script: |
-            sleep 10
-            if curl -f http://localhost/health; then
-              echo "Health check passed"
-            else
-              echo "❌ Health check failed — rolling back"
-              cd ~/kingken
-              docker compose -f docker-compose.prod.yml --env-file .env.deploy down
-              docker compose -f docker-compose.prod.yml --env-file .env.deploy up -d
+            echo "Deployment health checks failed. Attempting rollback to previous images..."
+
+            if [ -z "${PREV_BACKEND_IMAGE}" ] || [ -z "${PREV_FRONTEND_IMAGE}" ]; then
+              echo "Rollback unavailable: previous running images were not detected."
               exit 1
             fi
+
+            printf '%s\n' \
+              "BACKEND_IMAGE=${PREV_BACKEND_IMAGE}" \
+              "FRONTEND_IMAGE=${PREV_FRONTEND_IMAGE}" \
+              "DATABASE_URL=${DATABASE_URL}" \
+              "JWT_SECRET=${JWT_SECRET}" \
+              "MAIL_FROM=${MAIL_FROM}" \
+              "APP_BASE_URL=${APP_BASE_URL}" \
+              "SMTP_HOST=${SMTP_HOST}" \
+              "SMTP_PORT=${SMTP_PORT}" \
+              "SMTP_SECURE=${SMTP_SECURE}" \
+              "SMTP_USER=${SMTP_USER}" \
+              "SMTP_PASS=${SMTP_PASS}" \
+              > .env.deploy
+
+            docker compose -f docker-compose.prod.yml --env-file .env.deploy up -d --wait backend
+            docker compose -f docker-compose.prod.yml --env-file .env.deploy up -d --wait frontend
+
+            if curl -fsS http://localhost/health >/dev/null && curl -fsS http://localhost/ >/dev/null; then
+              echo "Rollback succeeded and previous production images are healthy again."
+              docker compose -f docker-compose.prod.yml --env-file .env.deploy ps
+            else
+              echo "Rollback failed: previous images did not recover healthy service state."
+              docker compose -f docker-compose.prod.yml --env-file .env.deploy ps || true
+            fi
+
+            exit 1
+
+      - name: Record deployment success summary
+        if: ${{ success() && steps.precheck.outputs.ready == 'true' }}
+        run: |
+          {
+            echo "## Deployment result"
+            echo ""
+            echo "- Status: success"
+            echo "- Host: ${{ secrets.VPS_HOST }}"
+            echo "- Backend image: ${{ needs.build-and-push-images.outputs.backend_image }}"
+            echo "- Frontend image: ${{ needs.build-and-push-images.outputs.frontend_image }}"
+            echo "- Health checks: backend and frontend passed"
+          } >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Record deployment failure summary
+        if: ${{ failure() && steps.precheck.outputs.ready == 'true' }}
+        run: |
+          {
+            echo "## Deployment result"
+            echo ""
+            echo "- Status: failed"
+            echo "- Host: ${{ secrets.VPS_HOST }}"
+            echo "- Target backend image: ${{ needs.build-and-push-images.outputs.backend_image }}"
+            echo "- Target frontend image: ${{ needs.build-and-push-images.outputs.frontend_image }}"
+            echo "- Rollback mode: attempted restore to previously running images"
+            echo "- Next step: inspect SSH deploy logs for rollback health details"
+          } >> "$GITHUB_STEP_SUMMARY"
 
       - name: Notify on deploy failure
         if: ${{ failure() && steps.precheck.outputs.ready == 'true' }}
@@ -236,9 +312,9 @@ jobs:
           VPS_HOST: ${{ secrets.VPS_HOST }}
           SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
         run: |
-          echo "🚨 Deployment failed for commit ${SHA} on host ${VPS_HOST}" >> "$GITHUB_STEP_SUMMARY"
+          echo "🚨 Deployment failed for commit ${SHA} on host ${VPS_HOST} (rollback to previous images attempted)" >> "$GITHUB_STEP_SUMMARY"
           if [ -n "${SLACK_WEBHOOK_URL}" ]; then
-            payload=$(printf '{"text":"🚨 KingKen deploy failed for `%s` on `%s`"}' "${SHA}" "${VPS_HOST}")
+            payload=$(printf '{"text":"🚨 KingKen deploy failed for `%s` on `%s` — rollback to previous images attempted"}' "${SHA}" "${VPS_HOST}")
             curl -sS -X POST -H 'Content-type: application/json' --data "${payload}" "${SLACK_WEBHOOK_URL}" >/dev/null
           fi
 
