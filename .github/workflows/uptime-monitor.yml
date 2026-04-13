@@ -184,87 +184,87 @@ jobs:
             exit 1
           fi
 
-          - name: Apply degraded alert policy
-          if: ${{ always() && steps.precheck.outputs.ready == 'true' }}
-          id: policy
-          env:
-            PREVIOUS_UPTIME_JSON: ${{ steps.previous_state.outputs.stdout }}
-            DEGRADED_THRESHOLD: ${{ env.UPTIME_DEGRADED_CONSECUTIVE_RUNS }}
-          run: |
-            python - <<'PY'
-            import json
-            import os
-            from pathlib import Path
+      - name: Apply degraded alert policy
+        if: ${{ (success() || failure()) && steps.precheck.outputs.ready == 'true' }}
+        id: policy
+        env:
+          PREVIOUS_UPTIME_JSON: ${{ steps.previous_state.outputs.stdout }}
+          DEGRADED_THRESHOLD: ${{ env.UPTIME_DEGRADED_CONSECUTIVE_RUNS }}
+        run: |
+          python - <<'PY'
+          import json
+          import os
+          from pathlib import Path
 
-            previous_raw = os.environ.get("PREVIOUS_UPTIME_JSON", "{}").strip() or "{}"
-            try:
+          previous_raw = os.environ.get("PREVIOUS_UPTIME_JSON", "{}").strip() or "{}"
+          try:
               previous = json.loads(previous_raw)
               if not isinstance(previous, dict):
-                previous = {}
-            except json.JSONDecodeError:
+                  previous = {}
+          except json.JSONDecodeError:
               previous = {}
 
-            current_path = Path("uptime-artifacts/latest-uptime.json")
-            current = json.loads(current_path.read_text(encoding="utf-8"))
+          current_path = Path("uptime-artifacts/latest-uptime.json")
+          current = json.loads(current_path.read_text(encoding="utf-8"))
 
-            previous_overall = previous.get("overall_status")
-            previous_degraded_streak = int(previous.get("degraded_streak", 0) or 0)
-            previous_down_streak = int(previous.get("down_streak", 0) or 0)
-            previous_endpoint_streaks = previous.get("endpoint_slow_streaks", {})
-            if not isinstance(previous_endpoint_streaks, dict):
+          previous_overall = previous.get("overall_status")
+          previous_degraded_streak = int(previous.get("degraded_streak", 0) or 0)
+          previous_down_streak = int(previous.get("down_streak", 0) or 0)
+          previous_endpoint_streaks = previous.get("endpoint_slow_streaks", {})
+          if not isinstance(previous_endpoint_streaks, dict):
               previous_endpoint_streaks = {}
 
-            overall = current.get("overall_status")
-            if overall == "degraded":
+          overall = current.get("overall_status")
+          if overall == "degraded":
               degraded_streak = previous_degraded_streak + 1 if previous_overall == "degraded" else 1
               down_streak = 0
-            elif overall == "down":
+          elif overall == "down":
               degraded_streak = 0
               down_streak = previous_down_streak + 1 if previous_overall == "down" else 1
-            else:
+          else:
               degraded_streak = 0
               down_streak = 0
 
-            endpoint_streaks = {}
-            for endpoint in current.get("endpoints", []):
+          endpoint_streaks = {}
+          for endpoint in current.get("endpoints", []):
               if not isinstance(endpoint, dict):
-                continue
+                  continue
               name = str(endpoint.get("name", ""))
               if not name:
-                continue
+                  continue
               if endpoint.get("status") == "slow":
-                endpoint_streaks[name] = int(previous_endpoint_streaks.get(name, 0) or 0) + 1
+                  endpoint_streaks[name] = int(previous_endpoint_streaks.get(name, 0) or 0) + 1
               else:
-                endpoint_streaks[name] = 0
+                  endpoint_streaks[name] = 0
 
-            threshold = int(os.environ.get("DEGRADED_THRESHOLD", "3"))
-            should_alert_degraded = overall == "degraded" and degraded_streak >= threshold and previous_degraded_streak < threshold
-            should_alert_recovery = previous_overall in {"degraded", "down"} and overall == "healthy"
+          threshold = int(os.environ.get("DEGRADED_THRESHOLD", "3"))
+          should_alert_degraded = overall == "degraded" and degraded_streak >= threshold and previous_degraded_streak < threshold
+          should_alert_recovery = previous_overall in {"degraded", "down"} and overall == "healthy"
 
-            current["degraded_streak"] = degraded_streak
-            current["down_streak"] = down_streak
-            current["degraded_threshold"] = threshold
-            current["previous_overall_status"] = previous_overall
-            current["endpoint_slow_streaks"] = endpoint_streaks
-            current["should_alert_degraded"] = should_alert_degraded
-            current["should_alert_recovery"] = should_alert_recovery
+          current["degraded_streak"] = degraded_streak
+          current["down_streak"] = down_streak
+          current["degraded_threshold"] = threshold
+          current["previous_overall_status"] = previous_overall
+          current["endpoint_slow_streaks"] = endpoint_streaks
+          current["should_alert_degraded"] = should_alert_degraded
+          current["should_alert_recovery"] = should_alert_recovery
 
-            current_path.write_text(json.dumps(current, indent=2), encoding="utf-8")
+          current_path.write_text(json.dumps(current, indent=2), encoding="utf-8")
 
-            output_path = Path(os.environ["GITHUB_OUTPUT"])
-            with output_path.open("a", encoding="utf-8") as fh:
+          output_path = Path(os.environ["GITHUB_OUTPUT"])
+          with output_path.open("a", encoding="utf-8") as fh:
               fh.write(f"degraded_streak={degraded_streak}\n")
               fh.write(f"down_streak={down_streak}\n")
               fh.write(f"threshold={threshold}\n")
               fh.write(f"should_alert_degraded={'true' if should_alert_degraded else 'false'}\n")
               fh.write(f"should_alert_recovery={'true' if should_alert_recovery else 'false'}\n")
               fh.write(f"previous_overall_status={previous_overall or ''}\n")
-            PY
+          PY
 
-          - name: Record degraded alert policy summary
-          if: ${{ always() && steps.precheck.outputs.ready == 'true' }}
-          run: |
-            {
+      - name: Record degraded alert policy summary
+        if: ${{ (success() || failure()) && steps.precheck.outputs.ready == 'true' }}
+        run: |
+          {
             echo ""
             echo "## Alert policy"
             echo ""
@@ -272,7 +272,7 @@ jobs:
             echo "- Current degraded streak: ${{ steps.policy.outputs.degraded_streak }}"
             echo "- Current down streak: ${{ steps.policy.outputs.down_streak }}"
             echo "- Degraded alert threshold: ${{ steps.policy.outputs.threshold }} consecutive run(s)"
-            } >> "$GITHUB_STEP_SUMMARY"
+          } >> "$GITHUB_STEP_SUMMARY"
 
       - name: Ensure uptime artifact exists on failure
         if: ${{ failure() && steps.precheck.outputs.ready == 'true' && steps.probe.conclusion == 'failure' }}
@@ -298,7 +298,7 @@ jobs:
           fi
 
       - name: Persist latest uptime to VPS
-        if: ${{ always() && steps.precheck.outputs.ready == 'true' && steps.precheck.outputs.persist_ready == 'true' }}
+        if: ${{ (success() || failure()) && steps.precheck.outputs.ready == 'true' && steps.precheck.outputs.persist_ready == 'true' }}
         uses: appleboy/scp-action@v0.1.7
         with:
           host: ${{ secrets.VPS_HOST }}
@@ -309,7 +309,7 @@ jobs:
           strip_components: 1
 
       - name: Upload uptime trace artifact
-        if: ${{ always() && steps.precheck.outputs.ready == 'true' }}
+        if: ${{ (success() || failure()) && steps.precheck.outputs.ready == 'true' }}
         uses: actions/upload-artifact@v4
         with:
           name: uptime-trace-${{ github.run_id }}-${{ github.run_attempt }}
