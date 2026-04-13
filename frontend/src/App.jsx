@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import UploadDocuments from './pages/UploadDocuments.jsx';
 import AdminDocuments from './pages/AdminDocuments.jsx';
+import MonitoringPage from './pages/MonitoringPage.jsx';
 
 /** SVG recreation of the KingKen crown-globe-orbit mark */
 function KingKenLogoMark({ size = 48 }) {
@@ -57,6 +58,12 @@ export default function App() {
                     >
                         Admin Review
                     </button>
+                    <button
+                        style={view === 'monitoring' ? styles.activeButton : styles.button}
+                        onClick={() => setView('monitoring')}
+                    >
+                        Monitoring
+                    </button>
                 </nav>
             </header>
 
@@ -65,7 +72,7 @@ export default function App() {
 
             {/* ── Page content ── */}
             <main style={styles.main}>
-                {view === 'worker' ? <UploadDocuments /> : <AdminDocuments />}
+                {view === 'worker' ? <UploadDocuments /> : view === 'admin' ? <AdminDocuments /> : <MonitoringPage />}
             </main>
 
             {/* ── Footer ── */}

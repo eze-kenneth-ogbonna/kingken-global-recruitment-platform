@@ -2,6 +2,7 @@ import cors from "cors";
 import express from "express";
 import { env } from "./config/env.js";
 import { errorHandler, notFound } from "./middleware/error.js";
+import { requestLogger } from "./middleware/request-logger.js";
 import { authRouter } from "./routes/auth.js";
 import { employerProfileRouter } from "./routes/employer-profile.js";
 import { healthRouter } from "./routes/health.js";
@@ -12,6 +13,7 @@ const app = express();
 
 app.use(cors());
 app.use(express.json());
+app.use(requestLogger);
 
 app.use(healthRouter);
 app.use("/auth", authRouter);
