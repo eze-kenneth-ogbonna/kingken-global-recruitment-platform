@@ -101,6 +101,19 @@ jobs:
           cache: npm
           cache-dependency-path: backend/package-lock.json
 
+      - name: Verify Node.js and npm availability
+        run: |
+          if ! command -v node &>/dev/null; then
+            echo "::error title=Missing Runtime::node not found on PATH after setup-node. Check actions/setup-node version."
+            exit 1
+          fi
+          if ! command -v npm &>/dev/null; then
+            echo "::error title=Missing Runtime::npm not found on PATH after setup-node. Check actions/setup-node version."
+            exit 1
+          fi
+          echo "::notice title=Runtime OK::node $(node -v), npm $(npm -v)"
+          echo "NODE_BIN=$(dirname $(which node))" >> "$GITHUB_ENV"
+
       - name: Install dependencies
         run: npm ci --no-audit --no-fund
 
@@ -137,6 +150,21 @@ jobs:
           node-version: 24
           cache: npm
           cache-dependency-path: frontend/package-lock.json
+
+      - name: Verify Node.js and npm availability
+        run: |
+          if ! command -v node &>/dev/null; then
+            echo "::error title=Missing Runtime::node not found on PATH after setup-node. Check actions/setup-node version."
+            exit 1
+          fi
+          if ! command -v npm &>/dev/null; then
+            echo "::error title=Missing Runtime::npm not found on PATH after setup-node. Check actions/setup-node version."
+            exit 1
+          fi
+          echo "::notice title=Runtime OK::node $(node -v), npm $(npm -v)"
+
+      - name: Check lockfile sync
+        run: npm ci --dry-run
 
       - name: Install dependencies
         run: npm ci --no-audit --no-fund
