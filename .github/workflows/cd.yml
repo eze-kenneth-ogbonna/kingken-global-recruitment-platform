@@ -76,6 +76,33 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-buildx-
 
+      - name: Preflight backend build validation
+        working-directory: backend
+        run: |
+          set -euo pipefail
+          echo "::group::CD preflight backend build"
+          npm ci --no-audit --no-fund
+          npx prisma generate --schema prisma/schema.prisma
+          if ! npm run build; then
+            echo "::error title=CD Preflight Failed (Backend)::backend/npm run build failed before Docker build. Check TypeScript and Prisma compatibility."
+            exit 1
+          fi
+          echo "::notice title=CD Preflight Passed (Backend)::Backend build is healthy for Docker image build."
+          echo "::endgroup::"
+
+      - name: Preflight frontend build validation
+        working-directory: frontend
+        run: |
+          set -euo pipefail
+          echo "::group::CD preflight frontend build"
+          npm ci --no-audit --no-fund
+          if ! npm run build; then
+            echo "::error title=CD Preflight Failed (Frontend)::frontend/npm run build failed before Docker build. Check Vite and dependency compatibility."
+            exit 1
+          fi
+          echo "::notice title=CD Preflight Passed (Frontend)::Frontend build is healthy for Docker image build."
+          echo "::endgroup::"
+
       - name: Build and push backend image
         uses: docker/build-push-action@v6
         with:

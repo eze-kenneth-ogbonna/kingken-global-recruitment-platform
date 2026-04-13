@@ -131,6 +131,18 @@ jobs:
           npx prisma format --schema prisma/schema.prisma
           npx prisma validate --schema prisma/schema.prisma
 
+      - name: Backend pre-build gate
+        run: |
+          set -euo pipefail
+          echo "::group::Backend pre-build gate"
+          npx prisma generate --schema prisma/schema.prisma
+          if ! npm run build; then
+            echo "::error title=Backend Build Gate Failed::TypeScript/Prisma build failed in CI pre-build gate. Fix backend compile errors before CD Docker build."
+            exit 1
+          fi
+          echo "::notice title=Backend Build Gate Passed::Backend build completed successfully."
+          echo "::endgroup::"
+
   frontend-checks:
     name: Frontend Checks
     runs-on: ubuntu-latest
