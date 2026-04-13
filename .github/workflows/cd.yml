@@ -66,16 +66,32 @@ jobs:
   deploy-vps:
     name: Deploy to VPS
     needs: build-and-push-images
-    if: ${{ github.event.workflow_run.conclusion == 'success' && github.event.workflow_run.head_branch == 'main' && secrets.VPS_HOST != '' && secrets.VPS_USER != '' && secrets.VPS_SSH_KEY != '' }}
+    if: ${{ github.event.workflow_run.conclusion == 'success' && github.event.workflow_run.head_branch == 'main' }}
     runs-on: ubuntu-latest
 
     steps:
+      - name: Validate deployment secrets
+        id: precheck
+        env:
+          VPS_HOST: ${{ secrets.VPS_HOST }}
+          VPS_USER: ${{ secrets.VPS_USER }}
+          VPS_SSH_KEY: ${{ secrets.VPS_SSH_KEY }}
+        run: |
+          if [ -n "${VPS_HOST}" ] && [ -n "${VPS_USER}" ] && [ -n "${VPS_SSH_KEY}" ]; then
+            echo "ready=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "ready=false" >> "$GITHUB_OUTPUT"
+            echo "ℹ️ Deploy skipped: missing one or more required secrets (VPS_HOST, VPS_USER, VPS_SSH_KEY)." >> "$GITHUB_STEP_SUMMARY"
+          fi
+
       - name: Checkout main
+        if: ${{ steps.precheck.outputs.ready == 'true' }}
         uses: actions/checkout@v5
         with:
           ref: ${{ github.event.workflow_run.head_sha }}
 
       - name: Prepare SSH
+        if: ${{ steps.precheck.outputs.ready == 'true' }}
         run: |
           mkdir -p ~/.ssh
           printf '%s' "${{ secrets.VPS_SSH_KEY }}" > ~/.ssh/id_rsa
@@ -83,11 +99,13 @@ jobs:
           ssh-keyscan -H "${{ secrets.VPS_HOST }}" >> ~/.ssh/known_hosts
 
       - name: Upload compose file to server
+        if: ${{ steps.precheck.outputs.ready == 'true' }}
         run: |
           ssh "${{ secrets.VPS_USER }}@${{ secrets.VPS_HOST }}" "mkdir -p ~/kingken"
           scp ops/docker-compose.prod.yml "${{ secrets.VPS_USER }}@${{ secrets.VPS_HOST }}:~/kingken/docker-compose.prod.yml"
 
       - name: Zero-downtime deploy with health checks
+        if: ${{ steps.precheck.outputs.ready == 'true' }}
         env:
           BACKEND_IMAGE: ${{ needs.build-and-push-images.outputs.backend_image }}
           FRONTEND_IMAGE: ${{ needs.build-and-push-images.outputs.frontend_image }}
@@ -179,7 +197,7 @@ jobs:
           "
 
       - name: Notify on deploy failure
-        if: failure()
+        if: ${{ failure() && steps.precheck.outputs.ready == 'true' }}
         env:
           SHA: ${{ github.event.workflow_run.head_sha }}
           VPS_HOST: ${{ secrets.VPS_HOST }}
@@ -192,7 +210,7 @@ jobs:
           fi
 
       - name: Notify on deploy success
-        if: success()
+        if: ${{ success() && steps.precheck.outputs.ready == 'true' }}
         env:
           SHA: ${{ github.event.workflow_run.head_sha }}
           VPS_HOST: ${{ secrets.VPS_HOST }}
