@@ -120,19 +120,21 @@ jobs:
             }
 
             mkdir -p ~/kingken
-            cat > ~/kingken/.env.deploy <<'EOF'
-BACKEND_IMAGE=${BACKEND_IMAGE}
-FRONTEND_IMAGE=${FRONTEND_IMAGE}
-DATABASE_URL=${DATABASE_URL}
-JWT_SECRET=${JWT_SECRET}
-MAIL_FROM=${MAIL_FROM}
-APP_BASE_URL=${APP_BASE_URL}
-SMTP_HOST=${SMTP_HOST}
-SMTP_PORT=${SMTP_PORT}
-SMTP_SECURE=${SMTP_SECURE}
-SMTP_USER=${SMTP_USER}
-SMTP_PASS=${SMTP_PASS}
-EOF
+
+            printf '%s\n' \
+              "BACKEND_IMAGE=${BACKEND_IMAGE}" \
+              "FRONTEND_IMAGE=${FRONTEND_IMAGE}" \
+              "DATABASE_URL=${DATABASE_URL}" \
+              "JWT_SECRET=${JWT_SECRET}" \
+              "MAIL_FROM=${MAIL_FROM}" \
+              "APP_BASE_URL=${APP_BASE_URL}" \
+              "SMTP_HOST=${SMTP_HOST}" \
+              "SMTP_PORT=${SMTP_PORT}" \
+              "SMTP_SECURE=${SMTP_SECURE}" \
+              "SMTP_USER=${SMTP_USER}" \
+              "SMTP_PASS=${SMTP_PASS}" \
+              > ~/kingken/.env.deploy
+
             cd ~/kingken
             echo '${GHCR_TOKEN}' | docker login ghcr.io -u '${GHCR_USER}' --password-stdin
 
