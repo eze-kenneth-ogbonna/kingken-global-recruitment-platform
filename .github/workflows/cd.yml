@@ -234,6 +234,7 @@ jobs:
             ROLLBACK_STATUS="not_needed"
             FAILURE_REASON="none"
             DEPLOY_STARTED_AT="$(date -u +"%Y-%m-%dT%H:%M:%SZ")"
+            DEPLOY_STARTED_EPOCH="$(date +%s)"
 
             HISTORY_DIR="$PWD/deploy-history"
             DEPLOY_HISTORY_FILE="$HISTORY_DIR/deployments.log"
@@ -332,6 +333,33 @@ jobs:
             ACTIVE_BACKEND_IMAGE="$(docker inspect --format='{{.Config.Image}}' kingken-backend 2>/dev/null || true)"
             ACTIVE_FRONTEND_IMAGE="$(docker inspect --format='{{.Config.Image}}' kingken-frontend 2>/dev/null || true)"
             DEPLOY_FINISHED_AT="$(date -u +"%Y-%m-%dT%H:%M:%SZ")"
+            DEPLOY_FINISHED_EPOCH="$(date +%s)"
+            DEPLOY_DURATION_SECONDS="$((DEPLOY_FINISHED_EPOCH - DEPLOY_STARTED_EPOCH))"
+
+            cat > "$HISTORY_DIR/latest-status.json" <<EOF
+            {
+              "repository": "$REPOSITORY",
+              "run_id": "$RUN_ID",
+              "run_attempt": "$RUN_ATTEMPT",
+              "run_url": "$RUN_URL",
+              "actor": "$ACTOR",
+              "release_tag": "$RELEASE_TAG",
+              "deploy_status": "$DEPLOY_STATUS",
+              "rollback_status": "$ROLLBACK_STATUS",
+              "failure_reason": "$FAILURE_REASON",
+              "backend_target_image": "$BACKEND_IMAGE",
+              "frontend_target_image": "$FRONTEND_IMAGE",
+              "active_backend_image": "$ACTIVE_BACKEND_IMAGE",
+              "active_frontend_image": "$ACTIVE_FRONTEND_IMAGE",
+              "previous_backend_image": "$PREV_BACKEND_IMAGE",
+              "previous_frontend_image": "$PREV_FRONTEND_IMAGE",
+              "deploy_started_at": "$DEPLOY_STARTED_AT",
+              "deploy_finished_at": "$DEPLOY_FINISHED_AT",
+              "deploy_duration_seconds": "$DEPLOY_DURATION_SECONDS",
+              "deploy_history_file": "$DEPLOY_HISTORY_FILE",
+              "rollback_audit_file": "$ROLLBACK_AUDIT_FILE"
+            }
+            EOF
 
             printf '%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\n' \
               "$DEPLOY_FINISHED_AT" \
@@ -372,6 +400,7 @@ jobs:
             echo "ACTIVE_FRONTEND_IMAGE=${ACTIVE_FRONTEND_IMAGE}"
             echo "DEPLOY_STARTED_AT=${DEPLOY_STARTED_AT}"
             echo "DEPLOY_FINISHED_AT=${DEPLOY_FINISHED_AT}"
+            echo "DEPLOY_DURATION_SECONDS=${DEPLOY_DURATION_SECONDS}"
             echo "DEPLOY_HISTORY_FILE=${DEPLOY_HISTORY_FILE}"
             echo "ROLLBACK_AUDIT_FILE=${ROLLBACK_AUDIT_FILE}"
 
@@ -398,6 +427,7 @@ jobs:
               "active_frontend_image": "",
               "deploy_started_at": "",
               "deploy_finished_at": "",
+              "deploy_duration_seconds": "",
               "deploy_history_file": "",
               "rollback_audit_file": "",
           }
@@ -418,6 +448,7 @@ jobs:
                   "ACTIVE_FRONTEND_IMAGE": "active_frontend_image",
                   "DEPLOY_STARTED_AT": "deploy_started_at",
                   "DEPLOY_FINISHED_AT": "deploy_finished_at",
+                    "DEPLOY_DURATION_SECONDS": "deploy_duration_seconds",
                   "DEPLOY_HISTORY_FILE": "deploy_history_file",
                   "ROLLBACK_AUDIT_FILE": "rollback_audit_file",
               }

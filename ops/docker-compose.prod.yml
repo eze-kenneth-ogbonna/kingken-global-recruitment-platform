@@ -8,6 +8,7 @@ services:
     environment:
       PORT: 3001
       DATABASE_URL: ${DATABASE_URL}
+      OPS_STATUS_FILE: /app/ops/latest-status.json
     healthcheck:
       test:
         [
@@ -21,6 +22,7 @@ services:
     volumes:
       - kingken_data:/app/data
       - kingken_uploads:/app/uploads
+      - ./deploy-history:/app/ops:ro
 
   frontend:
     image: ${FRONTEND_IMAGE}

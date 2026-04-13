@@ -5,6 +5,7 @@ import { errorHandler, notFound } from "./middleware/error.js";
 import { authRouter } from "./routes/auth.js";
 import { employerProfileRouter } from "./routes/employer-profile.js";
 import { healthRouter } from "./routes/health.js";
+import { opsStatusRouter } from "./routes/ops-status.js";
 import { workerProfileRouter } from "./routes/worker-profile.js";
 
 const app = express();
@@ -14,6 +15,7 @@ app.use(express.json());
 
 app.use(healthRouter);
 app.use("/auth", authRouter);
+app.use(opsStatusRouter);
 app.use("/profiles/worker", workerProfileRouter);
 app.use("/profiles/employer", employerProfileRouter);
 
