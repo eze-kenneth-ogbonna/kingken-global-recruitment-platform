@@ -1,9 +1,11 @@
+## syntax=docker/dockerfile:1.7
+
 FROM node:24-alpine AS builder
 
 WORKDIR /app
 
 COPY package*.json ./
-RUN npm ci --no-audit --no-fund
+RUN --mount=type=cache,target=/root/.npm npm ci --no-audit --no-fund
 
 COPY . .
 RUN npm run build

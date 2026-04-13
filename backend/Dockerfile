@@ -1,3 +1,5 @@
+## syntax=docker/dockerfile:1.7
+
 # ── Stage 1: build stage - compile TypeScript and generate Prisma client ─────
 FROM node:24-alpine AS builder
 
@@ -5,7 +7,7 @@ WORKDIR /app
 
 # Install dependencies (deterministic)
 COPY package*.json ./
-RUN npm ci --no-audit --no-fund
+RUN --mount=type=cache,target=/root/.npm npm ci --no-audit --no-fund
 
 # Copy TypeScript config and source
 COPY tsconfig.json ./
@@ -25,7 +27,7 @@ WORKDIR /app
 COPY package*.json ./
 
 # Install production dependencies only
-RUN npm ci --no-audit --no-fund --omit=dev
+RUN --mount=type=cache,target=/root/.npm npm ci --no-audit --no-fund --omit=dev
 
 # Copy compiled JavaScript and Prisma files from builder
 COPY --from=builder /app/dist ./dist
