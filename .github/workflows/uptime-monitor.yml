@@ -19,16 +19,20 @@ jobs:
 
     steps:
       - name: Validate HEALTHCHECK_URL configured
+        id: precheck
         env:
           HEALTHCHECK_URL: ${{ secrets.HEALTHCHECK_URL }}
         run: |
           if [ -z "${HEALTHCHECK_URL}" ]; then
-            echo "Missing required secret: HEALTHCHECK_URL"
-            exit 1
+            echo "ready=false" >> "$GITHUB_OUTPUT"
+            echo "ℹ️ Uptime monitor skipped: set the HEALTHCHECK_URL secret to enable scheduled health checks." >> "$GITHUB_STEP_SUMMARY"
+          else
+            echo "ready=true" >> "$GITHUB_OUTPUT"
           fi
 
       - name: Run uptime check
         id: probe
+        if: ${{ steps.precheck.outputs.ready == 'true' }}
         env:
           HEALTHCHECK_URL: ${{ secrets.HEALTHCHECK_URL }}
         run: |
@@ -37,7 +41,7 @@ jobs:
           echo "status=ok" >> "$GITHUB_OUTPUT"
 
       - name: Notify Slack on failure
-        if: failure()
+        if: ${{ failure() && steps.precheck.outputs.ready == 'true' }}
         env:
           HEALTHCHECK_URL: ${{ secrets.HEALTHCHECK_URL }}
           SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
@@ -49,7 +53,7 @@ jobs:
           fi
 
       - name: Write success summary
-        if: success()
+        if: ${{ success() && steps.precheck.outputs.ready == 'true' }}
         env:
           HEALTHCHECK_URL: ${{ secrets.HEALTHCHECK_URL }}
         run: echo "✅ Uptime check passed for ${HEALTHCHECK_URL}" >> "$GITHUB_STEP_SUMMARY"
