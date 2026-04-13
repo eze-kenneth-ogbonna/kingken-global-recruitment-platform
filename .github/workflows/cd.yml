@@ -175,3 +175,29 @@ EOF
             docker compose -f docker-compose.prod.yml --env-file .env.deploy logs --tail=50
             docker image prune -f
           "
+
+      - name: Notify on deploy failure
+        if: failure()
+        env:
+          SHA: ${{ github.event.workflow_run.head_sha }}
+          VPS_HOST: ${{ secrets.VPS_HOST }}
+          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+        run: |
+          echo "🚨 Deployment failed for commit ${SHA} on host ${VPS_HOST}" >> "$GITHUB_STEP_SUMMARY"
+          if [ -n "${SLACK_WEBHOOK_URL}" ]; then
+            payload=$(printf '{"text":"🚨 KingKen deploy failed for `%s` on `%s`"}' "${SHA}" "${VPS_HOST}")
+            curl -sS -X POST -H 'Content-type: application/json' --data "${payload}" "${SLACK_WEBHOOK_URL}" >/dev/null
+          fi
+
+      - name: Notify on deploy success
+        if: success()
+        env:
+          SHA: ${{ github.event.workflow_run.head_sha }}
+          VPS_HOST: ${{ secrets.VPS_HOST }}
+          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+        run: |
+          echo "✅ Deployment succeeded for commit ${SHA} on host ${VPS_HOST}" >> "$GITHUB_STEP_SUMMARY"
+          if [ -n "${SLACK_WEBHOOK_URL}" ]; then
+            payload=$(printf '{"text":"✅ KingKen deploy succeeded for `%s` on `%s`"}' "${SHA}" "${VPS_HOST}")
+            curl -sS -X POST -H 'Content-type: application/json' --data "${payload}" "${SLACK_WEBHOOK_URL}" >/dev/null
+          fi

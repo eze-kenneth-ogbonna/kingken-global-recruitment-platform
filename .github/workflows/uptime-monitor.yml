@@ -1,0 +1,55 @@
+name: Uptime Monitor
+
+on:
+  schedule:
+    - cron: "*/5 * * * *"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
+
+jobs:
+  healthcheck:
+    name: Check Production Health Endpoint
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+
+    steps:
+      - name: Validate HEALTHCHECK_URL configured
+        env:
+          HEALTHCHECK_URL: ${{ secrets.HEALTHCHECK_URL }}
+        run: |
+          if [ -z "${HEALTHCHECK_URL}" ]; then
+            echo "Missing required secret: HEALTHCHECK_URL"
+            exit 1
+          fi
+
+      - name: Run uptime check
+        id: probe
+        env:
+          HEALTHCHECK_URL: ${{ secrets.HEALTHCHECK_URL }}
+        run: |
+          set -euo pipefail
+          curl --fail --show-error --silent --max-time 15 --retry 3 --retry-delay 2 "${HEALTHCHECK_URL}" >/dev/null
+          echo "status=ok" >> "$GITHUB_OUTPUT"
+
+      - name: Notify Slack on failure
+        if: failure()
+        env:
+          HEALTHCHECK_URL: ${{ secrets.HEALTHCHECK_URL }}
+          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+        run: |
+          echo "🚨 Uptime monitor failed for ${HEALTHCHECK_URL}" >> "$GITHUB_STEP_SUMMARY"
+          if [ -n "${SLACK_WEBHOOK_URL}" ]; then
+            payload=$(printf '{"text":"🚨 Uptime check failed: %s"}' "${HEALTHCHECK_URL}")
+            curl -sS -X POST -H 'Content-type: application/json' --data "${payload}" "${SLACK_WEBHOOK_URL}" >/dev/null
+          fi
+
+      - name: Write success summary
+        if: success()
+        env:
+          HEALTHCHECK_URL: ${{ secrets.HEALTHCHECK_URL }}
+        run: echo "✅ Uptime check passed for ${HEALTHCHECK_URL}" >> "$GITHUB_STEP_SUMMARY"
