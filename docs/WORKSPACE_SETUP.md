@@ -2,6 +2,8 @@
 
 Use this guide to open the project correctly in VS Code, bootstrap local dependencies, use the dev container, and log in to GitHub Container Registry (GHCR).
 
+For the full production + developer reference, see `docs/SETUP_MATRIX.md`.
+
 ## Open the workspace
 
 Open `kingken-global.code-workspace` in VS Code.

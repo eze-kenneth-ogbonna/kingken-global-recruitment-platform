@@ -47,6 +47,8 @@ For the fastest local setup in VS Code, use:
 
 Detailed steps are in `docs/WORKSPACE_SETUP.md`.
 
+For the complete production + developer configuration reference, see `docs/SETUP_MATRIX.md`.
+
 ---
 
 ## 🚀 Contributing
