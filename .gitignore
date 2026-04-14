@@ -18,6 +18,13 @@
 !/*.code-workspace
 !/README.md
 
+# Keep only repo-level VS Code config, not local extension/cache state
+.vscode/*
+!.vscode/settings.json
+!.vscode/tasks.json
+!.vscode/launch.json
+!.vscode/extensions.json
+
 # Node modules
 backend/node_modules/
 frontend/node_modules/
