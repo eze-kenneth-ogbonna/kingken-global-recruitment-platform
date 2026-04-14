@@ -73,11 +73,16 @@ jobs:
       - name: Validate Markdown readability baseline
         run: |
           set -e
-          # Basic guard: prevent empty markdown files in tracked docs.
-          empty_files=$(find . -type f -name "*.md" -size 0 | wc -l)
-          if [[ "$empty_files" -gt 0 ]]; then
+          # Basic guard: prevent empty markdown files that are actually tracked in git.
+          empty_files=$(git ls-files "*.md" | while read -r f; do
+            if [[ ! -s "$f" ]]; then
+              echo "$f"
+            fi
+          done)
+
+          if [[ -n "$empty_files" ]]; then
             echo "Found empty markdown files. Please add content before merging."
-            find . -type f -name "*.md" -size 0
+            echo "$empty_files"
             exit 1
           fi
 
