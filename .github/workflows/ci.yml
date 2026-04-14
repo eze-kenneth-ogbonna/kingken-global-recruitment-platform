@@ -86,6 +86,17 @@ jobs:
             exit 1
           fi
 
+      - name: Guard against tracked local cache files
+        run: |
+          set -e
+          blocked_tracked_files=$(git ls-files | grep -E '^\.vscode/(extensions/|cli/|argv\.json$)' || true)
+
+          if [[ -n "$blocked_tracked_files" ]]; then
+            echo "Tracked local VS Code cache files detected. Remove them from git before merging."
+            echo "$blocked_tracked_files"
+            exit 1
+          fi
+
   backend-checks:
     name: Backend Checks
     runs-on: ubuntu-latest
