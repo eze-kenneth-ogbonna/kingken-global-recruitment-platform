@@ -13,16 +13,16 @@
             "preLaunchTask": "backend:debug"
         },
         {
-            "name": "Frontend Debug (5173)",
-            "type": "pwa-chrome",
+            "name": "Frontend Debug (Edge 5173)",
+            "type": "pwa-msedge",
             "request": "launch",
             "url": "http://localhost:5173",
             "webRoot": "${workspaceFolder:Frontend}",
             "preLaunchTask": "frontend:dev"
         },
         {
-            "name": "Frontend Debug (3000)",
-            "type": "pwa-chrome",
+            "name": "Frontend Debug (Edge 3000)",
+            "type": "pwa-msedge",
             "request": "launch",
             "url": "http://localhost:3000",
             "webRoot": "${workspaceFolder:Frontend}",
@@ -34,7 +34,7 @@
             "name": "Full stack debug",
             "configurations": [
                 "Backend Debug",
-                "Frontend Debug (5173)"
+                "Frontend Debug (Edge 5173)"
             ]
         }
     ]

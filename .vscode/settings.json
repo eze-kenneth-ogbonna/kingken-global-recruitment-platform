@@ -3,7 +3,21 @@
         "github.copilot-chat"
     ],
     "C_Cpp.autocompleteAddParentheses": true,
+    "git.path": "C:\\Users\\KINGKEN\\AppData\\Local\\GitHubDesktop\\app-3.5.7\\resources\\app\\git\\cmd\\git.exe",
+    "git.autofetch": true,
     "terminal.integrated.defaultProfile.windows": "PowerShell + Git",
+    "terminal.integrated.profiles.windows": {
+        "PowerShell + Git": {
+            "path": "C:\\Windows\\System32\\WindowsPowerShell\\v1.0\\powershell.exe",
+            "args": [
+                "-NoLogo"
+            ],
+            "icon": "terminal-powershell",
+            "env": {
+                "PATH": "C:\\Users\\KINGKEN\\AppData\\Local\\GitHubDesktop\\app-3.5.7\\resources\\app\\git\\cmd;${env:PATH}"
+            }
+        }
+    },
     "terminal.integrated.automationProfile.windows": {
         "path": "C:\\Windows\\System32\\WindowsPowerShell\\v1.0\\powershell.exe",
         "args": [
@@ -13,5 +27,15 @@
             "-File",
             "C:\\Users\\KINGKEN\\AppData\\Roaming\\Code\\User\\terminal-tools\\bootstrap-powershell-git.ps1"
         ]
+    },
+    "search.exclude": {
+        "**/node_modules": true,
+        "**/dist": true
+    },
+    "files.watcherExclude": {
+        "**/node_modules/**": true,
+        "**/dist/**": true,
+        "**/.git/objects/**": true,
+        "**/.git/subtree-cache/**": true
     }
 }
