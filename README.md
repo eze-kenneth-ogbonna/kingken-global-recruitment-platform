@@ -36,6 +36,17 @@ Expected response:
 {"status":"ok"}
 ```
 
+## 🛠 Workspace Setup
+
+For the fastest local setup in VS Code, use:
+
+- the multi-root workspace: `kingken-global.code-workspace`
+- the bootstrap task/script in `scripts/dev-setup.ps1`
+- the registry login helper in `scripts/ghcr-login.ps1`
+- the dev container config in `.devcontainer/devcontainer.json`
+
+Detailed steps are in `docs/WORKSPACE_SETUP.md`.
+
 ---
 
 ## 🚀 Contributing

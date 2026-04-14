@@ -1,0 +1,138 @@
+{
+    "version": "2.0.0",
+    "tasks": [
+        {
+            "label": "backend:build",
+            "type": "shell",
+            "command": "npm run build",
+            "options": {
+                "cwd": "${workspaceFolder:Backend}"
+            },
+            "problemMatcher": []
+        },
+        {
+            "label": "frontend:build",
+            "type": "shell",
+            "command": "npm run build",
+            "options": {
+                "cwd": "${workspaceFolder:Frontend}"
+            },
+            "problemMatcher": []
+        },
+        {
+            "label": "backend:dev",
+            "type": "shell",
+            "command": "npm run dev",
+            "options": {
+                "cwd": "${workspaceFolder:Backend}"
+            },
+            "isBackground": true,
+            "problemMatcher": []
+        },
+        {
+            "label": "frontend:dev",
+            "type": "shell",
+            "command": "npm run dev",
+            "options": {
+                "cwd": "${workspaceFolder:Frontend}"
+            },
+            "isBackground": true,
+            "problemMatcher": []
+        },
+        {
+            "label": "backend:debug",
+            "type": "shell",
+            "command": "$env:NODE_OPTIONS='--inspect=9229'; npm run dev",
+            "options": {
+                "cwd": "${workspaceFolder:Backend}"
+            },
+            "isBackground": true,
+            "problemMatcher": []
+        },
+        {
+            "label": "setup:bootstrap",
+            "type": "shell",
+            "command": "powershell",
+            "args": [
+                "-NoLogo",
+                "-ExecutionPolicy",
+                "Bypass",
+                "-File",
+                "${workspaceFolder:Platform}\\scripts\\dev-setup.ps1"
+            ],
+            "options": {
+                "cwd": "${workspaceFolder:Platform}"
+            },
+            "problemMatcher": []
+        },
+        {
+            "label": "registry:login:ghcr",
+            "type": "shell",
+            "command": "powershell",
+            "args": [
+                "-NoLogo",
+                "-ExecutionPolicy",
+                "Bypass",
+                "-File",
+                "${workspaceFolder:Platform}\\scripts\\ghcr-login.ps1"
+            ],
+            "options": {
+                "cwd": "${workspaceFolder:Platform}"
+            },
+            "problemMatcher": []
+        },
+        {
+            "label": "container:build:backend",
+            "type": "shell",
+            "command": "docker",
+            "args": [
+                "build",
+                "-f",
+                "backend/Dockerfile",
+                "backend"
+            ],
+            "options": {
+                "cwd": "${workspaceFolder:Platform}"
+            },
+            "problemMatcher": []
+        },
+        {
+            "label": "container:build:frontend",
+            "type": "shell",
+            "command": "docker",
+            "args": [
+                "build",
+                "-f",
+                "frontend/Dockerfile",
+                "frontend"
+            ],
+            "options": {
+                "cwd": "${workspaceFolder:Platform}"
+            },
+            "problemMatcher": []
+        },
+        {
+            "label": "fullstack:build",
+            "dependsOn": [
+                "backend:build",
+                "frontend:build"
+            ],
+            "dependsOrder": "parallel",
+            "group": "build",
+            "problemMatcher": []
+        },
+        {
+            "label": "fullstack:dev",
+            "dependsOn": [
+                "backend:dev",
+                "frontend:dev"
+            ],
+            "dependsOrder": "parallel",
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            },
+            "problemMatcher": []
+        }
+    ]
+}

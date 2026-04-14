@@ -3,10 +3,20 @@
 !/.gitignore
 !/.github
 !/.github/**
+!/.vscode
+!/.vscode/**
+!/.devcontainer
+!/.devcontainer/**
 !/backend
 !/frontend
+!/docs
+!/docs/**
 !/ops
 !/ops/**
+!/scripts
+!/scripts/**
+!/*.code-workspace
+!/README.md
 
 # Node modules
 backend/node_modules/

@@ -1,0 +1,9 @@
+{
+    "recommendations": [
+        "ms-vscode.powershell",
+        "ms-azuretools.vscode-docker",
+        "github.vscode-github-actions",
+        "prisma.prisma",
+        "ms-vscode.remote-containers"
+    ]
+}

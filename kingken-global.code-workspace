@@ -1,0 +1,34 @@
+{
+    "folders": [
+        {
+            "name": "Platform",
+            "path": "."
+        },
+        {
+            "name": "Backend",
+            "path": "backend"
+        },
+        {
+            "name": "Frontend",
+            "path": "frontend"
+        }
+    ],
+    "settings": {
+        "terminal.integrated.defaultProfile.windows": "PowerShell + Git",
+        "terminal.integrated.automationProfile.windows": {
+            "path": "C:\\Windows\\System32\\WindowsPowerShell\\v1.0\\powershell.exe",
+            "args": [
+                "-NoLogo",
+                "-ExecutionPolicy",
+                "Bypass",
+                "-File",
+                "C:\\Users\\KINGKEN\\AppData\\Roaming\\Code\\User\\terminal-tools\\bootstrap-powershell-git.ps1"
+            ]
+        },
+        "files.exclude": {
+            "**/node_modules": true,
+            "**/dist": true,
+            "**/.git": true
+        }
+    }
+}

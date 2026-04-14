@@ -1,0 +1,41 @@
+{
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "Backend Debug",
+            "type": "pwa-node",
+            "request": "attach",
+            "port": 9229,
+            "restart": true,
+            "skipFiles": [
+                "<node_internals>/**"
+            ],
+            "preLaunchTask": "backend:debug"
+        },
+        {
+            "name": "Frontend Debug (5173)",
+            "type": "pwa-chrome",
+            "request": "launch",
+            "url": "http://localhost:5173",
+            "webRoot": "${workspaceFolder:Frontend}",
+            "preLaunchTask": "frontend:dev"
+        },
+        {
+            "name": "Frontend Debug (3000)",
+            "type": "pwa-chrome",
+            "request": "launch",
+            "url": "http://localhost:3000",
+            "webRoot": "${workspaceFolder:Frontend}",
+            "preLaunchTask": "frontend:dev"
+        }
+    ],
+    "compounds": [
+        {
+            "name": "Full stack debug",
+            "configurations": [
+                "Backend Debug",
+                "Frontend Debug (5173)"
+            ]
+        }
+    ]
+}

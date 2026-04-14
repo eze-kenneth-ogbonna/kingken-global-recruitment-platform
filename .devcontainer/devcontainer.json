@@ -1,0 +1,24 @@
+{
+    "name": "Kingken Platform",
+    "image": "mcr.microsoft.com/devcontainers/javascript-node:1-24-bookworm",
+    "workspaceFolder": "/workspaces/${localWorkspaceFolderBasename}",
+    "workspaceMount": "source=${localWorkspaceFolder},target=/workspaces/${localWorkspaceFolderBasename},type=bind,consistency=cached",
+    "forwardPorts": [
+        3001,
+        5173
+    ],
+    "customizations": {
+        "vscode": {
+            "extensions": [
+                "ms-vscode.powershell",
+                "ms-azuretools.vscode-docker",
+                "github.vscode-github-actions",
+                "prisma.prisma"
+            ],
+            "settings": {
+                "terminal.integrated.defaultProfile.linux": "bash"
+            }
+        }
+    },
+    "postCreateCommand": "bash -lc 'cd backend && npm ci --no-audit --no-fund && npx prisma generate --schema prisma/schema.prisma; cd ../frontend && npm ci --no-audit --no-fund'"
+}
