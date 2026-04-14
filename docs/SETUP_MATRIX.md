@@ -10,6 +10,11 @@ Use this matrix in three ways:
 2. **GitHub setup** — configure repository settings, secrets, workflows, and GHCR access
 3. **Production setup** — configure the VPS, runtime environment, monitoring, and SMTP
 
+The repository also enforces part of this document automatically through:
+
+- `scripts/audit_setup_matrix.mjs`
+- the CI workflow in `.github/workflows/ci.yml`
+
 ---
 
 ## Setup matrix

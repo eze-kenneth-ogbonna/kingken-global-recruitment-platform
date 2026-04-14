@@ -97,6 +97,9 @@ jobs:
             exit 1
           fi
 
+      - name: Audit setup matrix contract
+        run: node scripts/audit_setup_matrix.mjs
+
   backend-checks:
     name: Backend Checks
     runs-on: ubuntu-latest
