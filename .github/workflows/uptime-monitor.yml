@@ -185,7 +185,7 @@ jobs:
           fi
 
       - name: Apply degraded alert policy
-        if: ${{ (success() || failure()) && steps.precheck.outputs.ready == 'true' }}
+        if: ${{ !cancelled() && steps.precheck.outputs.ready == 'true' }}
         id: policy
         env:
           PREVIOUS_UPTIME_JSON: ${{ steps.previous_state.outputs.stdout }}
@@ -262,13 +262,17 @@ jobs:
           PY
 
       - name: Record degraded alert policy summary
-        if: ${{ (success() || failure()) && steps.precheck.outputs.ready == 'true' }}
+        if: ${{ !cancelled() && steps.precheck.outputs.ready == 'true' }}
         run: |
+          previous_status="${{ steps.policy.outputs.previous_overall_status }}"
+          if [ -z "${previous_status}" ]; then
+            previous_status="none"
+          fi
           {
             echo ""
             echo "## Alert policy"
             echo ""
-            echo "- Previous overall status: ${{ steps.policy.outputs.previous_overall_status || 'none' }}"
+            echo "- Previous overall status: ${previous_status}"
             echo "- Current degraded streak: ${{ steps.policy.outputs.degraded_streak }}"
             echo "- Current down streak: ${{ steps.policy.outputs.down_streak }}"
             echo "- Degraded alert threshold: ${{ steps.policy.outputs.threshold }} consecutive run(s)"
@@ -298,7 +302,7 @@ jobs:
           fi
 
       - name: Persist latest uptime to VPS
-        if: ${{ (success() || failure()) && steps.precheck.outputs.ready == 'true' && steps.precheck.outputs.persist_ready == 'true' }}
+        if: ${{ !cancelled() && steps.precheck.outputs.ready == 'true' && steps.precheck.outputs.persist_ready == 'true' }}
         uses: appleboy/scp-action@v0.1.7
         with:
           host: ${{ secrets.VPS_HOST }}
@@ -309,7 +313,7 @@ jobs:
           strip_components: 1
 
       - name: Upload uptime trace artifact
-        if: ${{ (success() || failure()) && steps.precheck.outputs.ready == 'true' }}
+        if: ${{ !cancelled() && steps.precheck.outputs.ready == 'true' }}
         uses: actions/upload-artifact@v4
         with:
           name: uptime-trace-${{ github.run_id }}-${{ github.run_attempt }}
