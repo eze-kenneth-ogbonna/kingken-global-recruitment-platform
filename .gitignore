@@ -11,6 +11,8 @@
 !/frontend
 !/docs
 !/docs/**
+!/integrations
+!/integrations/**
 !/ops
 !/ops/**
 !/scripts
