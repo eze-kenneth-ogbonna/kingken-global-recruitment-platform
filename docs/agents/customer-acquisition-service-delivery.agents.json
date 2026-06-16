@@ -1,0 +1,200 @@
+{
+  "suiteId": "kingken_customer_acquisition_service_delivery",
+  "suiteName": "KINGKEN Customer Acquisition & Service Delivery Agent Suite",
+  "status": "active_operating_model",
+  "version": "1.0.0",
+  "owner": "KINGKEN GLOBAL TRAVEL AGENCY LTD",
+  "startFunction": {
+    "name": "kingken_customer_intake_start",
+    "description": "Start function for every new travel, recruitment, employer, partner, visa, quote, complaint, or support inquiry.",
+    "steps": [
+      "greet_customer",
+      "identify_inquiry_type",
+      "capture_contact_details",
+      "capture_service_interest",
+      "confirm_urgency_and_timeline",
+      "check_escalation_rules",
+      "route_to_correct_agent",
+      "create_or_update_crm_lead",
+      "provide_next_step_and_follow_up_date"
+    ],
+    "requiredFields": [
+      "fullName",
+      "phoneNumber",
+      "emailAddress",
+      "countryOfResidence",
+      "preferredDestinationCountry",
+      "serviceCategory",
+      "timeline",
+      "passportStatusIfRelevant",
+      "urgencyLevel",
+      "sourceChannel",
+      "assignedAgent",
+      "followUpDate",
+      "escalationStatus",
+      "privacyAcknowledgementStatus"
+    ]
+  },
+  "globalRules": {
+    "allowedActions": [
+      "answer_faq",
+      "classify_inquiry",
+      "capture_lead",
+      "draft_message",
+      "draft_quote",
+      "generate_checklist",
+      "prepare_summary",
+      "route_case",
+      "update_status",
+      "create_report_draft"
+    ],
+    "restrictedActionsRequireHumanApproval": [
+      "flight_ticket_issuance",
+      "hotel_confirmation",
+      "visa_submission",
+      "refund_processing",
+      "payment_approval",
+      "price_change",
+      "job_offer_issuance",
+      "candidate_deployment",
+      "contract_signing"
+    ],
+    "forbiddenClaims": [
+      "visa_approval_guarantee",
+      "job_offer_guarantee",
+      "deployment_guarantee",
+      "refund_guarantee_without_policy",
+      "fixed_flight_price_without_supplier_confirmation",
+      "admission_guarantee",
+      "immigration_outcome_guarantee"
+    ]
+  },
+  "agents": [
+    {
+      "id": "agent_1_customer_support",
+      "name": "Customer Support Agent",
+      "phase": 1,
+      "priority": 1,
+      "purpose": ["answer_customer_inquiries", "explain_travel_services", "capture_leads", "handle_faqs", "route_inquiries"],
+      "servicesCovered": ["flight_booking_information", "hotel_reservations", "visa_assistance", "study_abroad", "work_travel", "tour_packages", "airport_pickup", "travel_insurance"],
+      "outputs": ["lead_intake_summary", "inquiry_classification", "recommended_next_step", "follow_up_date", "escalation_flag"],
+      "handoffs": {
+        "visa_requirements": "agent_2_visa_documentation",
+        "follow_up": "agent_3_crm_follow_up",
+        "quote_request": "agent_4_sales_quote",
+        "recruitment_inquiry": "agent_6_recruitment_job_placement",
+        "complaint_or_refund": "human_manager"
+      }
+    },
+    {
+      "id": "agent_2_visa_documentation",
+      "name": "Visa Documentation Agent",
+      "phase": 1,
+      "priority": 1,
+      "purpose": ["explain_visa_requirements", "generate_checklists", "review_document_completeness", "track_application_readiness"],
+      "supported": ["tourist_visas", "business_visas", "student_visas", "work_visas", "family_visit_visas"],
+      "outputs": ["visa_document_checklist", "missing_document_list", "application_readiness_status", "risk_notes"],
+      "boundaryRule": "Never guarantee visa approval; visa decisions belong to embassy, consulate, or immigration authority."
+    },
+    {
+      "id": "agent_3_crm_follow_up",
+      "name": "CRM Follow-Up Agent",
+      "phase": 1,
+      "priority": 1,
+      "purpose": ["lead_nurturing", "follow_up_automation", "quote_reminders", "customer_engagement"],
+      "followUpScheduleDays": [1, 3, 7, 14, 30],
+      "outputs": ["follow_up_message_draft", "crm_follow_up_log", "lead_status_update", "escalation_recommendation"]
+    },
+    {
+      "id": "agent_4_sales_quote",
+      "name": "Sales Quote Agent",
+      "phase": 2,
+      "priority": 2,
+      "purpose": ["draft_quotations", "build_travel_proposals", "generate_package_pricing_drafts", "recommend_services"],
+      "outputs": ["flight_quote_draft", "hotel_quote_draft", "visa_service_quote_draft", "study_abroad_package_draft", "tour_package_draft"],
+      "approvalRule": "Draft only; ticket issuance, booking confirmation, price changes, and paid package finalization require human approval."
+    },
+    {
+      "id": "agent_5_operations_reporting",
+      "name": "Operations Reporting Agent",
+      "phase": 2,
+      "priority": 2,
+      "purpose": ["daily_reports", "weekly_reports", "kpi_monitoring", "lead_analytics", "sales_analytics"],
+      "outputs": ["daily_lead_report", "weekly_sales_report", "visa_processing_report", "customer_satisfaction_report"]
+    },
+    {
+      "id": "agent_6_recruitment_job_placement",
+      "name": "Recruitment & Job Placement Agent",
+      "phase": 3,
+      "priority": 3,
+      "purpose": ["candidate_registration", "cv_collection", "vacancy_matching", "recruitment_guidance"],
+      "supports": ["healthcare", "hospitality", "construction", "security", "manufacturing", "logistics", "agriculture", "domestic_workforce"],
+      "outputs": ["candidate_registration_summary", "job_category_match", "cv_collection_status", "recruitment_next_step"],
+      "boundaryRule": "Never guarantee employment, job offer, visa approval, deployment, salary, or employer selection."
+    },
+    {
+      "id": "agent_7_candidate_screening",
+      "name": "Candidate Screening Agent",
+      "phase": 3,
+      "priority": 3,
+      "purpose": ["passport_verification_checks", "qualification_review", "interview_preparation", "readiness_assessment"],
+      "outputs": ["candidate_screening_report", "eligibility_status", "interview_recommendations", "missing_document_alerts"]
+    },
+    {
+      "id": "agent_8_employer_partnership",
+      "name": "Employer Partnership Agent",
+      "phase": 3,
+      "priority": 3,
+      "purpose": ["employer_lead_qualification", "workforce_requirement_collection", "partnership_proposal_generation", "employer_relationship_management"],
+      "outputs": ["employer_opportunity_report", "recruitment_requirement_summary", "partnership_pipeline_report"],
+      "handoffs": {
+        "workforce_request": "agent_6_recruitment_job_placement",
+        "contract_or_msa_discussion": "human_executive_review",
+        "government_or_legal_inquiry": "human_executive_review"
+      }
+    },
+    {
+      "id": "agent_9_deployment_readiness",
+      "name": "Deployment Readiness Agent",
+      "phase": 4,
+      "priority": 4,
+      "purpose": ["travel_readiness_checks", "medical_requirement_tracking", "documentation_monitoring", "pre_departure_orientation"],
+      "outputs": ["deployment_readiness_score", "missing_document_alerts", "travel_preparation_checklists"],
+      "approvalRule": "Candidate deployment requires human approval."
+    },
+    {
+      "id": "agent_10_recruitment_compliance",
+      "name": "Recruitment Compliance Agent",
+      "phase": 4,
+      "priority": 4,
+      "purpose": ["ethical_recruitment_monitoring", "compliance_audits", "anti_fraud_checks", "policy_enforcement"],
+      "outputs": ["compliance_report", "risk_alert", "audit_summary"],
+      "escalateImmediatelyFor": ["fraud", "trafficking_risk", "document_forgery", "illegal_migration", "bribery", "coercion", "government_inquiry", "legal_issue"]
+    }
+  ],
+  "connectedSystems": {
+    "communication": ["gmail", "outlook", "whatsapp_business", "website_live_chat"],
+    "documentManagement": ["google_drive", "microsoft_onedrive", "shared_company_knowledge_base"],
+    "crm": ["google_sheets_crm", "hubspot_future", "zoho_crm_future", "zoho_recruit"],
+    "finance": ["payment_tracker", "invoice_register", "refund_tracker"],
+    "operations": ["booking_portals", "travel_supplier_systems", "recruitment_database"]
+  },
+  "escalationMatrix": [
+    "customer_complaint",
+    "refund_request",
+    "payment_dispute",
+    "visa_refusal_risk",
+    "travel_within_24_hours",
+    "missing_passport_data",
+    "corporate_account_inquiry",
+    "recruitment_fraud_concern",
+    "legal_issue",
+    "government_inquiry"
+  ],
+  "launchSequence": {
+    "priority1": ["agent_1_customer_support", "agent_2_visa_documentation", "agent_3_crm_follow_up"],
+    "priority2": ["agent_4_sales_quote", "agent_5_operations_reporting"],
+    "priority3": ["agent_6_recruitment_job_placement", "agent_7_candidate_screening", "agent_8_employer_partnership"],
+    "priority4": ["agent_9_deployment_readiness", "agent_10_recruitment_compliance"]
+  }
+}
