@@ -18,16 +18,16 @@ COPY prisma ./prisma
 RUN npx prisma generate --schema prisma/schema.prisma
 RUN npm run build
 
-# ── Stage 2: lean production image ────────────────────────────────────────────
+# ── Stage 2: production image with Prisma CLI for migration service ───────────
 FROM node:24-alpine AS runtime
 
 WORKDIR /app
 
-# Copy package files (for production deps)
+# Copy package files and install locked dependencies.
+# Prisma CLI remains available so docker-compose can run `prisma migrate deploy`
+# before the backend accepts live traffic.
 COPY package*.json ./
-
-# Install production dependencies only
-RUN --mount=type=cache,target=/root/.npm npm ci --no-audit --no-fund --omit=dev
+RUN --mount=type=cache,target=/root/.npm npm ci --no-audit --no-fund
 
 # Copy compiled JavaScript and Prisma files from builder
 COPY --from=builder /app/dist ./dist
