@@ -29,7 +29,9 @@ const envSchema = z.object({
   ZOHO_CANDIDATE_MODULE: z.string().default("Candidates"),
   ZOHO_JOB_OPENINGS_MODULE: z.string().default("Job_Openings"),
   ZOHO_AUTO_PUSH_APPLICATIONS: booleanString.default(false),
-  ZOHO_SYNC_NOTIFY_EMAIL: z.string().email().default("info@kingkenglobal.com.ng")
+  ZOHO_SUPER_ADMIN_EMAIL: z.string().email().default("kingkenglobal@gmail.com"),
+  ZOHO_SUPER_ADMIN_USER_ID: z.string().default("912010524"),
+  ZOHO_SYNC_NOTIFY_EMAIL: z.string().email().default("kingkenglobal@gmail.com")
 });
 
 export const env = envSchema.parse(process.env);
