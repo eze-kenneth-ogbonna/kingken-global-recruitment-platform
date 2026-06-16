@@ -42,6 +42,51 @@ model EmployerProfile {
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
 
+model CustomerLead {
+  id                              String         @id @default(uuid())
+  fullName                        String
+  phoneNumber                     String
+  emailAddress                    String
+  countryOfResidence              String?
+  preferredDestinationCountry     String?
+  serviceCategory                 String
+  timeline                        String?
+  passportStatusIfRelevant        String?
+  urgencyLevel                    String         @default("normal")
+  sourceChannel                   String
+  assignedAgent                   String
+  status                          String         @default("NEW")
+  escalationStatus                String         @default("NONE")
+  privacyAcknowledgementStatus    String         @default("PENDING")
+  inquirySummary                  String?
+  routingReason                   String?
+  createdAt                       DateTime       @default(now())
+  updatedAt                       DateTime       @updatedAt
+  followUps                       LeadFollowUp[]
+
+  @@index([assignedAgent, status])
+  @@index([serviceCategory])
+  @@index([createdAt])
+}
+
+model LeadFollowUp {
+  id            String       @id @default(uuid())
+  leadId        String
+  assignedAgent String       @default("agent_3_crm_follow_up")
+  scheduledDay  Int
+  scheduledAt   DateTime
+  channel       String       @default("email")
+  messageDraft  String
+  status        String       @default("PENDING")
+  createdAt     DateTime     @default(now())
+  updatedAt     DateTime     @updatedAt
+
+  lead CustomerLead @relation(fields: [leadId], references: [id], onDelete: Cascade)
+
+  @@index([assignedAgent, status, scheduledAt])
+  @@index([leadId])
+}
+
 model Document {
   id        String   @id @default(uuid())
   userId    String
