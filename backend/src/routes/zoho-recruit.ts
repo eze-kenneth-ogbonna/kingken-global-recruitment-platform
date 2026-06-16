@@ -29,6 +29,8 @@ zohoRecruitRouter.post("/test-candidate", async (req: AuthenticatedRequest, res)
     return res.status(400).json({ error: "Invalid payload", details: parsed.error.flatten() });
   }
 
+  const userAgent = req.get("user-agent");
+
   try {
     const result = await createZohoCandidate({ ...parsed.data, source: parsed.data.source ?? "KINGKEN Admin Test Sync" });
 
@@ -43,7 +45,7 @@ zohoRecruitRouter.post("/test-candidate", async (req: AuthenticatedRequest, res)
         code: result.code
       },
       ipAddress: req.ip,
-      userAgent: req.headers["user-agent"]
+      userAgent
     });
 
     return res.status(201).json({ synced: true, result });
@@ -57,7 +59,7 @@ zohoRecruitRouter.post("/test-candidate", async (req: AuthenticatedRequest, res)
         error: error instanceof Error ? error.message : "Unknown error"
       },
       ipAddress: req.ip,
-      userAgent: req.headers["user-agent"]
+      userAgent
     });
 
     return res.status(502).json({
