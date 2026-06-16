@@ -18,14 +18,14 @@ COPY prisma ./prisma
 RUN npx prisma generate --schema prisma/schema.prisma
 RUN npm run build
 
-# ── Stage 2: production image with Prisma CLI for migration service ───────────
+# ── Stage 2: production image with Prisma CLI for migrations ──────────────────
 FROM node:24-alpine AS runtime
 
 WORKDIR /app
 
 # Copy package files and install locked dependencies.
-# Prisma CLI remains available so docker-compose can run `prisma migrate deploy`
-# before the backend accepts live traffic.
+# Prisma CLI remains available so production can apply pending migrations before
+# the backend accepts live traffic.
 COPY package*.json ./
 RUN --mount=type=cache,target=/root/.npm npm ci --no-audit --no-fund
 
@@ -44,5 +44,6 @@ ENV DATABASE_URL=file:/app/data/dev.db
 
 EXPOSE 3001
 
-# Run the compiled application
-CMD ["node", "dist/server.js"]
+# Apply pending migrations, then start the compiled application.
+# If migration deployment fails, the container exits and production health checks fail.
+CMD ["sh", "-c", "npx prisma migrate deploy --schema prisma/schema.prisma && node dist/server.js"]
