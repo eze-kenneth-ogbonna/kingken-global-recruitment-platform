@@ -51,6 +51,8 @@ export function getZohoRecruitStatus() {
     candidateModule: env.ZOHO_CANDIDATE_MODULE,
     jobOpeningsModule: env.ZOHO_JOB_OPENINGS_MODULE,
     apiBaseUrl: env.ZOHO_RECRUIT_API_BASE_URL,
+    superAdminEmail: env.ZOHO_SUPER_ADMIN_EMAIL,
+    superAdminUserId: env.ZOHO_SUPER_ADMIN_USER_ID,
     notifyEmail: env.ZOHO_SYNC_NOTIFY_EMAIL
   };
 }
