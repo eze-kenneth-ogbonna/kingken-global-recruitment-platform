@@ -69,8 +69,8 @@ The repository also enforces part of this document automatically through:
 | Container / Dev | Dev container base image | Local dev | Recommended | `mcr.microsoft.com/devcontainers/javascript-node:1-24-bookworm` | Reproducible dev environment | `.devcontainer/devcontainer.json` |
 | Container / Dev | Forwarded ports | Local dev | Recommended | `3001`, `5173` | Backend/frontend access in container | `.devcontainer/devcontainer.json` |
 | Container / Dev | Post-create bootstrap | Local dev | Recommended | install backend/frontend deps + Prisma generate | Faster first start | `.devcontainer/devcontainer.json` |
-| Local app | `backend/.env` | Local dev | Yes | local placeholder values | Backend local runtime config | `backend/.env` |
-| Local app | `frontend/.env.local` | Local dev | Yes | `VITE_API_BASE_URL=http://localhost:3001` | Frontend local API target | `frontend/.env.local` |
+| Local app | `backend/.env` | Local dev | Yes | local placeholder values | Backend local runtime config | Local developer machine, not committed |
+| Local app | `frontend/.env.local` | Local dev | Yes | `VITE_API_BASE_URL=http://localhost:3001` | Frontend local API target | Local developer machine, not committed |
 
 ---
 
@@ -97,7 +97,7 @@ Use this checklist on a new machine:
 - Open `kingken-global.code-workspace`
 - Run `setup:bootstrap`
 - Confirm Git works in VS Code terminal
-- Confirm `backend/.env` and `frontend/.env.local` are correct
+- Confirm local backend and frontend environment files are correct
 - Run `fullstack:build`
 - Optionally reopen in dev container
 - Optionally set `GHCR_TOKEN` and run `registry:login:ghcr`
