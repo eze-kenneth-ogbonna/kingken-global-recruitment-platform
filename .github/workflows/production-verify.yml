@@ -1,0 +1,91 @@
+name: Production Verification
+
+on:
+  workflow_dispatch:
+  workflow_run:
+    workflows: [CD]
+    types: [completed]
+
+permissions:
+  contents: read
+
+jobs:
+  verify-production:
+    name: Verify Production HTTPS Endpoints
+    if: ${{ github.event_name == 'workflow_dispatch' || github.event.workflow_run.conclusion == 'success' }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+
+    steps:
+      - name: Validate verification secrets
+        id: precheck
+        env:
+          APP_BASE_URL: ${{ secrets.APP_BASE_URL }}
+          OPS_STATUS_URL: ${{ secrets.OPS_STATUS_URL }}
+        run: |
+          set -euo pipefail
+          if [ -z "${APP_BASE_URL}" ]; then
+            echo "ready=false" >> "$GITHUB_OUTPUT"
+            echo "APP_BASE_URL secret is required for production verification." >> "$GITHUB_STEP_SUMMARY"
+            exit 0
+          fi
+
+          case "${APP_BASE_URL}" in
+            https://*) ;;
+            *)
+              echo "ready=false" >> "$GITHUB_OUTPUT"
+              echo "APP_BASE_URL must use HTTPS: ${APP_BASE_URL}" >> "$GITHUB_STEP_SUMMARY"
+              exit 0
+              ;;
+          esac
+
+          echo "ready=true" >> "$GITHUB_OUTPUT"
+          echo "app_base_url=${APP_BASE_URL%/}" >> "$GITHUB_OUTPUT"
+          echo "ops_status_url=${OPS_STATUS_URL}" >> "$GITHUB_OUTPUT"
+
+      - name: Verify public HTTPS endpoints
+        if: ${{ steps.precheck.outputs.ready == 'true' }}
+        env:
+          APP_BASE_URL: ${{ steps.precheck.outputs.app_base_url }}
+          OPS_STATUS_URL: ${{ steps.precheck.outputs.ops_status_url }}
+        run: |
+          set -euo pipefail
+
+          echo "Checking public application: ${APP_BASE_URL}/"
+          curl --fail --silent --show-error --location --max-time 20 "${APP_BASE_URL}/" >/dev/null
+
+          echo "Checking backend health endpoint: ${APP_BASE_URL}/health"
+          curl --fail --silent --show-error --location --max-time 20 "${APP_BASE_URL}/health" >/dev/null
+
+          if [ -n "${OPS_STATUS_URL}" ]; then
+            case "${OPS_STATUS_URL}" in
+              https://*)
+                echo "Checking public operations status endpoint: ${OPS_STATUS_URL}"
+                curl --fail --silent --show-error --location --max-time 20 "${OPS_STATUS_URL}" >/dev/null
+                ;;
+              *)
+                echo "OPS_STATUS_URL is configured but does not use HTTPS: ${OPS_STATUS_URL}"
+                exit 1
+                ;;
+            esac
+          fi
+
+      - name: Record verification summary
+        if: ${{ steps.precheck.outputs.ready == 'true' }}
+        run: |
+          {
+            echo "## Production verification passed"
+            echo ""
+            echo "- Public app: ${{ steps.precheck.outputs.app_base_url }}/"
+            echo "- Health endpoint: ${{ steps.precheck.outputs.app_base_url }}/health"
+            if [ -n "${{ steps.precheck.outputs.ops_status_url }}" ]; then
+              echo "- Ops endpoint: ${{ steps.precheck.outputs.ops_status_url }}"
+            fi
+            echo "- HTTPS requirement: enforced"
+          } >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Fail when verification was skipped
+        if: ${{ steps.precheck.outputs.ready != 'true' }}
+        run: |
+          echo "Production verification was skipped because required HTTPS secrets are missing or invalid."
+          exit 1
