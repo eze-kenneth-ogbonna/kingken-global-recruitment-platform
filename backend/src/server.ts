@@ -8,6 +8,7 @@ import { employerProfileRouter } from "./routes/employer-profile.js";
 import { healthRouter } from "./routes/health.js";
 import { opsStatusRouter } from "./routes/ops-status.js";
 import { workerProfileRouter } from "./routes/worker-profile.js";
+import { zohoRecruitRouter } from "./routes/zoho-recruit.js";
 
 const app = express();
 
@@ -20,6 +21,7 @@ app.use("/auth", authRouter);
 app.use(opsStatusRouter);
 app.use("/profiles/worker", workerProfileRouter);
 app.use("/profiles/employer", employerProfileRouter);
+app.use("/admin/zoho-recruit", zohoRecruitRouter);
 
 app.use(notFound);
 app.use(errorHandler);
